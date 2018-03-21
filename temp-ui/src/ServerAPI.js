@@ -131,10 +131,11 @@ AnsibleVariable.GROUP_VARIABLE = 5;
 AnsibleVariable.SYS_VARIABLE = 1
 
 
-class Hosts {
-    constructor(hName, hIP, hType) {
+class Host {
+    constructor(hName, hType) {
         this.hName = hName;
-        this.IP = hIP;
+        this.IPAddress = "";
+        this.invaderPort = "";
         this.type = hType;
         this.variables = {};
     }
@@ -146,44 +147,122 @@ class Hosts {
         
     }
     
-    addVariable(variable) {
-        
+    addVariable(key, value) {
+        this.variables[key] = value;
+    }
+    
+    setupVariable(variableDict) {
+        for (let key in variableDict) {
+            let val = variableDict[key];
+            if (key === "ansible_host")
+                this.IPAddress = val;
+            else if (key === "inv_port")
+                this.invaderPort = val;
+            else
+                this.addVariable(key, val);
+        }
     }
 }
+
+Host.KEY = "host";
+Host.OTHER = 0;
+Host.INVADER = 1;
+Host.SERVER = 5;
+
+
+
+class Group {
+    constructor(gName, gType) {
+        this.gName = gName;
+        this.gType = gType;
+        this.hosts = [];
+        this.variables = {};
+    }
+    
+    addVariable(key, value) {
+        this.variables[key] = value;
+    }
+
+    setupVariable(variableDict) {
+        for (let key in variableDict) {
+            let val = variableDict[key];
+            this.addVariable(key, val);
+        }
+    }
+}
+
+Group.KEY = "group";
+Group.INVADER_KEY = "clients";
+Group.SERVER_KEY = "servers";
+Group.VARIABLES = "vars";
+
 
 function simulateAllStats() {
     
 }
 
-Hosts.INVADER = 1;
-Hosts.SERVER = 5;
 
-
+let allGroups = {};
 let allHosts = {};
-let invaderHosts = [];
-let serverHosts = [];
+
+function allServerHostNames() {
+    let grp = allGroups[Group.SERVER_KEY];
+    return grp.hosts;
+}
+
+function allInvaderNames() {
+    let grp = allGroups[Group.INVADER_KEY];
+    return grp.hosts;
+}
 
 function setupInventory() {
     // Below we are going to replace hardcoded string to fetch from server.
+    allGroups = {};
+    allHosts = {};
+    invaderHosts = [];
+    serverHosts = [];
     let jsonString = fetchInvetoryAll();
     let jsonObj = JSON.parse(jsonString);
     let inventoryAll = jsonObj["all"];
-    let invGroups = inventoryAll["group"];
-    let invaderHosts = invGroups["clients"]["hosts"];
-    let ansableServers = invGroups["servers"]["hosts"];
+    let allHostDict = inventoryAll[Host.KEY];
+    let inventoryGroups = inventoryAll[Group.KEY];
     
-    invaderHosts.forEach(function(hostName, index, array) {
-        let host = Hosts(hostName, "", Hosts.INVADER);
-        allHosts[hostName] = host;
-        invaderHosts.push(hostName);
-        //MN::TODO::Setup HOST VARIABLES
-    });
-    ansableServers.forEach(function(hostName, index, array) {
-        let host = Hosts(hostName, "", Hosts.SERVER);
-        allHosts[hostName] = host;
-        serverHosts.push(hostName);
-        //MN::TODO::Setup HOST VARIABLES
-    });
+    for (groupName in inventoryGroups) {
+        let groupDict = inventoryGroups[groupName];
+        let hostType = Host.OTHER;
+        if (groupName === Group.INVADER_KEY) 
+            hostType = Host.INVADER;
+        else if (groupName === Group.SERVER_KEY)
+            hostType = Host.SERVER;
+
+        let grp = new Group(groupName, hostType);
+        grpHostsArray = groupDict["hosts"];
+        if (grpHostsArray !== undefined) {
+            grpHostsArray.forEach(function(hostName, index, array) {
+                let host = allHosts[hostName];
+                if (host === undefined) {
+                    host = new Host(hostName, hostType);
+                    let hostDict = allHostDict[hostName];
+                    if (hostDict !== undefined) {
+                        let hostVars = hostDict["vars"];
+                        host.setupVariable(hostVars);
+                    }
+                    allHosts[hostName] = host;
+                } else if (hostType > Host.OTHER) {
+                    if (host.type == Host.OTHER)
+                        host.type = hostType;
+                    else 
+                        console.log("ERROR :: Host :: " + hostName + " :: belongs to both 'Server' and 'Invader' Groups");
+                }
+                grp.hosts.push(hostName);
+            });
+        }
+
+        let grpVars = groupDict[Group.VARIABLES];
+        grp.setupVariable(grpVars);
+        
+        allGroups[groupName] = grp;
+    }
 }
 
 function fetchAllSystemStats() {
@@ -192,13 +271,29 @@ function fetchAllSystemStats() {
     let jsonMemoryString = fetchMemoryStats();
 }
 
-
 function fetchAllServiceStats() {
     let jsonEGINXString = fetchEGINXStats();
     let jsonVarnishString = fetchVarnishStats();
     let jsonIPVSString = fetchIPVSStats();
 }
 
+function fetchAllGroupNames() {
+    let jsonStr = fetchGroups();
+    let jsonObj = json.parse(jsonStr);
+    return jsonObj["groups"];
+}
+
+function fetchAllHostNames() {
+    let jsonStr = fetchHosts();
+    let jsonObj = json.parse(jsonStr);
+    return jsonObj["hosts"];
+}
+
+function fetchAllPlaybookNames() {
+    let jsonStr = fetchPlaybooks();
+    let jsonObj = json.parse(jsonStr);
+    return jsonObj["playbooks"];
+}
 
 function fetchInvetoryAll() {
     return '{"all":{"group":{"all":{"client_ip":"10.10.30.110","containers":4,"vip":"4.3.2.1"},"clients":{"hosts":["inv7"]},"inv":{"hosts":["127.0.0.1"],"vars":{"ansible_connection":"local","check_digest":"0ac91d27021904d30dbafce186223c81","check_url":"/","keepalived_conf":"/etc/keepalived/keepalived.conf","keepalived_daemon":"/usr/sbin/keepalived","lb_intfs":"eth-14-1 eth-16-1","script_inv":"/home/ansible/ipvs_inv.sh"}},"servers":{"hosts":["sr3","sr2"]}},"host":{"127.0.0.1":{"vars":{}},"inv7":{"vars":{}},"sr2":{"vars":{"ansible_host":"192.168.101.222","inv_port":"eth-14-1","main_intf":"enp130s0","server_num":1,"ssl_engine":"nginx"}},"sr3":{"vars":{"ansible_host":"192.168.101.223","inv_port":"eth-16-1","main_intf":"enp130s0","server_num":2,"ssl_engine":"hitch"}}}}}';
@@ -226,4 +321,16 @@ function fetchVarnishStats() {
 
 function fetchIPVSStats() {
     return '[{"protocol":"TCP","virtualIp":"4.3.2.1","port":"80","serviceType":"varnish","stats":{"connections":"0","inPackets":"0","outPackets":"0","inBytes":"0","outBytes":"0"},"servers":[{"realIp":"10.14.1.1","port":"80","serverName":"sr2","serviceId":"1","stats":{"connections":"0","inPackets":"0","outPackets":"0","inBytes":"0","outBytes":"0"}}]},{"protocol":"TCP","virtualIp":"4.3.2.1","port":"443","serviceType":"nginx","stats":{"connections":"0","inPackets":"0","outPackets":"0","inBytes":"0","outBytes":"0"},"servers":[{"realIp":"10.14.1.1","port":"443","serverName":"sr2","serviceId":"1","stats":{"connections":"0","inPackets":"0","outPackets":"0","inBytes":"0","outBytes":"0"}}]}]';
+}
+
+function fetchPlaybooks() {
+    return '{"playbooks":["adjust_containers.yml","install-docker.yml","install-ipvs.yml","ping.yml","uninstall-ipvs.yml"]}';
+}
+
+function fetchGroups() {
+    return '{"groups":["servers","inv","clients"]}';
+}
+
+function fetchHosts() {
+    return '{"hosts":["127.0.0.1","inv7","sr3","sr2"]}';
 }
