@@ -37,14 +37,19 @@ class StatsVarnish {
 }
 
 
+//DONE
 class StatsCPU {
-    constructor(user, nice, system, idle, iowait, irq) {
-        this.user = user;
-        this.nice = nice;
-        this.system = system;
-        this.idle = idle;
-        this.iowait = iowait;
-        this.irq = irq;
+    constructor(cpuStatsDict) {
+        let cpuAllStats = cpuStatsDict["cpu_all"];
+        this.user = cpuAllStats["user"];
+        this.nice = cpuAllStats["nice"];
+        this.system = cpuAllStats["system"];
+        this.idle = cpuAllStats["idle"];
+        this.iowait = cpuAllStats["iowait"];
+        this.irq = cpuAllStats["irq"];
+        this.processes = cpuStatsDict["processes"];
+        this.procsRunning = cpuStatsDict["procs_running"];
+        this.procsBlocked = cpuStatsDict["procs_blocked"];
     }
     static SimulateObj() {
         let a = Math.floor((Math.random() * 5) + 1);
@@ -59,11 +64,12 @@ class StatsCPU {
 }
 
 
+//DONE
 class StatsMemory {
-    constructor(total, free, available) {
-        this.total = total;
-        this.free = free;
-        this.available = available;
+    constructor(memStatsDict) {
+        this.total = memStatsDict["mem_total"];
+        this.free = memStatsDict["mem_free"];
+        this.available = memStatsDict["mem_available"];
     }
     static SimulateObj() {
         let total = 16464124;
@@ -73,7 +79,6 @@ class StatsMemory {
         return this(total, free, available);
     }
 }
-
 
 class StatsDisk {
     constructor(dName, readIOs, readSectors, writeIOs, writeSectors, ticksIO) {
@@ -269,6 +274,12 @@ function fetchAllSystemStats() {
     let jsonCPUString = fetchCPUStats();
     let jsonDiskString = fetchDiskStats();
     let jsonMemoryString = fetchMemoryStats();
+    
+    let cpuStatsObj = JSON.parse(jsonCPUString);
+    let diskStatsObj = JSON.parse(jsonDiskString);
+    let memStatsObj = JSON.parse(jsonMemoryString);
+    
+    let a = "";
 }
 
 function fetchAllServiceStats() {
