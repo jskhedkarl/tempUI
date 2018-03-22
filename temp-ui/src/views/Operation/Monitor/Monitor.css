@@ -1,0 +1,15 @@
+ .borderAllSide{
+    border: 1px solid #aaaaaa;
+  }
+  .borderLeft{
+    border-left: 1px solid #aaaaaa;
+  }
+  .borderRight{
+    border-right: 1px solid #aaaaaa;
+  }
+  .borderTop{
+    border-top: 1px solid #aaaaaa;
+  }
+  .borderBottom{
+    border-bottom: 1px solid #aaaaaa;
+  }
