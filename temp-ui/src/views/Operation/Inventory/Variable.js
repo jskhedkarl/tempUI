@@ -28,8 +28,8 @@ import Styles from './Variables.css';
 var total = 1;
 
 class Variables extends Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
             count: 1,
             name: '',
@@ -37,7 +37,7 @@ class Variables extends Component {
         };
     }
 
-    addEntry() {
+    addVariable() {
         this.setState({count: this.state.count + 1});
         console.log(this.state.count);
         this.setState({pairs: this.state.pairs.concat([{name: ''}])});
@@ -47,22 +47,48 @@ class Variables extends Component {
         this.setState({pairs: this.state.pairs.filter((s, sidx) => idx !== sidx)});
     }
 
-    showVariables() {
+    renderVariables() {
+        let retHTML = [];
+        for (let key in this.props.variables) {
+            let value = this.props.variables[key];
+            let varId = key.trim();
+            retHTML.push(
+              <CardBody id={varId} style={{height:'50px'}}>
+                <Row>
+                    <Col style={{width:'40px'}}><Input type="text" placeholder="Variable Key" required value={key}/></Col>
+                    <Col style={{width:'5px'}}> : </Col>
+                    <Col style={{width:'40px'}}><Input type="text" placeholder="Variable Value" required value={value}/></Col>
+                </Row>
+              </CardBody>
+            );
+        }
+        return retHTML;
     }
 
     render() {
-        console.log(this.props.active)        
         if(this.props.active) {
-            return (         
+            return (
                 <div className="animated fadeIn">
-                    <Row>
-                        <Col>
-                            <Card>
-                                <CardHeader align="center">
-                                    <strong>Variables</strong>
-                                    <Button className="floatRight" onClick={() => this.addEntry()} size="sm"
-                                            color="secondary"><b><strong>+</strong></b></Button>
-                                </CardHeader>
+                    <Card>
+                        <CardHeader>
+                            <strong>Variables</strong>
+                            <div className="floatRight" onClick={() => this.addVariable()} ><strong>+</strong></div>
+                        </CardHeader>
+                        <div style={{height:'300px', overflowY:'scroll'}}>
+                        {this.renderVariables()}
+                        </div>
+                    </Card>
+                </div>
+            )
+        }else{
+            return (<div></div>)
+        }
+    }
+}
+
+
+/*
+
                                 <Table>
                                     <thead>
                                     <tr>
@@ -126,15 +152,7 @@ class Variables extends Component {
                                     </tr>
                                     </tbody>
                                 </Table>
-                            </Card>
-                        </Col>
-                    </Row>
-                </div>
-            )
-        }else{
-            return (<div></div>)
-        }
-    }
-}
+
+*/
 
 export default Variables;

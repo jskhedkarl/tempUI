@@ -78,8 +78,9 @@ class InventoryComp extends Component {
 
     showDetails(hostName) {
         console.log("HOST SLEECTED:::" + hostName);
+        let host = this.state.hosts[hostName];
         this.setState({
-            selectedHost: hostName,
+            selectedHost: host,
             active: true,
         });
         this.handleToggleClick();
@@ -119,8 +120,8 @@ class InventoryComp extends Component {
                         </Card>
                     </Col>
                     <Col xs="12" sm="6">
-                        <Variables active={this.state.active} />
-                        <GroupComponent active={this.state.active} />
+                        <Variables active={this.state.active} variables={this.state.selectedHost.variables}/>
+                        <GroupComponent active={this.state.active} host={this.state.selectedHost}/>
                     </Col>
                 </Row>
             </div>
