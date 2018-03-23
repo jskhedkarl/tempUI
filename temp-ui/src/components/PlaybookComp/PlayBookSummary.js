@@ -45,10 +45,10 @@ class PlayBookSummary extends Component {
       <div className="animated fadeIn">
 
         <Card>
-         <CardHeader align="center">
-                <strong >Play Book Summary</strong>
-         </CardHeader>
-         <Table>
+            <CardHeader>
+                <strong>Selected Play Book Summary</strong>
+            </CardHeader>
+        <Table>
          <thead>
              <tr>   
                 <th>Play Book</th>

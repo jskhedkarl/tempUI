@@ -28,13 +28,28 @@ import {
 import Variables from './Variable';
 import GroupComponent from "./GroupComponent";
 import Styles from './GroupComponent.css'
+import {ServerAPI, Host, Group} from '../../../ServerAPI'
 
+/*
+class Host {
+    constructor(hName, hType) {
+        this.hName = hName;
+        this.IPAddress = "";
+        this.invaderPort = "";
+        this.type = hType;
+        this.variables = {};
+
+*/
 class InventoryComp extends Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
+        let server = ServerAPI.DefaultServer();
+
         this.state = {
             childVisible: false,
-            active: false
+            active: false,
+            hosts: server.allHosts,
+            selectedHost: "",
         }
         this.handleToggleClick = this.handleToggleClick.bind(this);
     }
@@ -61,10 +76,32 @@ class InventoryComp extends Component {
         this.setState({ childVisible: !this.state.childVisible });
     }
 
-    showDetails() {
-        this.state.active = true;
-        console.log(this.state.active)
+    showDetails(hostName) {
+        console.log("HOST SLEECTED:::" + hostName);
+        this.setState({
+            selectedHost: hostName,
+            active: true,
+        });
         this.handleToggleClick();
+    }
+    
+    renderHosts() {
+        let retHTML = [];
+        let index = 0;
+        for (let hostName in this.state.hosts) {
+            let host = this.state.hosts[hostName];
+            let hostId = hostName.trim() + "_" + host.IPAddress.trim();
+            if (host.type > 0) { //Host.OTHER
+                let bgColor = index % 2 ? 'rgb(237,237,237)': '';
+                retHTML.push(
+                  <CardBody id={hostId} style={{height:'50px', background:bgColor}} onClick={() => this.showDetails(hostName)}>
+                    <strong>{hostName}</strong> : {host.IPAddress}
+                  </CardBody>
+                );
+                index++;
+            } 
+        }
+        return retHTML;
     }
 
     render() {
@@ -73,9 +110,25 @@ class InventoryComp extends Component {
                 <Row>
                     <Col xs="12" sm="6">
                         <Card>
-                            <CardHeader align="center">
-                                <strong>HOSTS</strong>
+                            <CardHeader>
+                                <strong>Hosts</strong>
                             </CardHeader>
+                            <div style={{height:'300px', overflowY:'scroll'}}>
+                            {this.renderHosts()}
+                            </div>
+                        </Card>
+                    </Col>
+                    <Col xs="12" sm="6">
+                        <Variables active={this.state.active} />
+                        <GroupComponent active={this.state.active} />
+                    </Col>
+                </Row>
+            </div>
+        )
+    }
+}
+
+/*
                             <Table>
                                 <thead>
                                     <tr>
@@ -104,16 +157,6 @@ class InventoryComp extends Component {
                                     </tr>
                                 </tbody>
                             </Table>
-                        </Card>
-                    </Col>
-                    <Col xs="12" sm="6">
-                        <Variables active={this.state.active} />
-                        <GroupComponent active={this.state.active} />
-                    </Col>
-                </Row>
-            </div>
-        )
-    }
-}
+*/
 
 export default InventoryComp;

@@ -208,34 +208,43 @@ let allGroups = {};
 let allHosts = {};
 
 
-
 export class ServerAPI {
+    constructor() {
+        this.allGroups = new Object();
+        this.allHosts = new Object();
+        this.setupInventory();
+    }
+    
+    static DefaultServer() {
+        return defaultAPIServer;
+    }
+    
     fetchHosts() {
         return '{"hosts":["127.0.0.1","inv7","sr3","sr2"]}';
     }
     allServerHostNames() {
-        let grp = allGroups[Group.SERVER_KEY];
+        let grp = this.allGroups[Group.SERVER_KEY];
         return grp.hosts;
     }
 
     allInvaderNames() {
-        let grp = allGroups[Group.INVADER_KEY];
+        let grp = this.allGroups[Group.INVADER_KEY];
         return grp.hosts;
     }
 
     setupInventory() {
         // Below we are going to replace hardcoded string to fetch from server.
-        allGroups = {};
-        allHosts = {};
-        invaderHosts = [];
-        serverHosts = [];
+        this.allGroups = new Object();
+        this.allHosts = new Object();
+        let invaderHosts = [];
+        let serverHosts = [];
         let jsonString = this.fetchInvetoryAll();
         let jsonObj = JSON.parse(jsonString);
         let inventoryAll = jsonObj["all"];
         let allHostDict = inventoryAll[Host.KEY];
         let inventoryGroups = inventoryAll[Group.KEY];
 
-        for (groupName in inventoryGroups) {
+        for (let groupName in inventoryGroups) {
             let groupDict = inventoryGroups[groupName];
             let hostType = Host.OTHER;
             if (groupName === Group.INVADER_KEY)
@@ -244,11 +253,11 @@ export class ServerAPI {
                 hostType = Host.SERVER;
 
             let grp = new Group(groupName, hostType);
-            grpHostsArray = groupDict["hosts"];
+            let grpHostsArray = groupDict["hosts"];
             if (grpHostsArray !== undefined) {
-
-                grpHostsArray.forEach(function (hostName, index, array){
-                    let host = allHosts[hostName];
+                for (let hIndex in grpHostsArray) {
+                    let hostName = grpHostsArray[hIndex];
+                    let host = this.allHosts[hostName];
                     if (host === undefined) {
                         host = new Host(hostName, hostType);
                         let hostDict = allHostDict[hostName];
@@ -256,7 +265,7 @@ export class ServerAPI {
                             let hostVars = hostDict["vars"];
                             host.setupVariable(hostVars);
                         }
-                        allHosts[hostName] = host;
+                        this.allHosts[hostName] = host;
                     } else if (hostType > Host.OTHER) {
                         if (host.type == Host.OTHER)
                             host.type = hostType;
@@ -264,13 +273,13 @@ export class ServerAPI {
                             console.log("ERROR :: Host :: " + hostName + " :: belongs to both 'Server' and 'Invader' Groups");
                     }
                     grp.hosts.push(hostName);
-                });
+                }
             }
 
             let grpVars = groupDict[Group.VARIABLES];
             grp.setupVariable(grpVars);
 
-            allGroups[groupName] = grp;
+            this.allGroups[groupName] = grp;
         }
     }
 
@@ -346,4 +355,7 @@ export class ServerAPI {
         return '{"groups":["servers","inv","clients"]}';
     }
 
-    }
+}
+
+let defaultAPIServer = new ServerAPI();
+
