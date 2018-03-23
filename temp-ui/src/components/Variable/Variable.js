@@ -23,28 +23,16 @@ import {
   InputGroupText,
   Table
 } from 'reactstrap';
+let listVariables = {}
 import Variable from '../Variable/Variable.css';
-const division = 
-<tr>
-<td>
-  <FormGroup>
-    <Label htmlFor="name"></Label>
-    <Input type="text" id="name" placeholder="Enter the key" required/>
-  </FormGroup>
-</td>
-<td>
-<FormGroup>
-    <Label htmlFor="name"></Label>
-    <Input type="text" id="name" placeholder="Enter the value" required/>
-  </FormGroup>
-</td>
-</tr>
+
 export default class Variables extends Component {
   constructor() {
     super();
     this.state = { count: 1,
                    name: '',
-                   pairs: [{ name: '' }],};
+                   pairs: [{ name: '' }],
+                   data: [{key: '', value:''}]};
   }
 
   addEntry() {
@@ -55,16 +43,21 @@ export default class Variables extends Component {
   }
 
   removeEntry(idx) {
+    if(idx != 0)
     this.setState({ pairs: this.state.pairs.filter((s, sidx) => idx !== sidx) });
   }
 
 
   save() {
-    alert("Saved");
+    for(let i = 0; i < this.state.data.length; i++) {
+      console.log(this.state.data[i].key+'_'+this.state.data[i].value)
+    }
   }
 
-  showVariables() {
-
+  handleKey(event) {
+    
+    // console.log(event.target.id.split('@')[1])
+    this.setState(this.state.data.key[event.target.id.split('@')[1]]=event.state)
   }
 
   render() {
@@ -91,17 +84,17 @@ export default class Variables extends Component {
                   <td>
                     <FormGroup>
                       <Label></Label>
-                      <Input type="text" placeholder={`Key #${idx + 1}`} required/>
+                      <Input type="text"  onChange={this.handleKey.bind(this)}id={this.props.playBook+'_key@' + idx} placeholder={`Key #${idx + 1}`} required/>
                     </FormGroup>
                   </td>
                   <td>
                   <FormGroup>
                       <Label></Label>
-                      <Input type="text" placeholder={`Value #${idx + 1}`} required/>
+                      <Input type="text"  id={this.props.playBook+'_value_' + idx} placeholder={`Value #${idx + 1}`} required/>
                     </FormGroup>
                   </td>
                   <td align="center">
-                  <Button className="marginTop20 fontSize15" onClick={() => this.removeEntry(idx)} size="sm" color="light" ><b><strong>-</strong></b></Button>
+                  <Button hidden={idx==0} className="marginTop20 fontSize15" onClick={() => this.removeEntry(idx)} size="sm" color="light" ><b><strong>-</strong></b></Button>
                   </td>
                   </tr>
           
@@ -109,6 +102,9 @@ export default class Variables extends Component {
               </tbody>
                   
          </Table>
+         <CardFooter align="right">
+            <Button className="floatRight"  onClick={() => this.save()} size="sm" color="secondary"><b><strong>Save</strong></b></Button>
+         </CardFooter>
         </Card>
       </div>
     )

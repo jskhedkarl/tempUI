@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {Line, Bar} from 'react-chartjs-2';
+import Monitor from '../../views/Operation/Monitor/Monitor';
 
 const plugins = [{
     afterDraw: (chartInstance, easing) => {
@@ -13,44 +14,6 @@ class Chart extends Component{
     constructor(props){
         super(props);
         this.state = {
-            chartData : {
-                labels: ['0', '20', '40', '60','80','100'],
-            datasets: [{
-                label: 'DATA 1',
-                type:'line',
-                data: [51, 65, 40, 49, 60, 37, 40],
-                fill: false,
-                borderColor: '#EC932F',
-                backgroundColor: '#EC932F',
-                pointBorderColor: '#EC932F',
-                pointBackgroundColor: '#EC932F',
-                pointHoverBackgroundColor: '#EC932F',
-                pointHoverBorderColor: '#EC932F',
-                yAxisID: 'y-axis-2'
-                },{
-                type: 'line',
-                label: 'DATA 2',
-                data: [200, 185, 590, 621, 250, 400, 95],
-                fill: false,
-                backgroundColor: '#71B37C',
-                borderColor: '#71B37C',
-                hoverBackgroundColor: '#71B37C',
-                hoverBorderColor: '#71B37C',
-                yAxisID: 'y-axis-1'
-                },{
-                type: 'line',
-                label: 'DATA 3',
-                data: [800, 285, 690, 121, 350, 500, 98],
-                fill: false,
-                backgroundColor: '#b8c7d5',
-                borderColor: '#b8cdca',
-                hoverBackgroundColor: '#dbd9c6',
-                hoverBorderColor: '#e7dae1',
-                yAxisID: 'y-axis-1'
-                }]
-            },
-
-
             options : {
                 responsive: true,
                 maintainAspectRatio: false,
@@ -73,7 +36,7 @@ class Chart extends Component{
                   yAxes: [
                     {
                         type: 'linear',
-                        display: true,
+                        display: false,
                         position: 'left',
                         id: 'y-axis-1',
                         labels: {
@@ -99,7 +62,7 @@ class Chart extends Component{
     render(){
         return (
             <div>
-                <Bar data={this.state.chartData} options={this.state.options} plugins={plugins}/>
+                <Bar data={new Monitor().props.lineChartData} options={this.state.options} plugins={plugins}/>
             </div>
         )
     }

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import InventoryComp from '../../../views/Operation/Inventory/InventoryComp/InventoryComp';
+import InventoryComp from './InventoryComp';
 
 class Inventory extends Component{
   render(){
