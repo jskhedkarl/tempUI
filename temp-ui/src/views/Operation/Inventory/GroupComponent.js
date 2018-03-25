@@ -25,41 +25,82 @@ import {
 } from 'reactstrap';
 
 export default class GroupComponent extends Component {
+    constructor(props) {
+        super(props);
+        let sGrps = this.generateSelectedGroups();
+        this.state = {
+            selectedGroups: sGrps,
+        };
+    }
+    
+    generateSelectedGroups() {
+        if (this.props.host === undefined)
+            return [];
+        
+        let selectedGroups = [];
+        let hostName = this.props.host.hName;
+        if (hostName !== undefined) {
+            for (let groupName in this.props.groups) {
+                let group = this.props.groups[groupName];
+                if (group.hosts.includes(hostName)) {
+                    selectedGroup.push(groupName);
+                }
+            }
+        }
+        return selectedGroups;
+    }
+    
+    groupSelected(gName) {
+        let selGrps = this.state.selectedGroups;
+        if (selGrps.includes(gName)) {
+            selGrps.pop(gName);
+        } else {
+            selGrps.push(gName);
+        }
+        //MN:: TODO Update Server call goes here... Async call is good enough
+        this.setState({
+            selectedGroups: selGrps,
+        });
+    }
+    
+    renderGroups() {
+        let retHTML = [];
+        if (this.props.groups === undefined) {
+            return [];
+        }
+        for (let gName in this.props.groups) {
+            let grp = this.props.groups[gName];
+            if (grp.gType == 0) {
+                continue;
+            }
+            let selected = this.state.selectedGroups.includes(gName);
+            let style = selected ? {backgroud: 'rgb(120,120,120)'} : {};
+            retHTML.push(
+                <CardBody id={gName} style={{height: '50px'}}>
+                    <Row style={style} onClick={() => this.groupSelected(gName)}>
+                        <Col>{gName}</Col>
+                    </Row>
+                </CardBody>
+            );
+        }
+        return retHTML;
+    }
+    
     render() {
         if(this.props.active) {
         return (
             <Card>
-                <CardHeader align="center">
-                    <strong>GROUPS</strong>
+                <CardHeader>
+                    <strong>Groups</strong>
                 </CardHeader>
-                <Table>
-                    <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td><Button onClick={() => this.showVariables()} size="bg" color="gray"
-                                    id="1"><b>Group1</b></Button></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td><Button onClick={() => this.showVariables()} size="bg" color="gray"
-                                    id="1"> <b>Group2</b> </Button></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td><Button onClick={() => this.showVariables()} size="bg" color="gray"
-                                    id="1"> <b>Group3</b> </Button></td>
-                        <td></td>
-                    </tr>
-                    </tbody>
-                </Table>
+
+                <div style={{height:'300px', overflowY:'scroll'}}>
+                    {this.renderGroups()}
+                </div>
             </Card>
         )}else{
             return  (<div></div>)
         }
     }
 }
+

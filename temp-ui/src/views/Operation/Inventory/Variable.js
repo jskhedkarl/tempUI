@@ -49,15 +49,14 @@ class Variables extends Component {
 
     renderVariables() {
         let retHTML = [];
-        for (let key in this.props.variables) {
-            let value = this.props.variables[key];
+        for (let key in this.props.hostVariables) {
             let varId = key.trim();
             retHTML.push(
               <CardBody id={varId} style={{height:'50px'}}>
                 <Row>
                     <Col style={{width:'40px'}}><Input type="text" placeholder="Variable Key" required value={key}/></Col>
                     <Col style={{width:'5px'}}> : </Col>
-                    <Col style={{width:'40px'}}><Input type="text" placeholder="Variable Value" required value={value}/></Col>
+                    <Col style={{width:'40px'}}><Input type="text" placeholder="Variable Value" required value={this.props.hostVariables[key]}/></Col>
                 </Row>
               </CardBody>
             );

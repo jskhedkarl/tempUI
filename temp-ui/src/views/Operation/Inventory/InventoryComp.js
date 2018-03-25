@@ -49,8 +49,9 @@ class InventoryComp extends Component {
             childVisible: false,
             active: false,
             hosts: server.allHosts,
+            groups: server.allGroups,
             selectedHost: "",
-        }
+        };
         this.handleToggleClick = this.handleToggleClick.bind(this);
     }
 
@@ -106,6 +107,7 @@ class InventoryComp extends Component {
     }
 
     render() {
+        let hostVariables = (this.state.selectedHost !== undefined) ? this.state.selectedHost.variables : null;
         return (
             <div className="animated fadeIn">
                 <Row>
@@ -120,8 +122,8 @@ class InventoryComp extends Component {
                         </Card>
                     </Col>
                     <Col xs="12" sm="6">
-                        <Variables active={this.state.active} variables={this.state.selectedHost.variables}/>
-                        <GroupComponent active={this.state.active} host={this.state.selectedHost}/>
+                        <Variables active={this.state.active} hostVariables={hostVariables}/>
+                        <GroupComponent active={this.state.active} host={this.state.selectedHost} groups={this.state.groups}/>
                     </Col>
                 </Row>
             </div>
