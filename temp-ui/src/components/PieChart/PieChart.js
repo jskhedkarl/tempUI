@@ -1,32 +1,12 @@
 import React, {Component} from 'react';
 import {Pie} from 'react-chartjs-2';
+import Monitor from '../../views/Operation/Monitor/Monitor';
 
 class PieChart extends Component{
 
     constructor(props){
         super(props);
         this.state = {
-            chartData : {
-                datasets:[
-                    {
-                        label: 'Data',
-                        data:[
-                            1000,
-                            2000,
-                            3000,
-                            400
-                        ],
-                        backgroundColor:[
-                            '#b8c7d5',
-                            '#b8cdca',
-                            '#dbd9c6',
-                            '#e7dae1'  
-                        ]
-                    }
-                ]
-            },
-
-
             options : {
                 responsive: true,
                 maintainAspectRatio: false,
@@ -68,7 +48,7 @@ class PieChart extends Component{
     render(){
         return (
             <div>
-                <Pie data={this.state.chartData} options={this.state.options} />
+                <Pie data={new Monitor().props.pieChartData} options={this.state.options} />
             </div>
         )
     }

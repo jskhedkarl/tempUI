@@ -34,7 +34,9 @@ class PlaybookComp extends Component {
         this.state = {
             childVisible: false, 
             playbooks : new ServiceManager().fetchAllPlaybookNames(), 
-            playBookInUse: ''
+            playBookInUse: '',
+            data: [{key: '', value: ''}],
+            temp: ''
         }
     }
 
@@ -47,10 +49,19 @@ class PlaybookComp extends Component {
     }
 
     showVariables(id) {
-        this.setState({
+      // this.temp=event.target.id;
+      // if(event.target.id = temp)  
+      this.setState({
             childVisible: true,
-            playBookInUse: this.state.playbooks[id],
+            playBookInUse: this.state.playbooks[id]
         });
+    //   else
+    //   this.setState({
+    //     childVisible: true,
+    //     playBookInUse: this.state.playbooks[id],
+    //     data: [{key:'', value: ''}]
+    // });
+        
     }
     
     renderPlaybooks() {
@@ -88,7 +99,7 @@ class PlaybookComp extends Component {
                     <Col xs="12" sm="6">
                         {
                           this.state.childVisible
-                            ? <Variables playBook={this.state.playBookInUse}/>
+                            ? <Variables onChange={() => this.render} playBook={this.state.playBookInUse} data={this.state.data}/>
                             : null
                         }
                     </Col>
@@ -97,7 +108,7 @@ class PlaybookComp extends Component {
                     <Col >
                       {
                       this.state.childVisible
-                        ? <PlayBookSummary playBookGist={this.state.playBookInUse}/>
+                        ? <PlayBookSummary playBookGist={this.state.playBookInUse} displayData={this.state.data}/>
                         : null
                     }
                     </Col>

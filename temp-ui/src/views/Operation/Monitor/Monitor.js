@@ -3,8 +3,8 @@ import Chart from '../../../components/Chart/Chart';
 import BarChart from '../../../components/BarChart/BarChart';
 import PieChart from '../../../components/PieChart/PieChart';
 import Styles from '../Monitor/Monitor.css';
-import { Grid, Col, Row } from 'react-bootstrap';
-import { StatsCPU,StatsMemory,StatsEginx } from '../../../ServerAPI';
+import {Grid, Col, Row} from 'react-bootstrap';
+import {StatsCPU, StatsMemory, StatsEginx, StatsDisk} from '../../../ServerAPI';
 
 class Monitor extends React.Component {
   constructor(props) {
@@ -33,14 +33,15 @@ class Monitor extends React.Component {
       eginxStatsData4: new StatsEginx.SimulateObj(),
       eginxStatsData5: new StatsEginx.SimulateObj(),
       eginxStatsData6: new StatsEginx.SimulateObj(),
-      eginxStatsData7: new StatsEginx.SimulateObj()
+      eginxStatsData7: new StatsEginx.SimulateObj(),
+      diskStatsData: new StatsDisk.SimulateObj()     
     }
 
      this.props = {
       barChartData: {
         labels: ['0', '20', '40', '60', '80', '100'],
         datasets: [{
-          label: 'CPU STATS DATA',
+          label: 'Cpu Stats Data',
           type: 'line',
           fill: false,
           data: [this.state.cpuStatsData0.idle, this.state.cpuStatsData1.idle, this.state.cpuStatsData2.idle, this.state.cpuStatsData3.idle, this.state.cpuStatsData4.idle, this.state.cpuStatsData5.idle, this.state.cpuStatsData6.idle, this.state.cpuStatsData7.idle],
@@ -52,7 +53,7 @@ class Monitor extends React.Component {
           yAxisID: 'y-axis-2'
         }, {
           type: 'bar',
-          label: 'MEMORY STATS DATA',
+          label: 'Memory Stats Data',
           data: [this.state.memoryStatsData0.free, this.state.memoryStatsData1.free, this.state.memoryStatsData2.free, this.state.memoryStatsData3.free, this.state.memoryStatsData4.free, this.state.memoryStatsData5.free, this.state.memoryStatsData6.free, this.state.memoryStatsData7.free],
           fill: false,
           backgroundColor: '#71B37C',
@@ -60,6 +61,19 @@ class Monitor extends React.Component {
           hoverBackgroundColor: '#71B37C',
           hoverBorderColor: '#71B37C',
           yAxisID: 'y-axis-1'
+        }]
+      },
+      pieChartData: {
+        labels: ['ReadIOs', 'ReadSectors', 'WriteIOs', 'TicksIO'],
+        datasets: [{
+          label: 'Disk Stats Data',
+          data: [this.state.diskStatsData.readIOs, this.state.diskStatsData.readSectors, this.state.diskStatsData.writeIOs, this.state.diskStatsData.ticksIO],
+          backgroundColor:[
+            '#b8c7d5',
+            '#b8cdca',
+            '#dbd9c6',
+            '#e7dae1'  
+          ]
         }]
       },
       lineChartData: {
@@ -105,7 +119,7 @@ class Monitor extends React.Component {
       <div>
         <Row>
           <Col xs={12}>
-            <h3>SERVICE</h3>
+            <h3>Service</h3>
           </Col>
         </Row>
         <Grid>
@@ -113,25 +127,25 @@ class Monitor extends React.Component {
             <Col xs={12} md={2}>
             </Col>
             <Col xs={12} md={4} className="borderLeft">
-              <h5>SYSTEM</h5>
+              <h5>System</h5>
             </Col>
             <Col xs={12} md={3} className="borderLeft">
-              <h5>VARNISH[:80]</h5>
+              <h5>Varnish[:80]</h5>
             </Col>
             <Col xs={12} md={3} className="borderLeft">
-              <h5>NGINX[:443]</h5>
+              <h5>Nginx[:443]</h5>
             </Col>
           </Row>
           <Row className="show-grid">
             <Col xs={12} md={2} className="borderTop">
-              <h6>INVADER</h6><br />
-              <b>NAME:</b> INV7<br />
+              <h6>Invader</h6><br />
+              <b>Name:</b> INV7<br />
               <b>IP:</b> 172.17.17.32
             </Col>
             <Col xs={12} md={4} className="borderAllSide">
               <Row>
-                <Col xs={12} md={8}><BarChart/></Col>
-                <Col xs={12} md={4}><PieChart /></Col>
+                <Col xs={12} md={6}><BarChart/></Col>
+                <Col xs={12} md={6}><PieChart /></Col>
               </Row>
             </Col>
             <Col xs={12} md={3} className="borderAllSide">
@@ -143,15 +157,15 @@ class Monitor extends React.Component {
           </Row>
           <Row className="show-grid">
             <Col xs={12} md={2} className="borderTop">
-              <h6>SERVER 1</h6><br />
-              <b>NAME:</b> SR1<br />
+              <h6>Server 1</h6><br />
+              <b>Name:</b> SR1<br />
               <b>IP:</b> 172.17.2.29<br />
               <b>VIP:</b> 172.17.2.90
             </Col>
             <Col xs={12} md={4} className="borderAllSide">
               <Row>
-                <Col xs={12} md={8}><BarChart /></Col>
-                <Col xs={12} md={4}><PieChart /></Col>
+                <Col xs={12} md={6}><BarChart /></Col>
+                <Col xs={12} md={6}><PieChart /></Col>
               </Row>
             </Col>
             <Col xs={12} md={3} className="borderAllSide">
@@ -163,15 +177,15 @@ class Monitor extends React.Component {
           </Row>
           <Row className="show-grid">
             <Col xs={12} md={2} className="borderTop borderBottom">
-              <h6>SERVER 2</h6><br />
-              <b>NAME:</b> SR2<br />
+              <h6>Server 2</h6><br />
+              <b>Name:</b> SR2<br />
               <b>IP:</b> 172.17.2.23<br />
               <b>VIP:</b> 172.17.2.91
             </Col>
             <Col xs={12} md={4} className="borderAllSide">
               <Row>
-                <Col xs={12} md={8}><BarChart/></Col>
-                <Col xs={12} md={4}><PieChart /></Col>
+                <Col xs={12} md={6}><BarChart/></Col>
+                <Col xs={12} md={6}><PieChart /></Col>
               </Row>
             </Col>
             <Col xs={12} md={3} className="borderAllSide">

@@ -77,7 +77,7 @@ export class StatsMemory {
     }
 }
 
-class StatsDisk {
+export class StatsDisk {
     constructor(dName, readIOs, readSectors, writeIOs, writeSectors, ticksIO) {
         this.dName = dName;
         this.readIOs = readIOs;
@@ -88,14 +88,35 @@ class StatsDisk {
     }
     static SimulateObj() {
         let dName = "sda1";
-        let readIOs = 15806;
-        let readSectors = 853546;
-        let writeIOs = 27781;
+        let readIOs = Math.floor((Math.random() * 15) + 1);
+        let readSectors = Math.floor((Math.random() * 85) + 5);
+        let writeIOs = Math.floor((Math.random() * 27) + 3);
         let writeSectors = 1188568;
-        let ticksIO = 24448;
-        return this(dName, readIOs, readSectors, writeIOs, writeSectors, ticksIO);
+        let ticksIO =  Math.floor((Math.random() * 24) - 2);
+        return new StatsDisk(dName, readIOs, readSectors, writeIOs, writeSectors, ticksIO);
     }
 }
+
+// Old Code Backup
+//  class StatsDisk {
+//     constructor(dName, readIOs, readSectors, writeIOs, writeSectors, ticksIO) {
+//         this.dName = dName;
+//         this.readIOs = readIOs;
+//         this.readSectors = readSectors;
+//         this.writeIOs = writeIOs;
+//         this.writeSectors = writeSectors;
+//         this.ticksIO = ticksIO;
+//     }
+//     static SimulateObj() {
+//         let dName = "sda1";
+//         let readIOs = 15806;
+//         let readSectors = 853546;
+//         let writeIOs = 27781;
+//         let writeSectors = 1188568;
+//         let ticksIO = 24448;
+//         return this(dName, readIOs, readSectors, writeIOs, writeSectors, ticksIO);
+//     }
+// }
 
 
 class StatsIPVS {

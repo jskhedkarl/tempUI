@@ -28,6 +28,11 @@ import Variables from '../Variable/Variable';
 const records = 3;
 class PlayBookSummary extends Component {
 
+  constructor() {
+    super();
+    this.state = { status: true};
+  }
+
   addEntry() {
     alert("To Add");
   }
@@ -40,6 +45,33 @@ class PlayBookSummary extends Component {
     $('#variable').modal('show');
   }
 
+  renderData() {
+    let retHTML = [];
+    let index = 0;
+    for (let idx in this.props.displayData) {
+        let key = this.props.displayData[idx].key;
+        let value = this.props.displayData[idx].value;
+
+        retHTML.push(
+          <tr>
+            <td />
+            <td>{key}</td>
+            <td>{value}</td>
+          </tr>
+          // <CardBody id={playbookId} style={{height:'50px', background:bgColor}} onClick={() => this.showVariables(playbookIndex)}>
+          //   <strong>{playbookName}</strong>
+          // </CardBody>
+        );
+    }
+    return retHTML;
+}
+
+changeState() {
+
+  this.setState({status : !this.state.status});
+  console.log(this.state.status);
+}
+
   render() {
     return (
       <div className="animated fadeIn">
@@ -51,23 +83,24 @@ class PlayBookSummary extends Component {
         <Table>
          <thead>
              <tr>   
-                <th>Play Book</th>
-                <th>Key</th>
-                <th>Value</th>
+                <th>Playbook Name: </th>
+                <th><strong><b>{this.props.playBookGist}</b></strong></th>
+                <th/>
             </tr>
             <tr>
-              <td>
-                <strong><b>{this.props.playBookGist}</b></strong>
-              </td>
+              <td>Variables: </td>
+              <td>Key </td>
+              <td>Value </td>
             </tr>
          </thead>
+         {this.renderData()}
          </Table>
-            <Label className="switch switch-3d switch-primary alignCenter">
+            <Label className="switch switch-icon switch-secondary alignCenter">
                   <Input type="checkbox" className="switch-input" defaultChecked/>
-                  <span className="switch-label"></span>
+                  <span className="switch-label" data-on={'\uf087'} data-off={'\uf088'}></span>
                   <span className="switch-handle"></span>
             </Label>
-         <Button className="alignCenter width25pc"onClick={() => this.play()} size="sm" color="light" ><b><strong>Play</strong></b></Button>
+         <Button disabled={this.state.status==false} className="alignCenter width25pc"onClick={() => this.play()} size="sm" color="light" ><b><strong>Play</strong></b></Button>
         </Card>
              
       </div>
