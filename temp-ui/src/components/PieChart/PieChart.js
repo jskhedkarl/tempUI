@@ -8,6 +8,9 @@ class PieChart extends Component{
         super(props);
         this.state = {
             options : {
+                legend: {
+                    display: false,
+                },
                 responsive: true,
                 maintainAspectRatio: false,
                 tooltips: {
@@ -41,14 +44,18 @@ class PieChart extends Component{
                   ]
                 }
               }
-        }
+        };
     }
+    
+    componentDidCatch(error, info) {
+        console.log(error + " :: " + info);
+      }
 
-
+    //MN::TODO:: Need to add Props update function and only update props rather then whole chart..
     render(){
         return (
             <div>
-                <Pie data={new Monitor().props.pieChartData} options={this.state.options} />
+                <Pie data={this.props.pieChartData} options={this.state.options} />
             </div>
         )
     }

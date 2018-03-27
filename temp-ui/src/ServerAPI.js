@@ -18,6 +18,10 @@ export class StatsEginx {
         let totalRequests = totalConnection + totalHandledConnection;
         return new StatsEginx(activeConnection, totalConnection, totalHandledConnection, totalRequests, 0, 0, 0, 0);
     }
+    
+    static EmptyObj() {
+        return new StatsEginx(0, 0, 0, 0, 0, 0, 0, 0);
+    }
 }
 
 
@@ -32,7 +36,11 @@ class StatsVarnish {
         let cacheHits = Math.floor((Math.random() * 100000) + 1);
         let cacheMisses = Math.floor((Math.random() * 100) + 1);
         let clientRequests = cacheHits + cacheMisses;
-        return this(clientRequests, cacheHits, cacheMisses);
+        return new StatsVarnish(clientRequests, cacheHits, cacheMisses);
+    }
+    
+    static EmptyObj() {
+        return new StatsVarnish(0, 0, 0);
     }
 }
 
@@ -42,12 +50,12 @@ export class StatsCPU {
     constructor(user, nice, system, idle, iowait, irq) {
        //console.log(cpuStatsDict)
        // let cpuAllStats = cpuStatsDict["cpu_all"];
-        this.user = user
-        this.nice = nice
-        this.system = system
-        this.idle = idle
-        this.iowait = iowait
-        this.irq = irq        
+        this.user = user;
+        this.nice = nice;
+        this.system = system;
+        this.idle = idle;
+        this.iowait = iowait;
+        this.irq = irq;
     }
     static SimulateObj() {
         let a = Math.floor((Math.random() * 5) + 1);
@@ -58,6 +66,10 @@ export class StatsCPU {
         let idle = 100 - user - nice - system - iowait - iowait;
         let irq = 0;
         return new StatsCPU(user, nice, system, idle, iowait, irq);
+    }
+    
+    static EmptyObj() {
+        return new StatsCPU(0, 0, 0, 0, 0, 0);
     }
 }
 
@@ -75,6 +87,10 @@ export class StatsMemory {
         let available = 15614996;
         return new StatsMemory(total, free, available);
     }
+    
+    static EmptyObj() {
+        return new StatsMemory(0, 0, 0);
+    }
 }
 
 export class StatsDisk {
@@ -86,6 +102,7 @@ export class StatsDisk {
         this.writeSectors = writeSectors;
         this.ticksIO = ticksIO;
     }
+    
     static SimulateObj() {
         let dName = "sda1";
         let readIOs = Math.floor((Math.random() * 15) + 1);
@@ -95,31 +112,13 @@ export class StatsDisk {
         let ticksIO =  Math.floor((Math.random() * 24) - 2);
         return new StatsDisk(dName, readIOs, readSectors, writeIOs, writeSectors, ticksIO);
     }
+    
+    static EmptyObj() {
+        return new StatsDisk(0, 0, 0, 0, 0, 0);
+    }
 }
 
-// Old Code Backup
-//  class StatsDisk {
-//     constructor(dName, readIOs, readSectors, writeIOs, writeSectors, ticksIO) {
-//         this.dName = dName;
-//         this.readIOs = readIOs;
-//         this.readSectors = readSectors;
-//         this.writeIOs = writeIOs;
-//         this.writeSectors = writeSectors;
-//         this.ticksIO = ticksIO;
-//     }
-//     static SimulateObj() {
-//         let dName = "sda1";
-//         let readIOs = 15806;
-//         let readSectors = 853546;
-//         let writeIOs = 27781;
-//         let writeSectors = 1188568;
-//         let ticksIO = 24448;
-//         return this(dName, readIOs, readSectors, writeIOs, writeSectors, ticksIO);
-//     }
-// }
-
-
-class StatsIPVS {
+export class StatsIPVS {
     constructor(connections, inPackets, outPackets, inBytes, outBytes) {
         this.connections = connections;
         this.inPackets = inPackets;
@@ -128,12 +127,84 @@ class StatsIPVS {
         this.outBytes = outBytes;
     }
     static SimulateObj() {
-        
+        let connections = Math.floor(Math.random() * 1000);
+        let inPackets = Math.floor(Math.random() * 1000000);
+        let outPackets = Math.floor(Math.random() * 1000000);
+        let inBytes = Math.floor(Math.random() * 1000000);
+        let outBytes =  Math.floor((Math.random() * 1000000));
+        return new StatsIPVS(connections, inPackets, outPackets, inBytes, outBytes);
+    }
+    
+    static EmptyObj() {
+        return new StatsIPVS(0, 0, 0, 0, 0, 0);
     }
 }
 
+export class HostStats {
+    constructor(hName, IPAddress, invPort, ipvsStat, memStat, diskStat, cpuStat, varnishStat, engStat) {
+        this.hName = hName;
+        this.IPAddress = IPAddress;
+        this.invPort = invPort;
+        this.ipvsStat = ipvsStat;
+        this.memStat = memStat;
+        this.diskStat = diskStat;
+        this.cpuStat = cpuStat;
+        this.varnishStat = varnishStat;
+        this.engStat = engStat;
+    }
+    
+    static SimulateObj(isEmpty, hName, ipAddress, invPort) {
+        let ipvsStat = !isEmpty ? StatsIPVS.SimulateObj(): StatsIPVS.EmptyObj();
+        let memStat = !isEmpty ? StatsMemory.SimulateObj(): StatsMemory.EmptyObj();
+        let diskStat = !isEmpty ? StatsDisk.SimulateObj(): StatsDisk.EmptyObj();
+        let cpuStat = !isEmpty ? StatsCPU.SimulateObj(): StatsCPU.EmptyObj();
+        let varnishStat = !isEmpty ? StatsVarnish.SimulateObj(): StatsVarnish.EmptyObj();
+        let engStat = !isEmpty ? StatsEginx.SimulateObj(): StatsEginx.EmptyObj();
+        return new HostStats(hName, ipAddress, invPort, ipvsStat, memStat, diskStat, cpuStat, varnishStat, engStat);
+    }
+    
+    diskStats() {
+        return [this.diskStat.readIOs, this.diskStat.writeIOs, this.diskStat.ticksIO];
+    }
+    
+    diskStatsLabels() {
+        return ["Read IOs", "Write IOs", "Ticks IO"];
+    }
+    
+    memoryStatsFunc() {
+        return this.memStat.free;
+    }
+    
+    ipvsStat() {
+        return [this.ipvsStat.connections, this.ipvsStat.inBytes, this.ipvsStat.outBytes];
+    }
+    
+    cpuStatsFunc() {
+        return this.cpuStat.idle;
+    }
+    
+    varnishStats() {
+        return [this.varnishStat.clientRequests, this.varnishStat.cacheHits, this.varnishStat.cacheMisses];
+    }
+    
+    enginxStats() {
+        return [this.engStat.totalRequests, this.engStat.activeConnection, this.engStat.totalConnection];
+    }
+}
 
-class Service {
+export class MonitorStats {
+    constructor(invStat, hStats) {
+        let dt = new Date();
+        this.timeStamp = dt.getTime();
+        this.timeLabel = dt.getSeconds().toString();
+        this.invaderStats = invStat;
+        this.hostsStats = hStats;
+    }
+    
+}
+
+
+export class Service {
     constructor(sName, sPort, sType, sProtocol, vIP) {
         
     }
@@ -142,7 +213,7 @@ class Service {
 }
 
 
-class AnsibleVariable {
+export class AnsibleVariable {
     constructor(key, value, vType) {
         this.key = key;
         this.value = value;
@@ -154,7 +225,7 @@ AnsibleVariable.GROUP_VARIABLE = 5;
 AnsibleVariable.SYS_VARIABLE = 1
 
 
-class Host {
+export class Host {
     constructor(hName, hType) {
         this.hName = hName;
         this.IPAddress = "";
@@ -194,7 +265,7 @@ Host.SERVER = 5;
 
 
 
-class Group {
+export class Group {
     constructor(gName, gType) {
         this.gName = gName;
         this.gType = gType;
@@ -339,13 +410,27 @@ export class ServerAPI {
         let jsonObj = JSON.parse(jsonStr);
         return jsonObj["playbooks"];
     }
+    
+    fetchMonitorDEMOStates(isEmpty) {
+        let invaderStatObj;
+        let hostsStats = {};
+        for (let hostName in this.allHosts) {
+            let host = this.allHosts[hostName];
+            if (host.type == Host.INVADER) {
+                invaderStatObj = HostStats.SimulateObj(isEmpty, host.hName, host.IPAddress, host.invaderPort);
+            } else if (host.type == Host.SERVER) {
+                hostsStats[hostName] = HostStats.SimulateObj(isEmpty, host.hName, host.IPAddress, host.invaderPort);
+            }
+        }
+        return new MonitorStats(invaderStatObj, hostsStats);
+    }
 
     fetchInvetoryAll() {
         return '{"all":{"group":{"all":{"client_ip":"10.10.30.110","containers":4,"vip":"4.3.2.1"},"clients":{"hosts":["inv7"]},"inv":{"hosts":["127.0.0.1"],"vars":{"ansible_connection":"local","check_digest":"0ac91d27021904d30dbafce186223c81","check_url":"/","keepalived_conf":"/etc/keepalived/keepalived.conf","keepalived_daemon":"/usr/sbin/keepalived","lb_intfs":"eth-14-1 eth-16-1","script_inv":"/home/ansible/ipvs_inv.sh"}},"servers":{"hosts":["sr3","sr2"]}},"host":{"127.0.0.1":{"vars":{}},"inv7":{"vars":{}},"sr2":{"vars":{"ansible_host":"192.168.101.222","inv_port":"eth-14-1","main_intf":"enp130s0","server_num":1,"ssl_engine":"nginx"}},"sr3":{"vars":{"ansible_host":"192.168.101.223","inv_port":"eth-16-1","main_intf":"enp130s0","server_num":2,"ssl_engine":"hitch"}}}}}';
     }
 
     fetchCPUStats() {
-        return '{"inv2":{"cpu_all":{"id":"cpu","user":720493,"nice":0,"system":193706,"idle":281232312,"iowait":2204,"irq":0,"softirq":305516,"steal":0,"guest":0,"guest_nice":0},"cpus":[{"id":"cpu0","user":212496,"nice":0,"system":51767,"idle":34979935,"iowait":1625,"irq":0,"softirq":60984,"steal":0,"guest":0,"guest_nice":0},{"id":"cpu1","user":82107,"nice":0,"system":23029,"idle":35166237,"iowait":346,"irq":0,"softirq":35078,"steal":0,"guest":0,"guest_nice":0},{"id":"cpu2","user":82484,"nice":0,"system":21236,"idle":35168259,"iowait":132,"irq":0,"softirq":34678,"steal":0,"guest":0,"guest_nice":0},{"id":"cpu3","user":76214,"nice":0,"system":20793,"idle":35174223,"iowait":38,"irq":0,"softirq":35512,"steal":0,"guest":0,"guest_nice":0},{"id":"cpu4","user":70971,"nice":0,"system":19936,"idle":35181043,"iowait":18,"irq":0,"softirq":34804,"steal":0,"guest":0,"guest_nice":0},{"id":"cpu5","user":61940,"nice":0,"system":18894,"idle":35190912,"iowait":17,"irq":0,"softirq":35000,"steal":0,"guest":0,"guest_nice":0},{"id":"cpu6","user":69994,"nice":0,"system":19524,"idle":35182745,"iowait":12,"irq":0,"softirq":34482,"steal":0,"guest":0,"guest_nice":0},{"id":"cpu7","user":64283,"nice":0,"system":18524,"idle":35188954,"iowait":14,"irq":0,"softirq":34974,"steal":0,"guest":0,"guest_nice":0}],"intr":1602162025,"ctxt":878408125,"btime":"2018-03-15T11:41:44-07:00","processes":329682,"procs_running":2,"procs_blocked":0},"sr2":{"cpu_all":{"id":"cpu","user":172163,"nice":0,"system":96379,"idle":10776440,"iowait":14326,"irq":0,"softirq":79093,"steal":0,"guest":0,"guest_nice":0},"cpus":[{"id":"cpu0","user":2771,"nice":0,"system":2973,"idle":457666,"iowait":1050,"irq":0,"softirq":2484,"steal":0,"guest":0,"guest_nice":0},{"id":"cpu1","user":9402,"nice":0,"system":4393,"idle":450964,"iowait":583,"irq":0,"softirq":494,"steal":0,"guest":0,"guest_nice":0},{"id":"cpu2","user":4949,"nice":0,"system":3056,"idle":457220,"iowait":465,"irq":0,"softirq":150,"steal":0,"guest":0,"guest_nice":0},{"id":"cpu3","user":3110,"nice":0,"system":3050,"idle":459030,"iowait":516,"irq":0,"softirq":154,"steal":0,"guest":0,"guest_nice":0},{"id":"cpu4","user":2612,"nice":0,"system":2822,"idle":459980,"iowait":380,"irq":0,"softirq":128,"steal":0,"guest":0,"guest_nice":0},{"id":"cpu5","user":2654,"nice":0,"system":2675,"idle":460217,"iowait":321,"irq":0,"softirq":99,"steal":0,"guest":0,"guest_nice":0},{"id":"cpu6","user":11490,"nice":0,"system":4656,"idle":438628,"iowait":393,"irq":0,"softirq":6856,"steal":0,"guest":0,"guest_nice":0},{"id":"cpu7","user":7887,"nice":0,"system":4683,"idle":445640,"iowait":658,"irq":0,"softirq":4136,"steal":0,"guest":0,"guest_nice":0},{"id":"cpu8","user":8651,"nice":0,"system":4699,"idle":441134,"iowait":507,"irq":0,"softirq":6833,"steal":0,"guest":0,"guest_nice":0},{"id":"cpu9","user":8896,"nice":0,"system":4146,"idle":441758,"iowait":476,"irq":0,"softirq":6558,"steal":0,"guest":0,"guest_nice":0},{"id":"cpu10","user":6774,"nice":0,"system":4200,"idle":446551,"iowait":677,"irq":0,"softirq":4490,"steal":0,"guest":0,"guest_nice":0},{"id":"cpu11","user":9544,"nice":0,"system":4622,"idle":440090,"iowait":709,"irq":0,"softirq":7214,"steal":0,"guest":0,"guest_nice":0},{"id":"cpu12","user":2296,"nice":0,"system":2652,"idle":460459,"iowait":355,"irq":0,"softirq":81,"steal":0,"guest":0,"guest_nice":0},{"id":"cpu13","user":24763,"nice":0,"system":8563,"idle":429689,"iowait":1611,"irq":0,"softirq":1228,"steal":0,"guest":0,"guest_nice":0},{"id":"cpu14","user":4542,"nice":0,"system":3425,"idle":457114,"iowait":647,"irq":0,"softirq":166,"steal":0,"guest":0,"guest_nice":0},{"id":"cpu15","user":2515,"nice":0,"system":2837,"idle":460075,"iowait":379,"irq":0,"softirq":86,"steal":0,"guest":0,"guest_nice":0},{"id":"cpu16","user":2742,"nice":0,"system":2806,"idle":459740,"iowait":563,"irq":0,"softirq":102,"steal":0,"guest":0,"guest_nice":0},{"id":"cpu17","user":2576,"nice":0,"system":2759,"idle":460241,"iowait":270,"irq":0,"softirq":101,"steal":0,"guest":0,"guest_nice":0},{"id":"cpu18","user":10505,"nice":0,"system":4279,"idle":441885,"iowait":522,"irq":0,"softirq":5228,"steal":0,"guest":0,"guest_nice":0},{"id":"cpu19","user":9614,"nice":0,"system":4352,"idle":441509,"iowait":523,"irq":0,"softirq":6190,"steal":0,"guest":0,"guest_nice":0},{"id":"cpu20","user":9561,"nice":0,"system":4744,"idle":441353,"iowait":838,"irq":0,"softirq":5909,"steal":0,"guest":0,"guest_nice":0},{"id":"cpu21","user":6738,"nice":0,"system":4000,"idle":444704,"iowait":659,"irq":0,"softirq":5894,"steal":0,"guest":0,"guest_nice":0},{"id":"cpu22","user":8372,"nice":0,"system":4596,"idle":443565,"iowait":623,"irq":0,"softirq":5231,"steal":0,"guest":0,"guest_nice":0},{"id":"cpu23","user":9190,"nice":0,"system":5382,"idle":437218,"iowait":591,"irq":0,"softirq":9270,"steal":0,"guest":0,"guest_nice":0}],"intr":134144739,"ctxt":63361338,"btime":"2018-03-19T12:28:26-07:00","processes":10306,"procs_running":2,"procs_blocked":0},"sr3":{"cpu_all":{"id":"","user":0,"nice":0,"system":0,"idle":0,"iowait":0,"irq":0,"softirq":0,"steal":0,"guest":0,"guest_nice":0},"cpus":null,"intr":0,"ctxt":0,"btime":"0001-01-01T00:00:00Z","processes":0,"procs_running":0,"procs_blocked":0}}';
+        return '{"inv2":{"cpu_all":{"id":"cpu","user":720493,"nice":0,"system":193706,"idle":281232312,"iowait":2204,"irq":0,"softirq":305516,"steal":0,"guest":0,"guest_nice":0},"intr":1602162025,"ctxt":878408125,"btime":"2018-03-15T11:41:44-07:00","processes":329682,"procs_running":2,"procs_blocked":0},"sr2":{"cpu_all":{"id":"cpu","user":172163,"nice":0,"system":96379,"idle":10776440,"iowait":14326,"irq":0,"softirq":79093,"steal":0,"guest":0,"guest_nice":0},"intr":134144739,"ctxt":63361338,"btime":"2018-03-19T12:28:26-07:00","processes":10306,"procs_running":2,"procs_blocked":0},"sr3":{"cpu_all":{"id":"","user":0,"nice":0,"system":0,"idle":0,"iowait":0,"irq":0,"softirq":0,"steal":0,"guest":0,"guest_nice":0},"intr":0,"ctxt":0,"btime":"0001-01-01T00:00:00Z","processes":0,"procs_running":0,"procs_blocked":0}}';
     }
 
     fetchDiskStats() {
