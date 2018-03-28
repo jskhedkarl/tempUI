@@ -6,7 +6,7 @@ import Styles from '../Monitor/Monitor.css';
 import {Grid, Col, Row} from 'react-bootstrap';
 import {HostStats, ServerAPI} from '../../../ServerAPI';
 
-const StatsCounter = 5;
+const StatsCounter = 15;
 
 class Monitor extends React.Component {
     constructor(props) {

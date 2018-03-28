@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
-import {Line, Bar} from 'react-chartjs-2';
+import {Line, Bar, defaults} from 'react-chartjs-2';
 import Monitor from '../../views/Operation/Monitor/Monitor';
+
+defaults.global.animation = false;
 
 const plugins = [{
     afterDraw: (chartInstance, easing) => {
