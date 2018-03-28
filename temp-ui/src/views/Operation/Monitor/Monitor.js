@@ -4,201 +4,338 @@ import BarChart from '../../../components/BarChart/BarChart';
 import PieChart from '../../../components/PieChart/PieChart';
 import Styles from '../Monitor/Monitor.css';
 import {Grid, Col, Row} from 'react-bootstrap';
-import {StatsCPU, StatsMemory, StatsEginx, StatsDisk} from '../../../ServerAPI';
+import {HostStats, ServerAPI} from '../../../ServerAPI';
+
+const StatsCounter = 5;
 
 class Monitor extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      cpuStatsData0: new StatsCPU.SimulateObj(),
-      cpuStatsData1: new StatsCPU.SimulateObj(),
-      cpuStatsData2: new StatsCPU.SimulateObj(),
-      cpuStatsData3: new StatsCPU.SimulateObj(),
-      cpuStatsData4: new StatsCPU.SimulateObj(),
-      cpuStatsData5: new StatsCPU.SimulateObj(),
-      cpuStatsData6: new StatsCPU.SimulateObj(),
-      cpuStatsData7: new StatsCPU.SimulateObj(),
-      memoryStatsData0: new StatsMemory.SimulateObj(),
-      memoryStatsData1: new StatsMemory.SimulateObj(),
-      memoryStatsData2: new StatsMemory.SimulateObj(),
-      memoryStatsData3: new StatsMemory.SimulateObj(),
-      memoryStatsData4: new StatsMemory.SimulateObj(),
-      memoryStatsData5: new StatsMemory.SimulateObj(),
-      memoryStatsData6: new StatsMemory.SimulateObj(),
-      memoryStatsData7: new StatsMemory.SimulateObj(),
-      eginxStatsData0: new StatsEginx.SimulateObj(),
-      eginxStatsData1: new StatsEginx.SimulateObj(),
-      eginxStatsData2: new StatsEginx.SimulateObj(),
-      eginxStatsData3: new StatsEginx.SimulateObj(),
-      eginxStatsData4: new StatsEginx.SimulateObj(),
-      eginxStatsData5: new StatsEginx.SimulateObj(),
-      eginxStatsData6: new StatsEginx.SimulateObj(),
-      eginxStatsData7: new StatsEginx.SimulateObj(),
-      diskStatsData: new StatsDisk.SimulateObj()     
+    constructor(props) {
+        super(props)
+        let stats = [];
+        let server = ServerAPI.DefaultServer();
+        let serverCtr = 0;
+        for (serverCtr = 0; serverCtr < StatsCounter; serverCtr++) {
+          stats.push(server.fetchMonitorDEMOStates(true));
+        }
+        //TODO::MN:: Need to calculate this rather then hard coded..
+        let serviceCtr = 2;
+
+        this.state = {
+            hostStats: stats,
+            serverCounter: serverCtr,
+            serviceCounter: serviceCtr,
+            oneSecTimer : undefined,
+        };
+        this.generateStats = this.generateStats.bind(this);
     }
 
-     this.props = {
-      barChartData: {
-        labels: ['0', '20', '40', '60', '80', '100'],
-        datasets: [{
-          label: 'Cpu Stats Data',
-          type: 'line',
-          fill: false,
-          data: [this.state.cpuStatsData0.idle, this.state.cpuStatsData1.idle, this.state.cpuStatsData2.idle, this.state.cpuStatsData3.idle, this.state.cpuStatsData4.idle, this.state.cpuStatsData5.idle, this.state.cpuStatsData6.idle, this.state.cpuStatsData7.idle],
-          borderColor: '#EC932F',
-          pointBorderColor: '#EC932F',
-          pointBackgroundColor: '#EC932F',
-          pointHoverBackgroundColor: '#EC932F',
-          pointHoverBorderColor: '#EC932F',
-          yAxisID: 'y-axis-2'
-        }, {
-          type: 'bar',
-          label: 'Memory Stats Data',
-          data: [this.state.memoryStatsData0.free, this.state.memoryStatsData1.free, this.state.memoryStatsData2.free, this.state.memoryStatsData3.free, this.state.memoryStatsData4.free, this.state.memoryStatsData5.free, this.state.memoryStatsData6.free, this.state.memoryStatsData7.free],
-          fill: false,
-          backgroundColor: '#71B37C',
-          borderColor: '#71B37C',
-          hoverBackgroundColor: '#71B37C',
-          hoverBorderColor: '#71B37C',
-          yAxisID: 'y-axis-1'
-        }]
-      },
-      pieChartData: {
-        labels: ['ReadIOs', 'ReadSectors', 'WriteIOs', 'TicksIO'],
-        datasets: [{
-          label: 'Disk Stats Data',
-          data: [this.state.diskStatsData.readIOs, this.state.diskStatsData.readSectors, this.state.diskStatsData.writeIOs, this.state.diskStatsData.ticksIO],
-          backgroundColor:[
-            '#b8c7d5',
-            '#b8cdca',
-            '#dbd9c6',
-            '#e7dae1'  
-          ]
-        }]
-      },
-      lineChartData: {
-        labels: ['0', '20', '40', '60', '80', '100'],
-        datasets: [{
-          label: 'Total Requests',
-          type: 'line',
-          data: [this.state.eginxStatsData0.totalRequests, this.state.eginxStatsData1.totalRequests, this.state.eginxStatsData2.totalRequests, this.state.eginxStatsData3.totalRequests, this.state.eginxStatsData4.totalRequests, this.state.eginxStatsData5.totalRequests, this.state.eginxStatsData6.totalRequests, this.state.eginxStatsData7.totalRequests],
-          fill: false,
-          borderColor: '#EC932F',
-          backgroundColor: '#EC932F',
-          pointBorderColor: '#EC932F',
-          pointBackgroundColor: '#EC932F',
-          pointHoverBackgroundColor: '#EC932F',
-          pointHoverBorderColor: '#EC932F',
-          yAxisID: 'y-axis-2'
-        },{
-          type: 'line',
-          label: 'Active Connection',
-          data: [this.state.eginxStatsData0.activeConnection, this.state.eginxStatsData1.activeConnection, this.state.eginxStatsData2.activeConnection, this.state.eginxStatsData3.activeConnection, this.state.eginxStatsData4.activeConnection, this.state.eginxStatsData5.activeConnection, this.state.eginxStatsData6.activeConnection, this.state.eginxStatsData7.activeConnection],
-          fill: false,
-          backgroundColor: '#71B37C',
-          borderColor: '#71B37C',
-          hoverBackgroundColor: '#71B37C',
-          hoverBorderColor: '#71B37C',
-          yAxisID: 'y-axis-1'
-        }, {
-          type: 'line',
-          label: 'Total Connection',
-          data: [this.state.eginxStatsData0.totalConnection, this.state.eginxStatsData1.totalConnection, this.state.eginxStatsData2.totalConnection, this.state.eginxStatsData3.totalConnection, this.state.eginxStatsData4.totalConnection, this.state.eginxStatsData5.totalConnection, this.state.eginxStatsData6.totalConnection, this.state.eginxStatsData7.totalConnection],
-          fill: false,
-          backgroundColor: '#b8c7d5',
-          borderColor: '#b8cdca',
-          hoverBackgroundColor: '#dbd9c6',
-          hoverBorderColor: '#e7dae1',
-          yAxisID: 'y-axis-1'
-        }]
-      }
+    componentDidMount() {
+        //setTimeout(this.generateStats, 1000, this);
+        this.setState({
+            oneSecTimer: setInterval(this.generateStats, 1000),
+        });
     }
-  }
-  render() {
-    return (
-      <div>
-        <Row>
-          <Col xs={12}>
-            <h3>Service</h3>
-          </Col>
-        </Row>
-        <Grid>
-          <Row className="show-grid">
-            <Col xs={12} md={2}>
-            </Col>
-            <Col xs={12} md={4} className="borderLeft">
-              <h5>System</h5>
-            </Col>
-            <Col xs={12} md={3} className="borderLeft">
-              <h5>Varnish[:80]</h5>
-            </Col>
-            <Col xs={12} md={3} className="borderLeft">
-              <h5>Nginx[:443]</h5>
-            </Col>
-          </Row>
-          <Row className="show-grid">
-            <Col xs={12} md={2} className="borderTop">
-              <h6>Invader</h6><br />
-              <b>Name:</b> INV7<br />
-              <b>IP:</b> 172.17.17.32
-            </Col>
-            <Col xs={12} md={4} className="borderAllSide">
-              <Row>
-                <Col xs={12} md={6}><BarChart/></Col>
-                <Col xs={12} md={6}><PieChart /></Col>
-              </Row>
-            </Col>
-            <Col xs={12} md={3} className="borderAllSide">
-              <Chart />
-            </Col>
-            <Col xs={12} md={3} className="borderTop">
-              <Chart />
-            </Col>
-          </Row>
-          <Row className="show-grid">
-            <Col xs={12} md={2} className="borderTop">
-              <h6>Server 1</h6><br />
-              <b>Name:</b> SR1<br />
-              <b>IP:</b> 172.17.2.29<br />
-              <b>VIP:</b> 172.17.2.90
-            </Col>
-            <Col xs={12} md={4} className="borderAllSide">
-              <Row>
-                <Col xs={12} md={6}><BarChart /></Col>
-                <Col xs={12} md={6}><PieChart /></Col>
-              </Row>
-            </Col>
-            <Col xs={12} md={3} className="borderAllSide">
-              <Chart />
-            </Col>
-            <Col xs={12} md={3} className="borderTop">
-              <Chart />
-            </Col>
-          </Row>
-          <Row className="show-grid">
-            <Col xs={12} md={2} className="borderTop borderBottom">
-              <h6>Server 2</h6><br />
-              <b>Name:</b> SR2<br />
-              <b>IP:</b> 172.17.2.23<br />
-              <b>VIP:</b> 172.17.2.91
-            </Col>
-            <Col xs={12} md={4} className="borderAllSide">
-              <Row>
-                <Col xs={12} md={6}><BarChart/></Col>
-                <Col xs={12} md={6}><PieChart /></Col>
-              </Row>
-            </Col>
-            <Col xs={12} md={3} className="borderAllSide">
-              <Chart />
-            </Col>
-            <Col xs={12} md={3} className="borderTop borderBottom">
-              <Chart/>
-            </Col>
-          </Row>
-        </Grid>
+    
+    componentWillUnmount() {
+        this.state.oneSecTimer = null;
+    }
 
-      </div>
-    )
-  }
+    generateStats() {
+        let server = ServerAPI.DefaultServer();
+        let currStats = this.state.hostStats;
+        for (let ctr = 0; ctr < StatsCounter - 1; ctr++) {
+            let next = ctr + 1;
+            currStats[ctr] = currStats[next];
+        }
+        let newStats = server.fetchMonitorDEMOStates(false);
+        currStats[StatsCounter - 1] = newStats;
+        this.setStatsState(currStats);
+        
+        //setTimeout(this.generateStats, 1000, this);
+    }
+    
+    setStatsState(hostStat) {
+        this.setState({
+            hostStats: hostStat,
+        });
+    }
+
+    //generateEmptyStats() {
+    //    let stats = [];
+    //    let server = ServerAPI.DefaultServer();
+    //    for (let ctr = 0; ctr < StatsCounter; ctr++) {
+    //        stats.push(server.fetchMonitorDEMOStates(true));
+    //    }
+    //    return stats;
+    //}
+  
+    generateDiskPieObject(diskStats, diskLabels) {
+        let obj = {
+            labels: diskLabels,
+            datasets: [{
+                label: 'Disk Stats Data',
+                data: diskStats,
+                backgroundColor:[
+                    '#b8c7d5',
+                    '#b8cdca',
+                    '#dbd9c6',
+//                    '#e7dae1',
+                ]
+            }]
+        };
+        return obj;
+    }
+    
+    generateCpuMemChartObject(cpuMemLabels, cpuStats, memoryStats) {
+        let obj = {
+            labels: cpuMemLabels,
+            datasets: [{
+                label: 'Cpu Stats',
+                type: 'line',
+                fill: false,
+                data: cpuStats,
+                borderColor: '#EC932F',
+                pointBorderColor: '#EC932F',
+                pointBackgroundColor: '#EC932F',
+                pointHoverBackgroundColor: '#EC932F',
+                pointHoverBorderColor: '#EC932F',
+                yAxisID: 'y-axis-2'
+            }, {
+                type: 'bar',
+                label: 'Memory Stats Data',
+                data: memoryStats,
+                fill: false,
+                backgroundColor: '#71B37C',
+                borderColor: '#71B37C',
+                hoverBackgroundColor: '#71B37C',
+                hoverBorderColor: '#71B37C',
+                yAxisID: 'y-axis-1'
+            }]
+        };
+        return obj;
+    }
+    
+    generateEngixChartObject(labels, totalReqStats, activeConnStats, totalConnStats) {
+        let obj = {
+                labels: labels,
+                datasets: [{
+                    label: 'Total Requests',
+                    type: 'line',
+                    data: totalReqStats,
+                    fill: false,
+                    borderColor: '#EC932F',
+                    backgroundColor: '#EC932F',
+                    pointBorderColor: '#EC932F',
+                    pointBackgroundColor: '#EC932F',
+                    pointHoverBackgroundColor: '#EC932F',
+                    pointHoverBorderColor: '#EC932F',
+                    yAxisID: 'y-axis-2'
+                },{
+                    type: 'line',
+                    label: 'Active Connection',
+                    data: activeConnStats,
+                    fill: false,
+                    backgroundColor: '#71B37C',
+                    borderColor: '#71B37C',
+                    hoverBackgroundColor: '#71B37C',
+                    hoverBorderColor: '#71B37C',
+                    yAxisID: 'y-axis-1'
+                }, {
+                    type: 'line',
+                    label: 'Total Connection',
+                    data: totalConnStats,
+                    fill: false,
+                    backgroundColor: '#b8c7d5',
+                    borderColor: '#b8cdca',
+                    hoverBackgroundColor: '#dbd9c6',
+                    hoverBorderColor: '#e7dae1',
+                    yAxisID: 'y-axis-1'
+                }]
+            };
+        return obj;
+    }
+
+    generateVarnishChartObject(labels, totalReqStats, cacheHitsStats, cacheMissStats) {
+        let obj = {
+                labels: labels,
+                datasets: [{
+                    label: 'Client Requests',
+                    type: 'line',
+                    data: totalReqStats,
+                    fill: false,
+                    borderColor: '#EC932F',
+                    backgroundColor: '#EC932F',
+                    pointBorderColor: '#EC932F',
+                    pointBackgroundColor: '#EC932F',
+                    pointHoverBackgroundColor: '#EC932F',
+                    pointHoverBorderColor: '#EC932F',
+                    yAxisID: 'y-axis-2'
+                },{
+                    type: 'line',
+                    label: 'Cache Hits',
+                    data: cacheHitsStats,
+                    fill: false,
+                    backgroundColor: '#71B37C',
+                    borderColor: '#71B37C',
+                    hoverBackgroundColor: '#71B37C',
+                    hoverBorderColor: '#71B37C',
+                    yAxisID: 'y-axis-1'
+                }, {
+                    type: 'line',
+                    label: 'Cache Misses',
+                    data: cacheMissStats,
+                    fill: false,
+                    backgroundColor: '#b8c7d5',
+                    borderColor: '#b8cdca',
+                    hoverBackgroundColor: '#dbd9c6',
+                    hoverBorderColor: '#e7dae1',
+                    yAxisID: 'y-axis-1'
+                }]
+            };
+        return obj;
+    }
+
+//
+    renderHost(hostStat, diskPieObj, cpuMemObj, varnishObj, nginxObj) {
+        return (
+            <Row className="show-grid">
+                <Col xs={12} md={2} className="borderTop">
+                    <h6>{hostStat.hName}</h6><br />
+                    <b>IP:</b> {hostStat.IPAddress}
+                </Col>
+                <Col xs={12} md={4} className="borderAllSide">
+                    <Row>
+                        <Col xs={12} md={9}><BarChart barChartData={cpuMemObj}/></Col>
+                        <Col  xs={12} md={3}><PieChart pieChartData={diskPieObj}/></Col>
+                    </Row>
+                </Col>
+                <Col xs={12} md={3} className="borderAllSide"><Chart lineChartData={varnishObj}/></Col>
+                <Col xs={12} md={3} className="borderTop"><Chart lineChartData={nginxObj}/></Col>
+            </Row>
+        );
+    }
+
+    renderAllHostsAndServices() {
+        let retHTML = [];
+        let labels = [];
+
+        let diskStatLabel = [];
+        let invaderCpu = [];
+        let invaderMem = [];
+        let invaderDisk = [];
+        let invaderVarnishClientReq = [];
+        let invaderVarnishCacheHits = [];
+        let invaderVarnishCacheMiss = [];
+        let invaderNGINXTotalReq = [];
+        let invaderNGINXActConn = [];
+        let invaderNGINXTotalConn = [];
+
+        let serverCpu = {};
+        let serverMem = {};
+        let serverDisk = {};
+        let serverVarnishClientReq = {};
+        let serverVarnishCacheHits = {};
+        let serverVarnishCacheMiss = {};
+        let serverNGINXTotalReq  = {};
+        let serverNGINXActConn = {};
+        let serverNGINXTotalConn = {};
+        
+        let invaderStat = undefined;
+        // Generate Time Labels.
+        
+        let monitoredServers = {};
+        for (let ctr = 0; ctr < StatsCounter; ctr++) {
+            let monitorStat = this.state.hostStats[ctr];
+            labels.push(monitorStat.timeLabel);
+            
+            invaderStat = monitorStat.invaderStats;
+            invaderDisk = invaderStat.diskStats();  // effect of doing this is we pickup last stats in the array.
+            diskStatLabel = invaderStat.diskStatsLabels();
+            invaderCpu[ctr] = invaderStat.cpuStatsFunc();
+            invaderMem[ctr] = invaderStat.memoryStatsFunc();
+            let varnishStats = invaderStat.varnishStats();
+            invaderVarnishClientReq[ctr] = varnishStats[0];
+            invaderVarnishCacheHits[ctr] = varnishStats[1];
+            invaderVarnishCacheMiss[ctr] = varnishStats[2];
+            
+            let enginxStats = invaderStat.enginxStats();
+            invaderNGINXTotalReq[ctr] = enginxStats[0];
+            invaderNGINXActConn[ctr] = enginxStats[1];
+            invaderNGINXTotalConn[ctr] = enginxStats[2];
+
+            for (let hostName in monitorStat.hostsStats) {
+                let hostStats = monitorStat.hostsStats[hostName];
+                if (!serverCpu[hostName]) {
+                    monitoredServers[hostName] = hostName;
+                    serverCpu[hostName] = [];
+                    serverMem[hostName] = [];
+                    serverDisk[hostName] = [];
+                    serverVarnishClientReq[hostName] = [];
+                    serverVarnishCacheHits[hostName] = [];
+                    serverVarnishCacheMiss[hostName] = [];
+                    serverNGINXTotalReq[hostName] = [];
+                    serverNGINXActConn[hostName] = [];
+                    serverNGINXTotalConn[hostName] = [];
+                }
+                serverCpu[hostName][ctr] = hostStats.cpuStatsFunc();
+                serverMem[hostName][ctr] = hostStats.memoryStatsFunc();
+                serverDisk[hostName] = hostStats.diskStats();
+                let varnishStats = hostStats.varnishStats();
+                serverVarnishClientReq[hostName][ctr] = varnishStats[0];
+                serverVarnishCacheHits[hostName][ctr] = varnishStats[1];
+                serverVarnishCacheMiss[hostName][ctr] = varnishStats[2];
+                
+                let sNginxStats = hostStats.enginxStats();
+                serverNGINXTotalReq[hostName][ctr] = sNginxStats[0];
+                serverNGINXActConn[hostName][ctr] = sNginxStats[1];
+                serverNGINXTotalConn[hostName][ctr] = sNginxStats[2];
+            }
+        }
+        
+        let diskPieObj = this.generateDiskPieObject(invaderDisk, diskStatLabel);
+        let cpuMemObj = this.generateCpuMemChartObject(labels, invaderCpu, invaderMem);
+        let varnishObj = this.generateVarnishChartObject(labels, invaderVarnishClientReq, invaderVarnishCacheHits, invaderVarnishCacheMiss);
+        let engixObj = this.generateEngixChartObject(labels, invaderNGINXTotalReq, invaderNGINXActConn, invaderNGINXTotalConn);
+        retHTML.push(this.renderHost(invaderStat, diskPieObj, cpuMemObj, varnishObj, engixObj));
+        
+        for (let hostName in monitoredServers) {
+            let sDiskPieObj = this.generateDiskPieObject(serverDisk[hostName], diskStatLabel);
+            let sCpuMemObj = this.generateCpuMemChartObject(labels, serverCpu[hostName], serverMem[hostName]);
+            let sVarnishObj = this.generateVarnishChartObject(labels, serverVarnishClientReq[hostName], serverVarnishCacheHits[hostName], serverVarnishCacheMiss[hostName]);
+            let sEngixObj = this.generateEngixChartObject(labels, serverNGINXTotalReq[hostName], serverNGINXActConn[hostName], serverNGINXTotalConn[hostName]);
+            retHTML.push(this.renderHost(invaderStat, sDiskPieObj, sCpuMemObj, sVarnishObj, sEngixObj));
+        }
+        return retHTML;
+    }
+  
+    render() {
+        return (
+            <div>
+                <Row>
+                    <Col xs={12}>
+                        <h3>Service</h3>
+                    </Col>
+                </Row>
+                <Grid>
+                    <Row className="show-grid">
+                        <Col xs={12} md={2}>
+                        </Col>
+                        <Col xs={12} md={4} className="borderLeft">
+                            <h5>System</h5>
+                        </Col>
+                        <Col xs={12} md={3} className="borderLeft">
+                            <h5>Varnish[:80]</h5>
+                        </Col>
+                        <Col xs={12} md={3} className="borderLeft">
+                            <h5>Nginx[:443]</h5>
+                        </Col>
+                    </Row>
+                    {this.renderAllHostsAndServices()}
+                </Grid>
+            </div>
+        );
+    }
 }
+
+
 export default Monitor;

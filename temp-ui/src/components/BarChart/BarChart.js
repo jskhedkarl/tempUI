@@ -15,6 +15,9 @@ class BarChart extends Component{
         super(props);
         this.state = {
             options : {
+                legend: {
+                    display: false,
+                },
                 responsive: true,
                 maintainAspectRatio: false,
                 tooltips: {
@@ -58,11 +61,16 @@ class BarChart extends Component{
         }
     }
 
+    componentDidCatch(error, info) {
+        console.log("Bar Chart :: " + error + " :: " + info);
+      }
+
+//                <Bar data={new Monitor().props.barChartData} options={this.state.options} plugins={plugins}/>
 
     render(){
         return (
             <div>
-                <Bar data={new Monitor().props.barChartData} options={this.state.options} plugins={plugins}/>
+                <Bar data={this.props.barChartData} options={this.state.options}/>
             </div>
         )
     }
