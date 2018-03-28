@@ -18,7 +18,7 @@ class PlaybookComp extends Component {
         this.state = {
             childVisible: false, 
             playbooks : new ServiceManager().fetchAllPlaybookNames(), 
-            playBookInUse: '',
+            selectedPlaybookIndex: -1,
             data: [{key: '', value: ''}],
             listPlaybook : listPlaybook,
         }
@@ -32,29 +32,34 @@ class PlaybookComp extends Component {
         alert("Saved");
     }
 
-    showVariables(playbooks,id,event) {
-      this.setState({
-            childVisible: true,
-            playBookInUse: this.state.playbooks[id],
-        });
-
-        for (let i = 0; i < playbooks.length; i ++) {
-          
+    showPlaybookSelection(playbookId, index, event) {
+        let selElement = document.getElementById(playbookId);
+        if (!this.state.childVisible) { // No Previous Selection
+            selElement.setAttribute("style", "background-color:rgb(189,189,189)");
+            this.setState({
+                childVisible: true,
+                selectedPlaybookIndex: index,
+            });
+        } else {
+            let prevName = this.state.playbooks[this.state.selectedPlaybookIndex];
+            let prevSelElement = document.getElementById(prevName.trim());
+            prevSelElement.setAttribute("style", "background-color:white");
+            
+            if (this.state.selectedPlaybookIndex === index) { // Same selection or DE-SELECTION is make
+                this.setState({
+                    childVisible: false,
+                    selectedPlaybookIndex: -1,
+                });
+            } else {  // New Selection is made
+                selElement.setAttribute("style", "background-color:rgb(189,189,189)");
+                this.setState({
+                    childVisible: true,
+                    selectedPlaybookIndex: index,
+                });
+            }
         }
-
-
-        //listPlaybook[this.state.playBookInUse]
     }
 
-    change(id) {
-      for(let i = 0 ; i < this.state.playbooks.length; i++){
-      document.getElementById(this.state.playbooks[i]).setAttribute("style", "background-color:white");
-        // document.getElementById("@"+this.state.playbooks[i]).setAttribute("style", "background-color:rgb(255,255,255)");
-        }
-      document.getElementById(id).setAttribute("style", "background-color:rgb(189,189,189)");
-    }
-
-    
     renderPlaybooks() {
         let retHTML = [];
         let index = 0;
@@ -64,8 +69,8 @@ class PlaybookComp extends Component {
             let bgColor = playbookIndex % 2 ? 'rgb(255,255,255)': '';
             
             retHTML.push(
-              <CardBody id={playbookId} style={{height:'50px', background:bgColor}} onClick={() => this.showVariables(this.state.playbooks,playbookIndex,event)}>
-                <div id={'@'+playbookId} onClick={() => this.change(playbookId)}><strong>{playbookName}</strong></div>
+              <CardBody id={playbookId} style={{height:'50px', background:bgColor}} onClick={() => this.showPlaybookSelection(playbookId, playbookIndex, event)}>
+                <div id={'@'+playbookId}><strong>{playbookName}</strong></div>
               </CardBody>
             );
         }
@@ -74,6 +79,8 @@ class PlaybookComp extends Component {
 
 
     render() {
+        let selectedIdx = this.state.selectedPlaybookIndex;
+        let selectedPlaybook = selectedIdx > -1? this.state.playbooks[selectedIdx] : '';
         return (
             <div className="animated fadeIn">
                 <Row>
@@ -90,7 +97,7 @@ class PlaybookComp extends Component {
                     <Col xs="12" sm="6">
                         {
                           this.state.childVisible
-                            ? <Variables onChange={() => this.render} playBook={this.state.playBookInUse}
+                            ? <Variables onChange={() => this.render} playBook={selectedPlaybook}
                                          data={this.state.listPlaybook} 
                               />
                             : null
@@ -101,14 +108,14 @@ class PlaybookComp extends Component {
                     <Col >
                       {
                       this.state.childVisible
-                        ? <PlayBookSummary playBookGist={this.state.playBookInUse} displayData={listPlaybook[this.state.playBookInUse]}/>
+                        ? <PlayBookSummary playBookGist={selectedPlaybook} displayData={listPlaybook[selectedPlaybook]}/>
                         : null
                     }
                     </Col>
                 </Row>
                 {console.log(listPlaybook)}
             </div>
-        )
+        );
     }
 }
 
