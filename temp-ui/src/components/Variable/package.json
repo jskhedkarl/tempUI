@@ -1,0 +1,6 @@
+{
+  "name": "Variable",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./Variable.js"
+}

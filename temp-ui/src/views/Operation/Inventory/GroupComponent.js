@@ -32,11 +32,11 @@ export default class GroupComponent extends Component {
             selectedGroups: sGrps,
         };
     }
-    
+
     generateSelectedGroups() {
         if (this.props.host === undefined)
             return [];
-        
+
         let selectedGroups = [];
         let hostName = this.props.host.hName;
         if (hostName !== undefined) {
@@ -49,25 +49,38 @@ export default class GroupComponent extends Component {
         }
         return selectedGroups;
     }
-    
-    groupSelected(gName) {
+
+    groupSelected(event,gName) {
+        let currentTarget=event.target.parentNode.parentNode;
+
+        currentTarget.style.background=(currentTarget.getAttribute("class")=='card') ? "white" : "rgb(204,204,204)";
+
         let selGrps = this.state.selectedGroups;
         if (selGrps.includes(gName)) {
-            selGrps.pop(gName);
+          if(currentTarget.getAttribute("class")!='card'){
+            currentTarget.style.background="white";
+            selGrps.splice(selGrps.indexOf(gName),1);
+          }
         } else {
-            selGrps.push(gName);
+            if(currentTarget.getAttribute("class")!='card'){
+              currentTarget.style.background="rgb(204,204,204)";
+              selGrps.unshift(gName);
+            }
         }
+
         //MN:: TODO Update Server call goes here... Async call is good enough
         this.setState({
             selectedGroups: selGrps,
         });
     }
-    
+
     renderGroups() {
         let retHTML = [];
+
         if (this.props.groups === undefined) {
             return [];
         }
+
         for (let gName in this.props.groups) {
             let grp = this.props.groups[gName];
             if (grp.gType == 0) {
@@ -76,8 +89,8 @@ export default class GroupComponent extends Component {
             let selected = this.state.selectedGroups.includes(gName);
             let style = selected ? {backgroud: 'rgb(120,120,120)'} : {};
             retHTML.push(
-                <CardBody id={gName} style={{height: '50px'}}>
-                    <Row style={style} onClick={() => this.groupSelected(gName)}>
+                <CardBody id={gName} key={gName} style={{height: '50px'}} onClick={(event) => this.groupSelected(event,gName)}>
+                    <Row style={style}>
                         <Col>{gName}</Col>
                     </Row>
                 </CardBody>
@@ -85,13 +98,14 @@ export default class GroupComponent extends Component {
         }
         return retHTML;
     }
-    
+
     render() {
         if(this.props.active) {
         return (
             <Card>
                 <CardHeader>
                     <strong>Groups</strong>
+                    <Button className="floatRight">{this.state.selectedGroups.length}</Button>
                 </CardHeader>
 
                 <div style={{height:'300px', overflowY:'scroll'}}>
@@ -103,4 +117,3 @@ export default class GroupComponent extends Component {
         }
     }
 }
-

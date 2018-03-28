@@ -1,0 +1,9 @@
+ .HeaderNameClass {
+    position: absolute;
+    left: 56px;
+    padding: 15px;
+    font-size: 17px;
+    font-weight: 400;
+    font-family: sans-serif;
+    color: #020e60;
+}

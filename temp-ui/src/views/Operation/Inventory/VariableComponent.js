@@ -23,11 +23,11 @@ import {
     InputGroupText,
     Table
 } from 'reactstrap';
-import Styles from './Variables.css';
+import Styles from './Inventory.css';
 
 var total = 1;
 
-class Variables extends Component {
+class VariableComponent extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -41,6 +41,11 @@ class Variables extends Component {
         this.setState({count: this.state.count + 1});
         console.log(this.state.count);
         this.setState({pairs: this.state.pairs.concat([{name: ''}])});
+
+        for(let i=0;i<this.state.count;i++){
+          let key="Key"+this.state.count;
+          this.props.hostVariables[key]="Value"+this.state.count;
+        }
     }
 
     removeEntry(idx) {
@@ -49,14 +54,16 @@ class Variables extends Component {
 
     renderVariables() {
         let retHTML = [];
+        console.log(this.props.hostVariables);
         for (let key in this.props.hostVariables) {
             let varId = key.trim();
             retHTML.push(
-              <CardBody id={varId} style={{height:'50px'}}>
+              <CardBody id={varId} key={varId} style={{height:'50px'}}>
                 <Row>
-                    <Col style={{width:'40px'}}><Input type="text" placeholder="Variable Key" required value={key}/></Col>
-                    <Col style={{width:'5px'}}> : </Col>
-                    <Col style={{width:'40px'}}><Input type="text" placeholder="Variable Value" required value={this.props.hostVariables[key]}/></Col>
+                    <Col md="5"><Input  type="text" placeholder="Variable Key" required value={key}/></Col>
+                    <Col md="1"><strong style={{textAlign:"center"}}>:</strong></Col>
+                    <Col md="5"><Input type="text" placeholder="Variable Value" required value={this.props.hostVariables[key]}/></Col>
+                    <Col md="1"><Button color="secondary" size="md">x</Button></Col>
                 </Row>
               </CardBody>
             );
@@ -73,9 +80,17 @@ class Variables extends Component {
                             <strong>Variables</strong>
                             <div className="floatRight" onClick={() => this.addVariable()} ><strong>+</strong></div>
                         </CardHeader>
-                        <div style={{height:'300px', overflowY:'scroll'}}>
+                        <div style={{height:"200px",marginBottom:"20px", overflowY:'scroll'}}>
                         {this.renderVariables()}
                         </div>
+                        <CardHeader><strong>Groups</strong></CardHeader>
+                        <CardBody>
+                          Group data will be displayed here
+                        </CardBody>
+                        <CardHeader><strong>All</strong></CardHeader>
+                        <CardBody>
+                          All data will be displayed here
+                        </CardBody>
                     </Card>
                 </div>
             )
@@ -84,74 +99,4 @@ class Variables extends Component {
         }
     }
 }
-
-
-/*
-
-                                <Table>
-                                    <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Value</th>
-                                        <th/>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    {this.state.pairs.map((pairs, idx) => (
-                                        <tr>
-                                            <td className="borderBottom">
-                                                <FormGroup>
-                                                    <Label></Label>
-                                                    <Input type="text" placeholder={`Key #${idx + 1}`} required/>
-                                                </FormGroup>
-                                            </td>
-                                            <td className="borderBottom">
-                                                <FormGroup>
-                                                    <Label></Label>
-                                                    <Input type="text" placeholder={`Value #${idx + 1}`} required/>
-                                                </FormGroup>
-                                            </td>
-
-                                            <td align="center" className="borderBottom">
-                                                <Button className="marginTop20 fontSize15"
-                                                        onClick={() => this.removeEntry(idx)} size="sm"
-                                                        color="light"><b><strong>-</strong></b></Button>
-                                            </td>
-                                        </tr>
-                                    ))}
-
-                                    <tr>
-                                        <td className='borderNone paddingTopBottom0'>
-                                            <FormGroup className='marginBottom0'>
-                                                <Label htmlFor="name">ALL</Label>
-                                                <Input type="text" id="name" disabled placeholder="key1" required/>
-                                            </FormGroup>
-                                        </td>
-                                        <td className='borderNone paddingTopBottom0'>
-                                            <FormGroup className='marginBottom0'>
-                                                <Label htmlFor="name">&nbsp;</Label>
-                                                <Input type="text" id="name" disabled placeholder="Value1" required/>
-                                            </FormGroup>
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <td className='borderNone paddingTopBottom0'>
-                                            <FormGroup className='marginBottom0'>
-                                                <Label htmlFor="name">Groups</Label>
-                                                <Input type="text" id="name" disabled placeholder="key2" required/>
-                                            </FormGroup>
-                                        </td>
-                                        <td className='borderNone paddingTopBottom0'>
-                                            <FormGroup className='marginBottom0'>
-                                                <Label htmlFor="name">&nbsp;</Label>
-                                                <Input type="text" id="name" disabled placeholder="value2" required/>
-                                            </FormGroup>
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                </Table>
-
-*/
-
-export default Variables;
+export default VariableComponent;

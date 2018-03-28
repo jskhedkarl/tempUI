@@ -26,21 +26,10 @@ import {
 } from 'reactstrap';
 
 
-import Variables from './VariableComponent';
+import VariableComponent from './VariableComponent';
 import GroupComponent from "./GroupComponent";
-import Styles from './GroupComponent.css'
-import { ServerAPI, Host, Group } from '../../../ServerAPI'
+import { ServerAPI, Host, Group } from '../../../ServerAPI';
 
-/*
-class Host {
-    constructor(hName, hType) {
-        this.hName = hName;
-        this.IPAddress = "";
-        this.invaderPort = "";
-        this.type = hType;
-        this.variables = {};
-
-*/
 class InventoryComponent extends Component {
     constructor(props) {
         super(props);
@@ -52,7 +41,10 @@ class InventoryComponent extends Component {
             hosts: server.allHosts,
             groups: server.allGroups,
             selectedHost: "",
-            show: false
+            show: false,
+            isOpen: false,
+            hostName: "",
+            hostIP: ""
         };
         this.handleToggleClick = this.handleToggleClick.bind(this);
     }
@@ -62,6 +54,7 @@ class InventoryComponent extends Component {
             showWarning: !prevState.active
         }));
     }
+
 
     addEntry() {
         alert("To Add");
@@ -79,7 +72,7 @@ class InventoryComponent extends Component {
         this.setState({ childVisible: !this.state.childVisible });
     }
 
-    showDetails(hostName) {
+    showDetails(event,hostName) {
         console.log("HOST SLEECTED:::" + hostName);
         let host = this.state.hosts[hostName];
         this.setState({
@@ -87,12 +80,46 @@ class InventoryComponent extends Component {
             active: true,
             bgColor: 'white',
         });
+        this.highlightSelectedHost(event);
         this.handleToggleClick();
     }
 
+    highlightSelectedHost(event){
+      let cardDiv;
+
+      switch(event.target.getAttribute('class')){
+        case 'card-body' : cardDiv=event.target.parentNode.childNodes;
+              break;
+        case 'row' : cardDiv=event.target.parentNode.parentNode.childNodes;
+              break;
+        case 'col col-md-11' : cardDiv=event.target.parentNode.parentNode.parentNode.childNodes;
+              break;
+        default : cardDiv=event.target.parentNode.parentNode.parentNode.parentNode.childNodes;
+      }
+
+      for(let i=0;i<cardDiv.length;i++){
+        cardDiv[i].style.background="white";
+      }
+
+      switch(event.target.getAttribute('class')){
+        case 'card-body' : event.target.style.background="rgb(204,204,204)";
+              break;
+        case 'row' : event.target.style.background="rgb(204,204,204)";
+              break;
+        case 'col col-md-11' : cardDiv=event.target.parentNode.parentNode.style.background="rgb(204,204,204)";
+              break;
+        default : event.target.parentNode.parentNode.parentNode.style.background="rgb(204,204,204)";
+      }
+
+    }
+
     addHost() {
-        var person = prompt("Enter host name:", "");
-        var person = prompt("Enter host IP:", "");
+        alert("Placeholder for addHost()");
+    }
+
+    removeHost(event,hostName) {
+        event.stopPropagation();
+        alert("removed host : "+hostName);
     }
 
     renderHosts() {
@@ -104,19 +131,20 @@ class InventoryComponent extends Component {
             if (host.type > 0) { //Host.OTHER
                 //let bgColor = index % 2 ? 'rgb(237,237,237)' : '';
                 retHTML.push(
-                    <CardBody id={hostId} style={{ height: '50px' }} onClick={() => this.showDetails(hostName)}>
-                        <strong>{hostName}</strong> : {host.IPAddress}
+                    <CardBody id={hostId} key={hostId} style={{ height: '50px' }} onClick={(event) => this.showDetails(event,hostName)}>
+                        <Row>
+                            <Col md="11">
+                                <div><strong>{hostName}</strong> : {host.IPAddress}</div>
+                            </Col>
+                            <Col md="1">
+                                <button onClick={(event) => this.removeHost(event,hostName)}>-</button>
+                            </Col>
+                        </Row>
                     </CardBody>
                 );
                 index++;
             }
         }
-        retHTML.push(
-            <CardBody style={{ height: '50px' }} >
-                <button onClick={() => this.addHost()}>+</button>
-                <button onClick={() => this.addHost()}>-</button>
-            </CardBody>
-        )
         return retHTML;
     }
 
@@ -129,14 +157,15 @@ class InventoryComponent extends Component {
                         <Card>
                             <CardHeader>
                                 <strong>Hosts</strong>
+                                <div  className="floatRight" onClick={() => this.addHost()} ><strong>+</strong></div>
                             </CardHeader>
-                            <div style={{ height: '300px', overflowY: 'scroll' }}>
+                            <div style={{ height: '300px', overflowY: 'scroll', cursor:'pointer' }}>
                                 {this.renderHosts()}
                             </div>
                         </Card>
                     </Col>
                     <Col xs="12" sm="6">
-                        <Variables active={this.state.active} hostVariables={hostVariables} />
+                        <VariableComponent active={this.state.active} hostVariables={hostVariables} />
                         <GroupComponent active={this.state.active} host={this.state.selectedHost} groups={this.state.groups} />
                     </Col>
                 </Row>
@@ -144,36 +173,4 @@ class InventoryComponent extends Component {
         )
     }
 }
-
-/*
-                            <Table>
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>IP Address</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td><Button onClick={() => this.showDetails(this)} size="bg" color="gray" id="1"><b>Invader01</b></Button></td>
-                                        <td><b>192.168.0.1</b></td>
-                                    </tr>
-                                    <tr>
-                                        <td><Button onClick={() => this.showDetails(this)} size="bg" color="gray" id="2"> <b>Invader02</b> </Button></td>
-                                        <td><b>192.168.0.2</b></td>
-                                    </tr>
-                                    <tr>
-                                        <td><Button onClick={() => this.showDetails(this)} size="bg" color="gray" id="3"> <b>Invader03</b> </Button></td>
-                                        <td><b>192.168.0.3</b></td>
-                                    </tr>
-                                    <tr align="center">
-                                        <td colspan="2">
-                                            <Button className="marginLeft10" onClick={() => this.showDetails()} size="bg" color="gray" id="1"> <b>+</b> </Button>
-                                            <Button className="marginRight10" onClick={() => this.showDetails()} size="bg" color="gray" id="1"> <b>-</b> </Button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </Table>
-*/
-
 export default InventoryComponent;

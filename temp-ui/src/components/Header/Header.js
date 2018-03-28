@@ -5,6 +5,7 @@ import {
   NavbarToggler,
   NavbarBrand,
 } from 'reactstrap';
+import Styles from './Header.css';
 
 class Header extends Component {
 
@@ -34,13 +35,14 @@ class Header extends Component {
         <NavbarToggler className="d-lg-none" onClick={this.mobileSidebarToggle}>
           <span className="navbar-toggler-icon"></span>
         </NavbarToggler>        
-        <span> PLATINA UI</span>
+        
         <NavbarToggler className="d-md-down-none mr-auto" onClick={this.sidebarToggle}>
           <span className="navbar-toggler-icon"></span>
         </NavbarToggler>
-        <NavbarToggler className="d-md-down-none" onClick={this.asideToggle}>
+        <div className="HeaderNameClass"> PLATINA UI</div>
+        {/* <NavbarToggler className="d-md-down-none" onClick={this.asideToggle}>
           <span className="navbar-toggler-icon"></span>
-        </NavbarToggler>
+        </NavbarToggler> */}
       </header>
     );
   }

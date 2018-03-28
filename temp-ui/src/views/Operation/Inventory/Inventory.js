@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import InventoryComp from './InventoryComp';
+import InventoryComponent from './InventoryComponent';
 
 class Inventory extends Component{
   render(){
     return(
-        <div><InventoryComp/></div>
+        <div><InventoryComponent/></div>
     );
   }
 }

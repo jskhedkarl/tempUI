@@ -25,12 +25,11 @@ import {
 } from 'reactstrap';
 import Styles from '../PlaybookComp/PlayBookSummary.css';
 import Variables from '../Variable/Variable';
-const records = 3;
-class PlayBookSummary extends Component {
+export default class PlayBookSummary extends Component {
 
   constructor() {
     super();
-    this.state = { status: true};
+    this.state = { status: false};
   }
 
   addEntry() {
@@ -53,11 +52,17 @@ class PlayBookSummary extends Component {
         let value = this.props.displayData[idx].value;
 
         retHTML.push(
-          <tr>
-            <td />
-            <td>{key}</td>
-            <td>{value}</td>
-          </tr>
+          <Row>
+            <Col xs="12" sm="6"> 
+            <div className="Padding20"></div>
+            </Col>
+            <Col xs="12" sm="6">  
+              <Row>
+                <Col xs="12" sm="6"><div className="Padding20">{key}</div></Col>
+                <Col xs="12" sm="6"><div className="Padding20">{value}</div></Col>
+              </Row>
+            </Col>
+          </Row>
           // <CardBody id={playbookId} style={{height:'50px', background:bgColor}} onClick={() => this.showVariables(playbookIndex)}>
           //   <strong>{playbookName}</strong>
           // </CardBody>
@@ -71,6 +76,9 @@ changeState() {
   this.setState({status : !this.state.status});
   console.log(this.state.status);
 }
+play() {
+  alert('The playbook is playing');
+}
 
   render() {
     return (
@@ -80,27 +88,36 @@ changeState() {
             <CardHeader>
                 <strong>Selected Play Book Summary</strong>
             </CardHeader>
-        <Table>
-         <thead>
-             <tr>   
-                <th>Playbook Name: </th>
-                <th><strong><b>{this.props.playBookGist}</b></strong></th>
-                <th/>
-            </tr>
-            <tr>
-              <td>Variables: </td>
-              <td>Key </td>
-              <td>Value </td>
-            </tr>
-         </thead>
+        <Row>
+            <Col xs="12" sm="6"> 
+                <div className="Padding20">Playbook Name:</div>
+            </Col>
+            <Col xs="12" sm="6">
+            <div className="Padding20"><strong><b>{this.props.playBookGist}</b></strong></div>
+            </Col>
+        </Row>
+        <Row>
+            <Col xs="12" sm="6"> 
+            <div className="Padding20">Variables:</div>
+            </Col>
+            <Col xs="12" sm="6">  
+            <Row>
+              <Col xs="12" sm="6"> 
+              <div className="Padding20">Key </div>
+              </Col>
+              <Col xs="12" sm="6"> 
+              <div className="Padding20">Value </div>
+              </Col>
+            </Row> 
+              </Col>
+         </Row>
          {this.renderData()}
-         </Table>
             <Label className="switch switch-icon switch-secondary alignCenter">
-                  <Input type="checkbox" className="switch-input" defaultChecked/>
+                  <Input type="checkbox" className="switch-input" defaultUnchecked onClick={() => this.setState({status : !this.state.status})}/>
                   <span className="switch-label" data-on={'\uf087'} data-off={'\uf088'}></span>
                   <span className="switch-handle"></span>
             </Label>
-         <Button disabled={this.state.status==false} className="alignCenter width25pc"onClick={() => this.play()} size="sm" color="light" ><b><strong>Play</strong></b></Button>
+         <Button disabled={this.state.status==false} className="alignCenter width25pc"onClick={() => this.play()} size="sm" color="secondary" ><b><strong>Play</strong></b></Button>
         </Card>
              
       </div>
@@ -108,4 +125,3 @@ changeState() {
   }
 }
 
-export default PlayBookSummary;

@@ -3,9 +3,6 @@ import {NavLink} from 'react-router-dom';
 import {Badge, Nav, NavItem, NavLink as RsNavLink} from 'reactstrap';
 import classNames from 'classnames';
 import nav from './_nav';
-import SidebarFooter from './../SidebarFooter';
-import SidebarForm from './../SidebarForm';
-import SidebarHeader from './../SidebarHeader';
 import SidebarMinimizer from './../SidebarMinimizer';
 
 class Sidebar extends Component {
@@ -35,12 +32,6 @@ class Sidebar extends Component {
       document.body.classList.toggle('sidebar-mobile-show')
     }
   }
-
-  // todo Sidebar nav secondLevel
-  // secondLevelActive(routeName) {
-  //   return this.props.location.pathname.indexOf(routeName) > -1 ? "nav nav-second-level collapse in" : "nav nav-second-level collapse";
-  // }
-
 
   render() {
 
@@ -147,14 +138,11 @@ class Sidebar extends Component {
     // sidebar-nav root
     return (
       <div className="sidebar">
-        <SidebarHeader/>
-        <SidebarForm/>
         <nav className="sidebar-nav">
           <Nav>
             {navList(nav.items)}
           </Nav>
         </nav>
-        <SidebarFooter/>
         <SidebarMinimizer/>
       </div>
     )
