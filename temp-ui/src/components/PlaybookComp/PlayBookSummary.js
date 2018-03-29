@@ -58,39 +58,33 @@ export default class PlayBookSummary extends Component {
             </Col>
             <Col xs="12" sm="6">  
               <Row>
-                <Col xs="12" sm="6"><div className="Padding20">{key}</div></Col>
-                <Col xs="12" sm="6"><div className="Padding20">{value}</div></Col>
+                <Col xs="12" sm="6" md="4"><div className="Padding11">{key}</div></Col>
+                <Col xs="12" sm="6" md="4"><div className="Padding11">{value}</div></Col>
               </Row>
             </Col>
-          </Row>
-          // <CardBody id={playbookId} style={{height:'50px', background:bgColor}} onClick={() => this.showVariables(playbookIndex)}>
-          //   <strong>{playbookName}</strong>
-          // </CardBody>
+          </Row>          
         );
     }
     return retHTML;
 }
 
 changeState() {
-
-  this.setState({status : !this.state.status});
-  console.log(this.state.status);
+  this.setState({status : !this.state.status});  
 }
 play() {
-  alert('The playbook is playing');
+  alert('Execute playbook......');
 }
 
   render() {
     return (
       <div className="animated fadeIn">
-
         <Card>
             <CardHeader>
                 <strong>Selected Play Book Summary</strong>
             </CardHeader>
         <Row>
             <Col xs="12" sm="6"> 
-                <div className="Padding20">Playbook Name:</div>
+                <div className="Padding20"><strong>Playbook Name:</strong></div>
             </Col>
             <Col xs="12" sm="6">
             <div className="Padding20"><strong><b>{this.props.playBookGist}</b></strong></div>
@@ -98,26 +92,24 @@ play() {
         </Row>
         <Row>
             <Col xs="12" sm="6"> 
-            <div className="Padding20">Variables:</div>
+            <div className="Padding20"><strong>Variables:</strong></div>
             </Col>
             <Col xs="12" sm="6">  
             <Row>
-              <Col xs="12" sm="6"> 
-              <div className="Padding20">Key </div>
+              <Col xs="12" sm="6" md="4"> 
+              <div className="Padding11"><strong>Key</strong></div>
               </Col>
-              <Col xs="12" sm="6"> 
-              <div className="Padding20">Value </div>
+              <Col xs="12" sm="6" md="4"> 
+              <div className="Padding11"><strong>Value</strong></div>
               </Col>
             </Row> 
               </Col>
          </Row>
-         {this.renderData()}
-            <Label className="switch switch-icon switch-secondary alignCenter">
-                  <Input type="checkbox" className="switch-input" defaultUnchecked onClick={() => this.setState({status : !this.state.status})}/>
-                  <span className="switch-label" data-on={'\uf087'} data-off={'\uf088'}></span>
-                  <span className="switch-handle"></span>
+         <div className="SummaryClass">{this.renderData()}</div>
+            <Label className="labelClass alignCenter">
+                  <Input type="checkbox" className="size20" defaultUnchecked onClick={() => this.setState({status : !this.state.status})}/>
             </Label>
-         <Button disabled={this.state.status==false} className="alignCenter width25pc"onClick={() => this.play()} size="sm" color="secondary" ><b><strong>Play</strong></b></Button>
+         <Button disabled={this.state.status==false} className="alignCenter playButton"onClick={() => this.play()} size="sm" color="secondary" ><b><strong>Play</strong></b></Button>
         </Card>
              
       </div>

@@ -2,13 +2,6 @@ import React, {Component} from 'react';
 import {Line, Bar} from 'react-chartjs-2';
 import Monitor from '../../views/Operation/Monitor/Monitor';
 
-const plugins = [{
-    afterDraw: (chartInstance, easing) => {
-        const ctx = chartInstance.chart.ctx;
-        ctx.fillText("This text drawn by a plugin", 100, 100);
-    }
-}];
-
 class Chart extends Component{
 
     constructor(props){
@@ -60,8 +53,6 @@ class Chart extends Component{
               }
         }
     }
-
-//                <Bar data={new Monitor().props.lineChartData} options={this.state.options} plugins={plugins}/>
 
     render(){
         return (

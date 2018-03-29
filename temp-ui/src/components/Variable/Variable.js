@@ -15,21 +15,14 @@ export default class Variables extends Component {
     };
   }
 
-  addEntry(q) {
-      console.log(this.props.data);
+  addEntry(q) {     
       if(!this.props.data[this.props.playBook]){
-          console.log('empty')
+          this.count = 0    
           this.props.data[this.props.playBook] = [{}]
-          //this.props.data[this.props.playBook].concat([{key:'', value: ''}]);
-          this.count = this.count + 1;
-          this.props.data[this.props.playBook][this.count] = {key:'', value: ''};
-      }else{
-          console.log("count---> ",this.count)
-          this.count=this.count+1;
-          this.props.data[this.props.playBook][this.count] = {key:'', value: ''};
       }
-      this.setState({ data: this.state.data.concat([{key:'', value: ''}]) });
-      console.log(this.props.data[this.props.playBook]);
+      this.props.data[this.props.playBook][this.count] = {key:'', value: ''}
+      this.count++
+      this.setState({ data: this.state.data.concat([{key:'', value: ''}])})
   }
 
   removeEntry(idx) {
@@ -43,7 +36,6 @@ export default class Variables extends Component {
 
 
     handleChange(index,type,value){
-        console.log(this.props.data[this.props.playBook])
         if(!this.props.data[this.props.playBook]){
             this.props.data[this.props.playBook] = [{}]
         }else if (!this.props.data[this.props.playBook][index]){
@@ -60,51 +52,22 @@ export default class Variables extends Component {
     renderData() {
         let retHTML = [];
         let index = 0;
-        let displayData = this.props.data[this.props.playBook]
-        console.log('----->this.props.playBook ' ,this.props.playBook)
-        console.log('------>' , displayData)
-     /*    if(!displayData){
-            console.log('undefined')
-            retHTML.push(
-                <Row>
-                    <Col xs="12" sm="5">
-                        <div className="PaddingLeft10"><FormGroup>
-                            <Label className="PaddingTop20">Key</Label>
-                            <Input type="text" onBlur={(e) => this.handleChange(0, 'key', e.target.value)}
-                                   required/>
-                        </FormGroup>
-                        </div>
-                    </Col>
-                    <Col xs="12" sm="5">
-                        <FormGroup>
-                            <Label className="PaddingTop20">Value</Label>
-                            <Input type="text" onBlur={(e) => this.handleChange(0, 'value', e.target.value)}
-                                   required/>
-                        </FormGroup>
-                    </Col>
-                </Row>)
-
-        }else{ */
-            for (let idx in displayData) {
+        let displayData = this.props.data[this.props.playBook]            
+            for (let idx in displayData) {                
                 let key = displayData[idx].key;
-                let value = displayData[idx].value;
+                let value = displayData[idx].value;                
                 retHTML.push(
                   <Row>
                     <Col xs="12" sm="5">
                     <div className="PaddingLeft10"><FormGroup>
-                                {/* <Label>Key </Label> */}
-                                <Input type="text" onBlur={(e) => this.handleChange(idx, 'key', e.target.value)}
-                                        id={this.props.playBook+'$key@' + idx} placeholder={key} required/>
-                                        {/* {key} */}
+                                <Input type="text" placeholder = { displayData[idx].key } onBlur={(e) => this.handleChange(idx, 'key', e.target.value)}/>
+                                         
                             </FormGroup>
                           </div>
                       </Col>
                       <Col xs="12" sm="5">
                             <FormGroup>
-                                {/* <Label>Value</Label> */}
-                                <Input type="text" onBlur={(e) => this.handleChange(idx, 'value', e.target.value)}
-                                       id={this.props.playBook+'$value@' + idx} placeholder={value} required/>
-                                       {/* {value} */}
+                                <Input type="text" placeholder = { displayData[idx].value } onBlur={(e) => this.handleChange(idx, 'value', e.target.value)} />                                        
                             </FormGroup>
                       </Col>
                       <Col xs="12" sm="2">     
@@ -113,14 +76,10 @@ export default class Variables extends Component {
                     </Row>
                 );
             }
-        // }
-
         return retHTML;
     }
 
     render() {
-        console.log('render() ->', this.props)
-      console.log('render() ->', this.props.playBook)
     return (
 
       <div className="animated fadeIn" id="variable" >
@@ -134,8 +93,8 @@ export default class Variables extends Component {
             <Col xs="12">
               <div id="divMain">
               <Row>
-                <Col xs="12" sm="5" align="center" className="padding10">Key</Col>
-                <Col xs="12" sm="5" align="center" className="padding10">Value</Col>
+                <Col xs="12" sm="5" align="center" className="padding10"><strong>Key</strong></Col>
+                <Col xs="12" sm="5" align="center" className="padding10"><strong>Value</strong></Col>
               </Row>
               {this.renderData()}
               </div>

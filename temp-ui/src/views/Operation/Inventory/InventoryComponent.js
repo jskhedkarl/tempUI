@@ -29,6 +29,8 @@ import {
 import VariableComponent from './VariableComponent';
 import GroupComponent from "./GroupComponent";
 import { ServerAPI, Host, Group } from '../../../ServerAPI';
+var selectedHost2;
+var addHost;
 
 class InventoryComponent extends Component {
     constructor(props) {
@@ -44,9 +46,13 @@ class InventoryComponent extends Component {
             show: false,
             isOpen: false,
             hostName: "",
-            hostIP: ""
+            hostIP: "",
+            variableCount: 1,
+            hostCount : 1
         };
         this.handleToggleClick = this.handleToggleClick.bind(this);
+        this.removeVariables = this.removeVariables.bind(this);
+        this.addNewVariable=this.addNewVariable.bind(this);
     }
 
     handleToggleClick() {
@@ -73,8 +79,8 @@ class InventoryComponent extends Component {
     }
 
     showDetails(event,hostName) {
-        console.log("HOST SLEECTED:::" + hostName);
         let host = this.state.hosts[hostName];
+        selectedHost2=host;
         this.setState({
             selectedHost: host,
             active: true,
@@ -82,6 +88,23 @@ class InventoryComponent extends Component {
         });
         this.highlightSelectedHost(event);
         this.handleToggleClick();
+    }
+
+    addNewVariable(){
+      let key='key'+this.state.variableCount;
+      let value='value'+this.state.variableCount;
+      selectedHost2.variables[key]=value
+      this.setState({
+        variableCount: this.state.variableCount+1,
+        selectedHost: selectedHost2
+      });
+    }
+
+    removeVariables(key){
+      delete selectedHost2.variables[key];
+      this.setState({
+        selectedHost:selectedHost2
+      })
     }
 
     highlightSelectedHost(event){
@@ -113,31 +136,19 @@ class InventoryComponent extends Component {
 
     }
 
-    addHost() {
-        alert("Placeholder for addHost()");
-    }
-
-    removeHost(event,hostName) {
-        event.stopPropagation();
-        alert("removed host : "+hostName);
-    }
-
     renderHosts() {
         let retHTML = [];
         let index = 0;
         for (let hostName in this.state.hosts) {
             let host = this.state.hosts[hostName];
+
             let hostId = hostName.trim() + "_" + host.IPAddress.trim();
-            if (host.type > 0) { //Host.OTHER
-                //let bgColor = index % 2 ? 'rgb(237,237,237)' : '';
+            if (host.type > 0) {
                 retHTML.push(
                     <CardBody id={hostId} key={hostId} style={{ height: '50px' }} onClick={(event) => this.showDetails(event,hostName)}>
                         <Row>
                             <Col md="11">
                                 <div><strong>{hostName}</strong> : {host.IPAddress}</div>
-                            </Col>
-                            <Col md="1">
-                                <button onClick={(event) => this.removeHost(event,hostName)}>-</button>
                             </Col>
                         </Row>
                     </CardBody>
@@ -149,7 +160,7 @@ class InventoryComponent extends Component {
     }
 
     render() {
-        let hostVariables = (this.state.selectedHost !== undefined) ? this.state.selectedHost.variables : null;
+        let hostVariables = (selectedHost2 !== undefined) ? selectedHost2.variables : null;
         return (
             <div className="animated fadeIn">
                 <Row>
@@ -157,7 +168,7 @@ class InventoryComponent extends Component {
                         <Card>
                             <CardHeader>
                                 <strong>Hosts</strong>
-                                <div  className="floatRight" onClick={() => this.addHost()} ><strong>+</strong></div>
+                                <div  className="floatRight" onClick={() => this.addHost()} ></div>
                             </CardHeader>
                             <div style={{ height: '300px', overflowY: 'scroll', cursor:'pointer' }}>
                                 {this.renderHosts()}
@@ -165,7 +176,7 @@ class InventoryComponent extends Component {
                         </Card>
                     </Col>
                     <Col xs="12" sm="6">
-                        <VariableComponent active={this.state.active} hostVariables={hostVariables} />
+                        <VariableComponent active={this.state.active} hostVariables={hostVariables} removeVariables={this.removeVariables} addNewVariable={this.addNewVariable}/>
                         <GroupComponent active={this.state.active} host={this.state.selectedHost} groups={this.state.groups} />
                     </Col>
                 </Row>

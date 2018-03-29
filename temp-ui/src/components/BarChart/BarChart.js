@@ -4,13 +4,6 @@ import Monitor from '../../views/Operation/Monitor/Monitor';
 
 defaults.global.animation = false;
 
-const plugins = [{
-    afterDraw: (chartInstance, easing) => {
-        const ctx = chartInstance.chart.ctx;
-        ctx.fillText("This text drawn by a plugin", 100, 100);
-    }
-}];
-
 class BarChart extends Component{
 
     constructor(props){
@@ -66,8 +59,6 @@ class BarChart extends Component{
     componentDidCatch(error, info) {
         console.log("Bar Chart :: " + error + " :: " + info);
       }
-
-//                <Bar data={new Monitor().props.barChartData} options={this.state.options} plugins={plugins}/>
 
     render(){
         return (

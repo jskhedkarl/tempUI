@@ -1,11 +1,9 @@
 import React, {Component} from 'react';
-import Styles from './Footer.css';
 
 class Footer extends Component {
   render() {
     return (
-      <div className="BottomTextClass">
-        	&copy; 2018-19 Platina Systems Pvt. Ltd. All rights reserved.
+      <div>        	
       </div>
     )
   }

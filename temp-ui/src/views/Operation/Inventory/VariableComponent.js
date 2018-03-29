@@ -35,17 +35,16 @@ class VariableComponent extends Component {
             name: '',
             pairs: [{name: ''}],
         };
+
+
     }
 
     addVariable() {
-        this.setState({count: this.state.count + 1});
-        console.log(this.state.count);
-        this.setState({pairs: this.state.pairs.concat([{name: ''}])});
+        this.props.addNewVariable();
+    }
 
-        for(let i=0;i<this.state.count;i++){
-          let key="Key"+this.state.count;
-          this.props.hostVariables[key]="Value"+this.state.count;
-        }
+    removeVariable(key){
+      this.props.removeVariables(key);
     }
 
     removeEntry(idx) {
@@ -54,11 +53,10 @@ class VariableComponent extends Component {
 
     renderVariables() {
         let retHTML = [];
-        console.log(this.props.hostVariables);
         retHTML.push(
             <CardHeader>
                 <strong>Host</strong>
-                <div className="floatRight" onClick={() => this.addVariable()} ><strong>+</strong></div>
+                <div className="floatRight" onClick={() => this.addVariable()} ><Button><strong>+</strong></Button></div>
             </CardHeader>);
         for (let key in this.props.hostVariables) {
             let varId = key.trim();
@@ -68,7 +66,7 @@ class VariableComponent extends Component {
                         <Col md="5"><Input  type="text" placeholder="Variable Key" required value={key}/></Col>
                         <Col md="1"><strong style={{textAlign:"center"}}>:</strong></Col>
                         <Col md="5"><Input type="text" placeholder="Variable Value" required value={this.props.hostVariables[key]}/></Col>
-                        <Col md="1"><Button color="secondary" size="md">x</Button></Col>
+                        <Col md="1"><Button color="secondary" size="md" onClick={()=>(this.removeVariable(key))}>x</Button></Col>
                     </Row>
               </CardBody>
             );
@@ -84,13 +82,13 @@ class VariableComponent extends Component {
                         <CardHeader>
                             <strong>Variables</strong>
                         </CardHeader>
-                        <div style={{height:"350px",marginBottom:"20px", overflowY:'scroll'}}>
+                        <div style={{height:"290px",marginBottom:"20px", overflowY:'scroll'}}>
                             {this.renderVariables()}
-                            <CardHeader><strong>Groups</strong></CardHeader>
+                            <CardHeader style={{marginTop:"20px"}}><strong>Groups</strong></CardHeader>
                             <CardBody>
                                 Group data will be displayed here
                             </CardBody>
-                            <CardHeader><strong>All</strong></CardHeader>
+                            <CardHeader style={{marginTop:"20px"}}><strong>All</strong></CardHeader>
                             <CardBody>
                                 All data will be displayed here
                             </CardBody>
