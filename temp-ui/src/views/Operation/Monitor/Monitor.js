@@ -15,7 +15,7 @@ class Monitor extends React.Component {
         let server = ServerAPI.DefaultServer();
         let serverCtr = 0;
         for (serverCtr = 0; serverCtr < StatsCounter; serverCtr++) {
-          stats.push(server.fetchMonitorDEMOStates(true));
+          stats.push(server.fetchMonitorZeroStates(true));
         }
         //TODO::MN:: Need to calculate this rather then hard coded..
         let serviceCtr = 2;
@@ -26,30 +26,38 @@ class Monitor extends React.Component {
             serviceCounter: serviceCtr,
             oneSecTimer : undefined,
         };
-        this.generateStats = this.generateStats.bind(this);
+        //this.generateStats = this.generateStats.bind(this);
+        this.fetchStats = this.fetchStats.bind(this);
     }
 
     componentDidMount() {
         //setTimeout(this.generateStats, 1000, this);
-        this.setState({
-            oneSecTimer: setInterval(this.generateStats, 1000),
-        });
+        setTimeout(this.fetchStats, 50, this)
+        //this.setState({
+        //    oneSecTimer: ,
+        //});
     }
     
     componentWillUnmount() {
         this.state.oneSecTimer = null;
     }
-
-    generateStats() {
+    
+    fetchStats(instance) {
         let server = ServerAPI.DefaultServer();
-        let currStats = this.state.hostStats;
+        server.fetchMonitorServerStat(this.updateStats, this);
+        setTimeout(this.fetchStats, 3000, this)
+    } 
+
+    updateStats(instance, newStats) {
+        let server = ServerAPI.DefaultServer();
+        let currStats = instance.state.hostStats;
         for (let ctr = 0; ctr < StatsCounter - 1; ctr++) {
             let next = ctr + 1;
             currStats[ctr] = currStats[next];
         }
-        let newStats = server.fetchMonitorDEMOStates(false);
+        //let newStats = newStats; //server.fetchMonitorDEMOStates(false);
         currStats[StatsCounter - 1] = newStats;
-        this.setStatsState(currStats);
+        instance.setStatsState(currStats);
         
         //setTimeout(this.generateStats, 1000, this);
     }

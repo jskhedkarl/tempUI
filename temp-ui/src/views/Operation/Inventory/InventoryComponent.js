@@ -29,8 +29,6 @@ import {
 import VariableComponent from './VariableComponent';
 import GroupComponent from "./GroupComponent";
 import { ServerAPI, Host, Group } from '../../../ServerAPI';
-var selectedHost2;
-var addHost;
 
 class InventoryComponent extends Component {
     constructor(props) {
@@ -42,17 +40,14 @@ class InventoryComponent extends Component {
             active: false,
             hosts: server.allHosts,
             groups: server.allGroups,
+            selectedGroups: [],
             selectedHost: "",
             show: false,
             isOpen: false,
             hostName: "",
-            hostIP: "",
-            variableCount: 1,
-            hostCount : 1
+            hostIP: ""
         };
         this.handleToggleClick = this.handleToggleClick.bind(this);
-        this.removeVariables = this.removeVariables.bind(this);
-        this.addNewVariable=this.addNewVariable.bind(this);
     }
 
     handleToggleClick() {
@@ -77,63 +72,97 @@ class InventoryComponent extends Component {
     showGroups() {
         this.setState({ childVisible: !this.state.childVisible });
     }
+    
+    calculateSelectedGroups(host) {
+        if (host === undefined ||
+            host === "")
+            return [];
 
-    showDetails(event,hostName) {
+        let selectedGroups = [];
+        let hostName = host.hName;
+        if (hostName !== undefined) {
+            for (let groupName in this.state.groups) {
+                let group = this.state.groups[groupName];
+                if (group.hosts.includes(hostName)) {
+                    selectedGroups.push(groupName);
+                }
+            }
+        }
+        return selectedGroups;
+    }
+
+    showDetails(event, hostName) {
+        console.log("HOST SLEECTED:::" + hostName);
         let host = this.state.hosts[hostName];
-        selectedHost2=host;
+        let selGroups = this.calculateSelectedGroups(host);
         this.setState({
             selectedHost: host,
             active: true,
             bgColor: 'white',
+            selectedGroups: selGroups,
         });
         this.highlightSelectedHost(event);
         this.handleToggleClick();
-    }
-
-    addNewVariable(){
-      let key='key'+this.state.variableCount;
-      let value='value'+this.state.variableCount;
-      selectedHost2.variables[key]=value
-      this.setState({
-        variableCount: this.state.variableCount+1,
-        selectedHost: selectedHost2
-      });
-    }
-
-    removeVariables(key){
-      delete selectedHost2.variables[key];
-      this.setState({
-        selectedHost:selectedHost2
-      })
+        
     }
 
     highlightSelectedHost(event){
-      let cardDiv;
+        let cardDiv;
 
-      switch(event.target.getAttribute('class')){
-        case 'card-body' : cardDiv=event.target.parentNode.childNodes;
-              break;
-        case 'row' : cardDiv=event.target.parentNode.parentNode.childNodes;
-              break;
-        case 'col col-md-11' : cardDiv=event.target.parentNode.parentNode.parentNode.childNodes;
-              break;
-        default : cardDiv=event.target.parentNode.parentNode.parentNode.parentNode.childNodes;
-      }
+        switch(event.target.getAttribute('class')){
+            case 'card-body' : 
+                cardDiv=event.target.parentNode.childNodes;
+                break;
+            case 'row' : 
+                cardDiv=event.target.parentNode.parentNode.childNodes;
+                break;
+            case 'col col-md-11' : 
+                cardDiv=event.target.parentNode.parentNode.parentNode.childNodes;
+                break;
+            default : 
+                cardDiv=event.target.parentNode.parentNode.parentNode.parentNode.childNodes;
+        }
 
-      for(let i=0;i<cardDiv.length;i++){
-        cardDiv[i].style.background="white";
-      }
+        for(let i=0;i<cardDiv.length;i++){
+            cardDiv[i].style.background="white";
+        }
 
-      switch(event.target.getAttribute('class')){
-        case 'card-body' : event.target.style.background="rgb(204,204,204)";
-              break;
-        case 'row' : event.target.style.background="rgb(204,204,204)";
-              break;
-        case 'col col-md-11' : cardDiv=event.target.parentNode.parentNode.style.background="rgb(204,204,204)";
-              break;
-        default : event.target.parentNode.parentNode.parentNode.style.background="rgb(204,204,204)";
-      }
+        switch(event.target.getAttribute('class')){
+            case 'card-body' : 
+                event.target.style.background="rgb(204,204,204)";
+                break;
+            case 'row' : 
+                event.target.style.background="rgb(204,204,204)";
+                break;
+            case 'col col-md-11' : 
+                cardDiv=event.target.parentNode.parentNode.style.background="rgb(204,204,204)";
+                break;
+            default : 
+                event.target.parentNode.parentNode.parentNode.style.background="rgb(204,204,204)";
+        }
 
+    }
+
+    addHost() {
+        alert("Placeholder for addHost()");
+    }
+
+    removeHost(event,hostName) {
+        event.stopPropagation();
+        alert("removed host : "+hostName);
+    }
+    
+    // Callback function where Child (VariableComponent) Changes a varible,
+    // then makes a callback to parent to update new variables.
+    handleSetVariables(variables) {
+        //this.state.selectedHost.variables
+        let selHost = this.state.selectedHost;
+        selHost.variables = variables;
+        this.setState({
+            selectedHost: selHost,
+        });
+        //MN::TODO:: Need to update Server with new values.
+        console.log(selHost.variables);
     }
 
     renderHosts() {
@@ -141,14 +170,17 @@ class InventoryComponent extends Component {
         let index = 0;
         for (let hostName in this.state.hosts) {
             let host = this.state.hosts[hostName];
-
             let hostId = hostName.trim() + "_" + host.IPAddress.trim();
-            if (host.type > 0) {
+            if (host.type > 0) { //Host.OTHER
+                //let bgColor = index % 2 ? 'rgb(237,237,237)' : '';
                 retHTML.push(
                     <CardBody id={hostId} key={hostId} style={{ height: '50px' }} onClick={(event) => this.showDetails(event,hostName)}>
                         <Row>
                             <Col md="11">
                                 <div><strong>{hostName}</strong> : {host.IPAddress}</div>
+                            </Col>
+                            <Col md="1">
+                                <div style={{fontSize: '18px' }} onClick={(event) => this.removeHost(event,hostName)} >-</div>
                             </Col>
                         </Row>
                     </CardBody>
@@ -160,7 +192,14 @@ class InventoryComponent extends Component {
     }
 
     render() {
-        let hostVariables = (selectedHost2 !== undefined) ? selectedHost2.variables : null;
+        let hostVariables = (this.state.selectedHost !== undefined) ? this.state.selectedHost.variables : null;
+        let groupVariables = "";
+        let systemVariables = this.state.groups[Group.SYSTEM_VARIABLES];
+        if (systemVariables !== undefined) {
+            systemVariables = systemVariables.variables;
+        } else {
+            systemVariables = "";
+        }
         return (
             <div className="animated fadeIn">
                 <Row>
@@ -168,7 +207,7 @@ class InventoryComponent extends Component {
                         <Card>
                             <CardHeader>
                                 <strong>Hosts</strong>
-                                <div  className="floatRight" onClick={() => this.addHost()} ></div>
+                                <div  className="floatRight" onClick={() => this.addHost()} ><strong>+</strong></div>
                             </CardHeader>
                             <div style={{ height: '300px', overflowY: 'scroll', cursor:'pointer' }}>
                                 {this.renderHosts()}
@@ -176,8 +215,14 @@ class InventoryComponent extends Component {
                         </Card>
                     </Col>
                     <Col xs="12" sm="6">
-                        <VariableComponent active={this.state.active} hostVariables={hostVariables} removeVariables={this.removeVariables} addNewVariable={this.addNewVariable}/>
-                        <GroupComponent active={this.state.active} host={this.state.selectedHost} groups={this.state.groups} />
+                        <VariableComponent 
+                                active={this.state.active} 
+                                hostVariables={hostVariables} 
+                                groupVariables={groupVariables} 
+                                systemVariables={systemVariables}
+                                setVariables={(variables) => this.handleSetVariables(variables)}
+                        />
+                        <GroupComponent active={this.state.active} host={this.state.selectedHost} groups={this.state.groups} selectedGroups={this.state.selectedGroups}/>
                     </Col>
                 </Row>
             </div>

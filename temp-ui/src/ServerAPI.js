@@ -10,7 +10,33 @@ export class StatsEginx {
         this.waiting = waiting;
     }
     
-    
+    addStats(addStats) {
+        this.activeConnection += addStats.activeConnection;
+        this.totalConnection += addStats.totalConnection;
+        this.totalHandledConnection += addStats.totalHandledConnection;
+        this.totalRequests += addStats.totalRequests;
+        this.requestsPerConnection += addStats.requestsPerConnection;
+        this.reading += addStats.reading;
+        this.writing += addStats.writing;
+        this.waiting += addStats.waiting;
+    }
+
+    static EginxStatsFromJson(jsonArray) {
+        let retStat = StatsEginx.EmptyObj();
+        for (let jsonId in jsonArray) {
+            let jsonObj = jsonArray[jsonId];
+            retStat.activeConnection += jsonObj['ActiveConnections'];
+            retStat.totalConnection += jsonObj['TotalConnections'];
+            retStat.totalHandledConnection += jsonObj['TotalHandledConnections'];
+            retStat.totalRequests += jsonObj['TotalRequests'];
+            retStat.requestsPerConnection += jsonObj['RequestsPerConnection'];
+            retStat.reading += jsonObj['Reading'];
+            retStat.writing += jsonObj['Writing'];
+            retStat.waiting += jsonObj['Waiting'];
+        }
+        return retStat;
+    }
+
     static SimulateObj() {
         let activeConnection = Math.floor((Math.random() * 100) + 1);
         let totalConnection = Math.floor((Math.random() * 100000) + 1);
@@ -31,6 +57,31 @@ class StatsVarnish {
         this.cacheHits = cacheHits;
         this.cacheMisses = cacheMisses;
     }
+
+    addStats(addStats) {
+        this.clientRequests += addStats.clientRequests;
+        this.cacheHits += addStats.cacheHits;
+        this.cacheMisses += addStats.cacheMisses;
+    }
+
+    static VarnishStatsFromJson(jsonArray) {
+        let retStat = StatsVarnish.EmptyObj();
+        for (let jsonId in jsonArray) {
+            let jsonObj = jsonArray[jsonId];
+            let statArr = jsonObj['stats'];
+            for (let stat in statArr) {
+                let statObj = statArr[stat];
+                if (statObj['id'] === 'clientRequests') {
+                    retStat.clientRequests += statObj['value'];
+                } else if (statObj['id'] === 'cacheHits') {
+                    retStat.cacheHits += statObj['value'];
+                } else if (statObj['id'] === 'cacheMisses') {
+                    retStat.cacheMisses += statObj['value'];
+                }
+            }
+        }
+        return retStat;
+    }
     
     static SimulateObj() {
         let cacheHits = Math.floor((Math.random() * 100000) + 1);
@@ -44,12 +95,9 @@ class StatsVarnish {
     }
 }
 
-
 //DONE
 export class StatsCPU {
     constructor(user, nice, system, idle, iowait, irq) {
-       //console.log(cpuStatsDict)
-       // let cpuAllStats = cpuStatsDict["cpu_all"];
         this.user = user;
         this.nice = nice;
         this.system = system;
@@ -57,6 +105,14 @@ export class StatsCPU {
         this.iowait = iowait;
         this.irq = irq;
     }
+    
+    static CPUStatsFromJson(jsonObj) {
+        let cpuAllStats = jsonObj['cpu_all'];
+        return new StatsCPU(cpuAllStats['user'], cpuAllStats['nice'], 
+            cpuAllStats['system'], cpuAllStats['idle'], 
+            cpuAllStats['iowait'], cpuAllStats['irq']);
+    }
+    
     static SimulateObj() {
         let a = Math.floor((Math.random() * 5) + 1);
         let user = Math.floor((Math.random() * 10) + 1) * a;
@@ -80,6 +136,11 @@ export class StatsMemory {
         this.free = free;
         this.available = available;
     }
+    
+    static MemoryStatsFromJson(jsonObj) {
+        return new StatsMemory(jsonObj["mem_total"], jsonObj["mem_free"], jsonObj["mem_available"]);
+    }
+    
     static SimulateObj() {
         let total = 16464124;
         let freePercent = Math.floor((Math.random() * 10) + 1) * (30 - 10) + 10;
@@ -289,6 +350,7 @@ Group.KEY = "group";
 Group.INVADER_KEY = "clients";
 Group.SERVER_KEY = "servers";
 Group.VARIABLES = "vars";
+Group.SYSTEM_VARIABLES = "all";
 
 
 function simulateAllStats() {
@@ -296,15 +358,15 @@ function simulateAllStats() {
 }
 
 
-let allGroups = {};
-let allHosts = {};
-
-
 export class ServerAPI {
     constructor() {
         this.allGroups = new Object();
         this.allHosts = new Object();
-        this.setupInventory();
+        //this.setupInventory();
+    }
+    
+    DefaultInvader() {
+        return "http://192.168.101.122:8080";
     }
     
     static DefaultServer() {
@@ -323,56 +385,78 @@ export class ServerAPI {
         let grp = this.allGroups[Group.INVADER_KEY];
         return grp.hosts;
     }
+    
+    setupInventory(callback, instance) {
+        let serverInstance = this;
+        let xhr = new XMLHttpRequest();
+        let sourceURL = this.DefaultInvader() + "/config/all";
+        xhr.open("GET", sourceURL, true);
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                try {
+                    //let serverInstance = ServerAPI.DefaultServer();
+                    serverInstance.allGroups = new Object();
+                    serverInstance.allHosts = new Object();
+                    let invaderHosts = [];
+                    let serverHosts = [];
 
-    setupInventory() {
-        // Below we are going to replace hardcoded string to fetch from server.
-        this.allGroups = new Object();
-        this.allHosts = new Object();
-        let invaderHosts = [];
-        let serverHosts = [];
-        let jsonString = this.fetchInvetoryAll();
-        let jsonObj = JSON.parse(jsonString);
-        let inventoryAll = jsonObj["all"];
-        let allHostDict = inventoryAll[Host.KEY];
-        let inventoryGroups = inventoryAll[Group.KEY];
+                    let jsonObj = JSON.parse(xhr.responseText);
+                    let inventoryAll = jsonObj["all"];
+                    let allHostDict = inventoryAll[Host.KEY];
+                    let inventoryGroups = inventoryAll[Group.KEY];
 
-        for (let groupName in inventoryGroups) {
-            let groupDict = inventoryGroups[groupName];
-            let hostType = Host.OTHER;
-            if (groupName === Group.INVADER_KEY)
-                hostType = Host.INVADER;
-            else if (groupName === Group.SERVER_KEY)
-                hostType = Host.SERVER;
+                    for (let groupName in inventoryGroups) {
+                        let groupDict = inventoryGroups[groupName];
+                        let hostType = Host.OTHER;
+                        if (groupName === Group.INVADER_KEY)
+                            hostType = Host.INVADER;
+                        else if (groupName === Group.SERVER_KEY)
+                            hostType = Host.SERVER;
 
-            let grp = new Group(groupName, hostType);
-            let grpHostsArray = groupDict["hosts"];
-            if (grpHostsArray !== undefined) {
-                for (let hIndex in grpHostsArray) {
-                    let hostName = grpHostsArray[hIndex];
-                    let host = this.allHosts[hostName];
-                    if (host === undefined) {
-                        host = new Host(hostName, hostType);
-                        let hostDict = allHostDict[hostName];
-                        if (hostDict !== undefined) {
-                            let hostVars = hostDict["vars"];
-                            host.setupVariable(hostVars);
+                        let grp = new Group(groupName, hostType);
+                        if (groupName === Group.SYSTEM_VARIABLES) {
+                            grp.setupVariable(groupDict);
+                        } else {
+                            let grpHostsArray = groupDict["hosts"];
+                            if (grpHostsArray !== undefined) {
+                                for (let hIndex in grpHostsArray) {
+                                    let hostName = grpHostsArray[hIndex];
+                                    let host = serverInstance.allHosts[hostName];
+                                    if (host === undefined) {
+                                        host = new Host(hostName, hostType);
+                                        let hostDict = allHostDict[hostName];
+                                        if (hostDict !== undefined) {
+                                            let hostVars = hostDict["vars"];
+                                            host.setupVariable(hostVars);
+                                        }
+                                        serverInstance.allHosts[hostName] = host;
+                                    } else if (hostType > Host.OTHER) {
+                                        if (host.type == Host.OTHER)
+                                            host.type = hostType;
+                                        else
+                                            console.log("ERROR :: Host :: " + hostName + " :: belongs to both 'Server' and 'Invader' Groups");
+                                    }
+                                    grp.hosts.push(hostName);
+                                }
+                            }
+                            let grpVars = groupDict[Group.VARIABLES];
+                            grp.setupVariable(grpVars);
                         }
-                        this.allHosts[hostName] = host;
-                    } else if (hostType > Host.OTHER) {
-                        if (host.type == Host.OTHER)
-                            host.type = hostType;
-                        else
-                            console.log("ERROR :: Host :: " + hostName + " :: belongs to both 'Server' and 'Invader' Groups");
+                        serverInstance.allGroups[groupName] = grp;
                     }
-                    grp.hosts.push(hostName);
+                    callback(instance);
+                    //setTimeout(callback, 1000, instance);
+                    
+                } catch (err) {
+                    console.log("POST :: ERROR :: " + err);
                 }
             }
-
-            let grpVars = groupDict[Group.VARIABLES];
-            grp.setupVariable(grpVars);
-
-            this.allGroups[groupName] = grp;
+        };
+        xhr.onerror = function () {
+            console.log("POST :: Error :: ");
         }
+        xhr.send();
     }
 
     fetchAllSystemStats() {
@@ -405,13 +489,251 @@ export class ServerAPI {
         return jsonObj["hosts"];
     }
 
-    fetchAllPlaybookNames() {
-        let jsonStr = this.fetchPlaybooks();
-        let jsonObj = JSON.parse(jsonStr);
-        return jsonObj["playbooks"];
+    fetchAllPlaybookNames(callback, instance) {
+        //let jsonStr = this.fetchPlaybooks();
+        //let jsonObj = JSON.parse(jsonStr);
+        //return jsonObj["playbooks"];
+        let serverInstance = this;
+        let xhr = new XMLHttpRequest();
+        let sourceURL = this.DefaultInvader() + "/config/playbook";
+        xhr.open("GET", sourceURL, true);
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                try {
+                    let jsonObj = JSON.parse(xhr.responseText);
+                    callback(instance, jsonObj["playbooks"]);
+                    //setTimeout(callback, 1000, instance);
+                    
+                } catch (err) {
+                    console.log("POST :: ERROR :: " + err);
+                }
+            }
+        };
+        xhr.onerror = function () {
+            console.log("POST :: Error :: ");
+        }
+        xhr.send();
+        
     }
     
-    fetchMonitorDEMOStates(isEmpty) {
+    fetchMonitorServerStat(callback, instance) {
+        let serverInstance = this;
+
+        let invaderStat = undefined;
+        let hostsStats = {};
+        let statsCounter = 0;
+        for (let hostName in this.allHosts) {
+            let host = this.allHosts[hostName];
+            let hostStatObj = HostStats.SimulateObj(true, host.hName, host.IPAddress, host.invaderPort);
+            if (host.type == Host.INVADER) {
+                invaderStat = hostStatObj;
+            } else if (host.type == Host.SERVER) {
+                hostsStats[hostName] = hostStatObj;
+            }
+        }
+        
+        let xhrCPU = new XMLHttpRequest();
+        let cpuURL = this.DefaultInvader() + "/stats/allcpu";
+        xhrCPU.open("GET", cpuURL, true);
+        xhrCPU.setRequestHeader("Content-type", "application/json");
+        xhrCPU.onreadystatechange = function () {
+            if (xhrCPU.readyState === 4 && xhrCPU.status === 200) {
+                try {
+                    statsCounter--;
+                    let jsonObj = JSON.parse(xhrCPU.responseText);
+                    for (let hostName in serverInstance.allHosts) {
+                        if (hostName in jsonObj) {
+                            let cpuJsonObj = jsonObj[hostName];
+                            let cpuStat = StatsCPU.CPUStatsFromJson(cpuJsonObj);
+                            let host = serverInstance.allHosts[hostName];
+                            if (host.type == Host.INVADER) {
+                                invaderStat.cpuStat = cpuStat;
+                            } else if (host.type == Host.SERVER) {
+                                let hostStats = hostsStats[hostName];
+                                hostStats.cpuStat = cpuStat;
+                                hostsStats[hostName] = hostStats;
+                            }
+                        }
+                    }
+                } catch (err) {
+                    console.log("POST :: CPU ERROR :: " + err);
+                }
+            }
+            if (statsCounter <= 0) {
+                let monitorStats = new MonitorStats(invaderStat, hostsStats);
+                callback(instance, monitorStats);
+            }
+        }
+        xhrCPU.onerror = function () {
+            statsCounter--;
+            console.log("POST :: CPU Error :: ");
+            if (statsCounter <= 0) {
+                let monitorStats = new MonitorStats(invaderStat, hostsStats);
+                callback(instance, monitorStats);
+            }
+        }
+        statsCounter++;
+        xhrCPU.send();
+        
+        let xhrMem = new XMLHttpRequest();
+        let memURL = this.DefaultInvader() + "/stats/allmemory";
+        xhrMem.open("GET", memURL, true);
+        xhrMem.setRequestHeader("Content-type", "application/json");
+        xhrMem.onreadystatechange = function () {
+            if (xhrMem.readyState === 4 && xhrMem.status === 200) {
+                try {
+                    statsCounter--;
+                    let jsonObj = JSON.parse(xhrMem.responseText);
+                    for (let hostName in serverInstance.allHosts) {
+                        if (hostName in jsonObj) {
+                            let memJsonObj = jsonObj[hostName];
+                            let memStat = StatsMemory.MemoryStatsFromJson(memJsonObj);
+                            let host = serverInstance.allHosts[hostName];
+                            if (host.type == Host.INVADER) {
+                                invaderStat.memStat = memStat;
+                            } else if (host.type == Host.SERVER) {
+                                let hostStats = hostsStats[hostName];
+                                hostStats.memStat = memStat;
+                                hostsStats[hostName] = hostStats;
+                            }
+                        }
+                    }
+                } catch (err) {
+                    console.log("POST :: Mem ERROR :: " + err);
+                }
+            }
+            if (statsCounter <= 0) {
+                let monitorStats = new MonitorStats(invaderStat, hostsStats);
+                callback(instance, monitorStats);
+            }
+        }
+        xhrMem.onerror = function () {
+            statsCounter--;
+            console.log("POST :: MEM Error :: ");
+            if (statsCounter <= 0) {
+                let monitorStats = new MonitorStats(invaderStat, hostsStats);
+                callback(instance, monitorStats);
+            }
+        }
+        statsCounter++;
+        xhrMem.send();
+
+        //let xhrDisk = new XMLHttpRequest();
+        //let diskURL = this.DefaultInvader() + "/stats/alldisk";
+        //xhrDisk.open("GET", diskURL, true);
+        //xhrDisk.setRequestHeader("Content-type", "application/json");
+        //xhrDisk.onreadystatechange = function () {
+        //    if (xhrDisk.readyState === 4 && xhrDisk.status === 200) {
+        //        try {
+        //            statsCounter--;
+        //            let jsonObj = JSON.parse(xhrDisk.responseText);
+        //        } catch (err) {
+        //            console.log("POST :: Disk ERROR :: " + err);
+        //        }
+        //    }
+        //    if (statsCounter <= 0) {
+        //        let monitorStats = new MonitorStats(invaderStat, hostsStats);
+        //        callback(instance, monitorStats);
+        //    }
+        //}
+        //xhrDisk.onerror = function () {
+        //    statsCounter--;
+        //    console.log("POST :: Disk Error :: ");
+        //    if (statsCounter <= 0) {
+        //        let monitorStats = new MonitorStats(invaderStat, hostsStats);
+        //        callback(instance, monitorStats);
+        //    }
+        //}
+        //statsCounter++;
+        //xhrDisk.send();
+        
+        let xhrVarn = new XMLHttpRequest();
+        let varnURL = this.DefaultInvader() + "/stats/varnish";
+        xhrVarn.open("GET", varnURL, true);
+        xhrVarn.setRequestHeader("Content-type", "application/json");
+        xhrVarn.onreadystatechange = function () {
+            if (xhrVarn.readyState === 4 && xhrVarn.status === 200) {
+                try {
+                    statsCounter--;
+                    let jsonObj = JSON.parse(xhrVarn.responseText);
+                    for (let hostName in serverInstance.allHosts) {
+                        if (hostName in jsonObj) {
+                            let varnJsonObj = jsonObj[hostName];
+                            let varnStat = StatsVarnish.VarnishStatsFromJson(varnJsonObj);
+                            let host = serverInstance.allHosts[hostName];
+                            if (host.type == Host.SERVER) {
+                                let hostStats = hostsStats[hostName];
+                                hostStats.varnishStat = varnStat;
+                                hostsStats[hostName] = hostStats;
+                                invaderStat.varnishStat.addStats(varnStat);
+                            }
+                        }
+                    }
+                } catch (err) {
+                    console.log("POST :: Varnish ERROR :: " + err);
+                }
+            }
+            if (statsCounter <= 0) {
+                let monitorStats = new MonitorStats(invaderStat, hostsStats);
+                callback(instance, monitorStats);
+            }
+        }
+        xhrVarn.onerror = function () {
+            statsCounter--;
+            console.log("POST :: Varnish Error :: ");
+            if (statsCounter <= 0) {
+                let monitorStats = new MonitorStats(invaderStat, hostsStats);
+                callback(instance, monitorStats);
+            }
+        }
+        statsCounter++;
+        xhrVarn.send();
+        
+        let xhrNginx = new XMLHttpRequest();
+        let nginxURL = this.DefaultInvader() + "/stats/nginx";
+        xhrNginx.open("GET", nginxURL, true);
+        xhrNginx.setRequestHeader("Content-type", "application/json");
+        xhrNginx.onreadystatechange = function () {
+            if (xhrNginx.readyState === 4 && xhrNginx.status === 200) {
+                try {
+                    statsCounter--;
+                    let jsonObj = JSON.parse(xhrNginx.responseText);
+                    for (let hostName in serverInstance.allHosts) {
+                        if (hostName in jsonObj) {
+                            let eginxJsonObj = jsonObj[hostName];
+                            let eginxStat = StatsEginx.EginxStatsFromJson(eginxJsonObj);
+                            let host = serverInstance.allHosts[hostName];
+                            if (host.type == Host.SERVER) {
+                                let hostStats = hostsStats[hostName];
+                                hostStats.engStat = eginxStat;
+                                hostsStats[hostName] = hostStats;
+                                invaderStat.engStat.addStats(eginxStat);
+                            }
+                        }
+                    }
+                } catch (err) {
+                    console.log("POST :: Varnish ERROR :: " + err);
+                }
+            }
+            if (statsCounter <= 0) {
+                let monitorStats = new MonitorStats(invaderStat, hostsStats);
+                callback(instance, monitorStats);
+            }
+        }
+        xhrNginx.onerror = function () {
+            statsCounter--;
+            console.log("POST :: Varnish Error :: ");
+            if (statsCounter <= 0) {
+                let monitorStats = new MonitorStats(invaderStat, hostsStats);
+                callback(instance, monitorStats);
+            }
+        }
+        statsCounter++;
+        xhrNginx.send();
+    }
+    
+    fetchMonitorZeroStates(isEmpty) {
         let invaderStatObj;
         let hostsStats = {};
         for (let hostName in this.allHosts) {
