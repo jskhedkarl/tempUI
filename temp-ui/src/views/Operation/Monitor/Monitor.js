@@ -24,58 +24,47 @@ class Monitor extends React.Component {
             hostStats: stats,
             serverCounter: serverCtr,
             serviceCounter: serviceCtr,
-            oneSecTimer : undefined,
+            continueStats: true,
         };
-        //this.generateStats = this.generateStats.bind(this);
         this.fetchStats = this.fetchStats.bind(this);
     }
 
     componentDidMount() {
-        //setTimeout(this.generateStats, 1000, this);
+        this.state.continueStats = true;
         setTimeout(this.fetchStats, 50, this)
-        //this.setState({
-        //    oneSecTimer: ,
-        //});
     }
     
     componentWillUnmount() {
-        this.state.oneSecTimer = null;
+        this.state.continueStats = false;
     }
     
     fetchStats(instance) {
-        let server = ServerAPI.DefaultServer();
-        server.fetchMonitorServerStat(this.updateStats, this);
-        setTimeout(this.fetchStats, 3000, this)
+        if (this.state.continueStats) {
+            let server = ServerAPI.DefaultServer();
+            server.fetchMonitorServerStat(this.updateStats, this);
+            setTimeout(instance.fetchStats, 3000, instance)
+        }
     } 
 
     updateStats(instance, newStats) {
-        let server = ServerAPI.DefaultServer();
-        let currStats = instance.state.hostStats;
-        for (let ctr = 0; ctr < StatsCounter - 1; ctr++) {
-            let next = ctr + 1;
-            currStats[ctr] = currStats[next];
+        if (instance.state.continueStats) {
+            let server = ServerAPI.DefaultServer();
+            let currStats = instance.state.hostStats;
+            for (let ctr = 0; ctr < StatsCounter - 1; ctr++) {
+                let next = ctr + 1;
+                currStats[ctr] = currStats[next];
+            }
+            currStats[StatsCounter - 1] = newStats;
+            instance.setStatsState(currStats);
         }
-        //let newStats = newStats; //server.fetchMonitorDEMOStates(false);
-        currStats[StatsCounter - 1] = newStats;
-        instance.setStatsState(currStats);
-        
-        //setTimeout(this.generateStats, 1000, this);
     }
     
     setStatsState(hostStat) {
         this.setState({
             hostStats: hostStat,
+            
         });
     }
-
-    //generateEmptyStats() {
-    //    let stats = [];
-    //    let server = ServerAPI.DefaultServer();
-    //    for (let ctr = 0; ctr < StatsCounter; ctr++) {
-    //        stats.push(server.fetchMonitorDEMOStates(true));
-    //    }
-    //    return stats;
-    //}
   
     generateDiskPieObject(diskStats, diskLabels) {
         let obj = {
@@ -205,11 +194,13 @@ class Monitor extends React.Component {
 
 //
     renderHost(hostStat, diskPieObj, cpuMemObj, varnishObj, nginxObj) {
+        let rowId = hostStat.hName + "_id";
         return (
-            <Row className="show-grid">
+            <Row id={rowId} key={rowId} className="show-grid">
                 <Col xs={12} md={2} className="borderTop">
-                    <h6>{hostStat.hName}</h6><br />
-                    <b>IP:</b> {hostStat.IPAddress}
+                    <h6>Host: {hostStat.hName}</h6>
+                    IP: {hostStat.IPAddress}<br />
+                    Invader Port: {hostStat.invPort}<br />
                 </Col>
                 <Col xs={12} md={4} className="borderAllSide">
                     <Row>
@@ -274,7 +265,7 @@ class Monitor extends React.Component {
             for (let hostName in monitorStat.hostsStats) {
                 let hostStats = monitorStat.hostsStats[hostName];
                 if (!serverCpu[hostName]) {
-                    monitoredServers[hostName] = hostName;
+                    monitoredServers[hostName] = hostStats;
                     serverCpu[hostName] = [];
                     serverMem[hostName] = [];
                     serverDisk[hostName] = [];
@@ -307,11 +298,12 @@ class Monitor extends React.Component {
         retHTML.push(this.renderHost(invaderStat, diskPieObj, cpuMemObj, varnishObj, engixObj));
         
         for (let hostName in monitoredServers) {
+            let hostStats = monitoredServers[hostName]
             let sDiskPieObj = this.generateDiskPieObject(serverDisk[hostName], diskStatLabel);
             let sCpuMemObj = this.generateCpuMemChartObject(labels, serverCpu[hostName], serverMem[hostName]);
             let sVarnishObj = this.generateVarnishChartObject(labels, serverVarnishClientReq[hostName], serverVarnishCacheHits[hostName], serverVarnishCacheMiss[hostName]);
             let sEngixObj = this.generateEngixChartObject(labels, serverNGINXTotalReq[hostName], serverNGINXActConn[hostName], serverNGINXTotalConn[hostName]);
-            retHTML.push(this.renderHost(invaderStat, sDiskPieObj, sCpuMemObj, sVarnishObj, sEngixObj));
+            retHTML.push(this.renderHost(hostStats, sDiskPieObj, sCpuMemObj, sVarnishObj, sEngixObj));
         }
         return retHTML;
     }
@@ -344,6 +336,5 @@ class Monitor extends React.Component {
         );
     }
 }
-
 
 export default Monitor;

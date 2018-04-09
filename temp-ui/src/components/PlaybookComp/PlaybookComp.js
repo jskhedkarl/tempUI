@@ -87,7 +87,7 @@ class PlaybookComp extends Component {
             let bgColor = playbookIndex % 2 ? 'rgb(255,255,255)': '';
             
             retHTML.push(
-              <CardBody id={playbookId} style={{height:'50px', background:bgColor}} onClick={() => this.showPlaybookSelection(playbookId, playbookIndex, event)}>
+              <CardBody id={playbookId} key={playbookId}  style={{height:'50px', background:bgColor}} onClick={() => this.showPlaybookSelection(playbookId, playbookIndex, event)}>
                 <div id={'@'+playbookId}><strong>{playbookName}</strong></div>
               </CardBody>
             );

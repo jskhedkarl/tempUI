@@ -81,14 +81,14 @@ class VariableComponent extends Component {
         let retHTML = [];
         console.log(this.props.playbookVariables);
         retHTML.push(
-            <CardHeader id="variables_host">
+            <CardHeader id="variables_playbook" key="variables_playbook">
                 <strong>Playbook</strong>
                 <div className="floatRight" onClick={() => this.addVariable()} ><strong>+</strong></div>
             </CardHeader>);
         for (let key in this.props.playbookVariables) {
             let varId = "playbook_"+key.trim();
             retHTML.push(
-                    <Row id={varId} style={{height:'50px'}}>
+                    <Row key={varId} style={{height:'50px'}}>
                         <Col md="4"><Input type="text" placeholder="Variable Key" required value={key} onFocus={(e) => this.onKeyFocused(e, key)} onChange={(e) => this.onKeyChanged(e, key, e.target.value)}/></Col>
                         <Col md="1"><strong style={{textAlign:"center"}}>:</strong></Col>
                         <Col md="5"><Input type="text" placeholder="Variable Value" required value={this.props.playbookVariables[key]} onChange={(e) => this.onValueChanged(e, key, e.target.value)}/></Col>
@@ -105,14 +105,14 @@ class VariableComponent extends Component {
         let retHTML = [];
         console.log(this.props.hostVariables);
         retHTML.push(
-            <CardHeader id="variables_host">
+            <CardHeader id="variables_host" key="variables_host">
                 <strong>Host</strong>
                 <div className="floatRight" onClick={() => this.addVariable()} ><strong>+</strong></div>
             </CardHeader>);
         for (let key in this.props.hostVariables) {
             let varId = "host_"+key.trim();
             retHTML.push(
-                    <Row id={varId} style={{height:'50px'}}>
+                    <Row key={varId} style={{height:'50px'}}>
                         <Col md="4"><Input type="text" placeholder="Variable Key" required value={key} onFocus={(e) => this.onKeyFocused(e, key)} onChange={(e) => this.onKeyChanged(e, key, e.target.value)}/></Col>
                         <Col md="1"><strong style={{textAlign:"center"}}>:</strong></Col>
                         <Col md="5"><Input type="text" placeholder="Variable Value" required value={this.props.hostVariables[key]} onChange={(e) => this.onValueChanged(e, key, e.target.value)}/></Col>
@@ -128,7 +128,7 @@ class VariableComponent extends Component {
     renderSystemVariables() {
         let retHTML = [];
         retHTML.push(
-            <CardHeader id="variables_system">
+            <CardHeader id="variables_system" key="variables_system">
                 <strong>System</strong>
             </CardHeader>);
         for (let key in this.props.systemVariables) {
@@ -149,7 +149,7 @@ class VariableComponent extends Component {
     renderGroupVariables() {
         let retHTML = [];
         retHTML.push(
-            <CardHeader id="variables_groups">
+            <CardHeader id="variables_groups" key="variables_groups">
                 <strong>Groups</strong>
             </CardHeader>);
         //for (let key in this.props.systemVariables) {
