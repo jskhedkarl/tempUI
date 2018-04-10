@@ -47,9 +47,9 @@ class VariableComponent extends Component {
         let header = "";
         if (nextProps.playbookVariables !== undefined) {
             ansiVarArr = nextProps.playbookVariables;
-            header = "Host";
+            header = "Playlist";
         } else if (nextProps.hostVariables !== undefined) {
-            header = "Playlist"
+            header = "Host"
             ansiVarArr = nextProps.hostVariables;
         }
         this.setState({
@@ -101,33 +101,6 @@ class VariableComponent extends Component {
         console.log("Key Focused :: Event :: " + event);
     }
     
-    renderPlaybookVariables() {
-        let retHTML = [];
-        console.log(this.props.playbookVariables);
-        retHTML.push(
-            <CardHeader id="variables_playbook" key="variables_playbook">
-                <strong>Playbook</strong>
-                <div className="floatRight" onClick={() => this.addVariable()} ><strong>+</strong></div>
-            </CardHeader>);
-        for (let index in this.state.ansibleVariables) {
-            let key = this.state.ansibleVariables[index].key
-            let varId = "playbook_"+index;
-            retHTML.push(
-                    <Row key={varId} style={{height:'50px'}}>
-                        <Col md="4"><Input type="text" placeholder="New Key" required defaultValue={this.state.ansibleVariables[index].key} onFocus={(e) => this.onKeyFocused(e, key)} /></Col>
-                        <Col md="1"><strong style={{textAlign:"center"}}>:</strong></Col>
-                        <Col md="5"><Input type="text" placeholder="New Value" required defaultValue={this.state.ansibleVariables[index].value} onChange={(e) => this.onValueChanged(e, key, e.target.value)}/></Col>
-                    </Row>
-            );
-            /*
-                        <Col md="2" onClick={(event) => this.removeVariable(event, index)}>
-                            <div size="md">-</div>
-                        </Col>
-            */
-        }
-        return retHTML;
-    }
-
     renderVariables() {
         //onFocus={(e) => this.onKeyFocused(e, key)
         let retHTML = [];
@@ -140,12 +113,15 @@ class VariableComponent extends Component {
         for (let index in this.state.ansibleVariables) {
             let key = this.state.ansibleVariables[index].key
             let varId = "host_var_"+index;
+            let styleHeight = "50px";
             retHTML.push(
-                    <Row key={varId} style={{height:'50px'}}>
-                        <Col md="4"><Input type="text" placeholder="New Key" required defaultValue={this.state.ansibleVariables[index].key} onChange={(event) => this.onKeyChanged(event, index, this.state.ansibleVariables[index].key)} /></Col>
+                <CardBody id={varId} key={varId} >
+                    <Row>
+                        <Col md="5"><Input type="text" placeholder="New Key" required defaultValue={this.state.ansibleVariables[index].key} onChange={(event) => this.onKeyChanged(event, index, this.state.ansibleVariables[index].key)} /></Col>
                         <Col md="1"><strong style={{textAlign:"center"}}>:</strong></Col>
                         <Col md="5"><Input type="text" placeholder="New Value" required defaultValue={this.state.ansibleVariables[index].value} onChange={(event) => this.onValueChanged(event, index, this.state.ansibleVariables[index].value)}/></Col>
                     </Row>
+                </CardBody>
             );
             /*
                         <Col md="2" onClick={() => this.removeVariable(index)}>
@@ -199,22 +175,11 @@ class VariableComponent extends Component {
     }
     
     /*
-                            {
-                                (this.props.playbookVariables !== undefined)?
-                                    this.renderPlaybookVariables() :
-                                    null
-                            }
-                            {
-                                (this.props.hostVariables !== undefined)?
-                                    this.renderVariables() :
-                                    null
-                            }
                             //{
                             //    (this.props.groupVariables !== undefined)?
                             //    this.renderGroupVariables() :
                             //    null
                             //}
-    
     */
     render() {
         if(this.props.active) {
