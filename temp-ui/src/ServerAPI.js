@@ -212,6 +212,7 @@ export class HostStats {
         this.cpuStat = cpuStat;
         this.varnishStat = varnishStat;
         this.engStat = engStat;
+        this.hostType = Host.OTHER;
     }
     
     static SimulateObj(isEmpty, hName, ipAddress, invPort) {
@@ -275,12 +276,13 @@ export class Service {
 
 
 export class AnsibleVariable {
-    constructor(key, value, vType) {
+    constructor(key, value) {
         this.key = key;
         this.value = value;
     }
     
 }
+AnsibleVariable.PLAYBOOK_VARIABLE = 15;
 AnsibleVariable.HOST_VARIABLE = 10;
 AnsibleVariable.GROUP_VARIABLE = 5;
 AnsibleVariable.SYS_VARIABLE = 1
@@ -292,7 +294,7 @@ export class Host {
         this.IPAddress = "";
         this.invaderPort = "";
         this.type = hType;
-        this.variables = {};
+        this.variables = [];
     }
     
     static SimulateObj() {
@@ -303,7 +305,8 @@ export class Host {
     }
     
     addVariable(key, value) {
-        this.variables[key] = value;
+        let ansiVar = new AnsibleVariable(key, value);
+        this.variables.push(ansiVar);
     }
     
     setupVariable(variableDict) {
@@ -331,11 +334,12 @@ export class Group {
         this.gName = gName;
         this.gType = gType;
         this.hosts = [];
-        this.variables = {};
+        this.variables = [];
     }
     
     addVariable(key, value) {
-        this.variables[key] = value;
+        let ansiVar = new AnsibleVariable(key, value);
+        this.variables.push(ansiVar);
     }
 
     setupVariable(variableDict) {
@@ -384,6 +388,14 @@ export class ServerAPI {
     allInvaderNames() {
         let grp = this.allGroups[Group.INVADER_KEY];
         return grp.hosts;
+    }
+    
+    updateHostVariables(host, variables) {
+        //TODO:: Update server here.. ON successful, return update HOst/Variables
+    }
+    
+    updateHostGroups(host, groups) {
+        // TODO:: Update Server here.. On successful return, update Groups/Hosts
     }
     
     setupInventory(callback, instance) {
@@ -527,8 +539,10 @@ export class ServerAPI {
             let host = this.allHosts[hostName];
             let hostStatObj = HostStats.SimulateObj(true, host.hName, host.IPAddress, host.invaderPort);
             if (host.type == Host.INVADER) {
+                hostStatObj.hostType = Host.INVADER;
                 invaderStat = hostStatObj;
             } else if (host.type == Host.SERVER) {
+                hostStatObj.hostType = Host.SERVER;
                 hostsStats[hostName] = hostStatObj;
             }
         }

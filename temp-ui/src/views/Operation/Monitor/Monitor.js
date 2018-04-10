@@ -4,7 +4,7 @@ import BarChart from '../../../components/BarChart/BarChart';
 import PieChart from '../../../components/PieChart/PieChart';
 import Styles from '../Monitor/Monitor.css';
 import {Grid, Col, Row} from 'react-bootstrap';
-import {HostStats, ServerAPI} from '../../../ServerAPI';
+import {HostStats, Host, ServerAPI} from '../../../ServerAPI';
 
 const StatsCounter = 15;
 
@@ -62,7 +62,6 @@ class Monitor extends React.Component {
     setStatsState(hostStat) {
         this.setState({
             hostStats: hostStat,
-            
         });
     }
   
@@ -191,10 +190,15 @@ class Monitor extends React.Component {
             };
         return obj;
     }
+    
+    selectEginxStats(event, hostStats, nginxObj) {
+        alert("ENGIN Selected " + host.hName);
+    }
 
 //
     renderHost(hostStat, diskPieObj, cpuMemObj, varnishObj, nginxObj) {
         let rowId = hostStat.hName + "_id";
+        let isServer = (hostStat.hostType === Host.SERVER);
         return (
             <Row id={rowId} key={rowId} className="show-grid">
                 <Col xs={12} md={2} className="borderTop">
@@ -209,7 +213,7 @@ class Monitor extends React.Component {
                     </Row>
                 </Col>
                 <Col xs={12} md={3} className="borderAllSide"><Chart lineChartData={varnishObj}/></Col>
-                <Col xs={12} md={3} className="borderTop"><Chart lineChartData={nginxObj}/></Col>
+                <Col xs={12} md={3} className="borderTop"><Chart onClick={(event) => this.selectEginxStats(event, hostStats, nginxObj)} lineChartData={nginxObj}/></Col>
             </Row>
         );
     }

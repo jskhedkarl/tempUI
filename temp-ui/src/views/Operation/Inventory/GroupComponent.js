@@ -69,6 +69,7 @@ export default class GroupComponent extends Component {
             }
         }
 
+        this.props.setSelectedGroups(selGrps);
         //MN:: TODO Update Server call goes here... Async call is good enough
         //this.setState({
         //    selectedGroups: selGrps,

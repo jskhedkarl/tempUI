@@ -5,7 +5,7 @@ import VariableComponent from '../../views/Operation/Inventory/VariableComponent
 import PlayBookSummary from './PlayBookSummary';
 import Styles from './PlayBookSummary.css';
 //import ServiceManager from "../../services/serviceManager";
-import { ServerAPI } from '../../ServerAPI';
+import { ServerAPI, AnsibleVariable } from '../../ServerAPI';
 
 
 /*const listPlaybook = {
@@ -15,13 +15,15 @@ const listPlaybook = {}
 
 class PlaybookComp extends Component {
 
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
+        let aVar = new AnsibleVariable("", "");
+        let ansiVars = [];
         this.state = {
             childVisible: false, 
             playbooks : [], //new ServiceManager().fetchAllPlaybookNames(), 
             selectedPlaybookIndex: -1,
-            data: [{key: '', value: ''}],
+            data: ansiVars,
             listPlaybook : listPlaybook,
         }
     }
@@ -109,7 +111,6 @@ class PlaybookComp extends Component {
     render() {
         let selectedIdx = this.state.selectedPlaybookIndex;
         let selectedPlaybook = selectedIdx > -1? this.state.playbooks[selectedIdx] : '';
-        let playbookVariables = [];
         
         return (
             <div className="animated fadeIn">
@@ -127,7 +128,7 @@ class PlaybookComp extends Component {
                     <Col xs="12" sm="6">
                     <VariableComponent 
                             active={this.state.childVisible}
-                            playbookVariables = {playbookVariables}
+                            playbookVariables = {this.state.data}
                             setVariables={(variables) => this.handleSetVariables(variables)}
                     />
                     </Col>

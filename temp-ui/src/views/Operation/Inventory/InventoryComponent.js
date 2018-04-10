@@ -141,13 +141,17 @@ class InventoryComponent extends Component {
     // Callback function where Child (VariableComponent) Changes a varible,
     // then makes a callback to parent to update new variables.
     handleSetVariables(variables) {
-        //this.state.selectedHost.variables
-        let selHost = this.state.selectedHost;
-        selHost.variables = variables;
-        this.setState({
-            selectedHost: selHost,
-        });
-        //MN::TODO:: Need to update Server with new values.
+        this.state.selectedHost.variables = variables;
+
+        let server = ServerAPI.DefaultServer();
+        server.updateHostVariables(this.state.selectedHost, variables);
+    }
+    
+    handleSelectedGroups(groups) {
+        this.state.selectedGroups = groups;
+        
+        let server = ServerAPI.DefaultServer();
+        server.updateHostGroups(this.state.selectedHost, this.state.selectedGroups);
     }
 
     renderHosts() {
@@ -201,13 +205,19 @@ class InventoryComponent extends Component {
                     </Col>
                     <Col xs="12" sm="6">
                         <VariableComponent 
-                                active={this.state.active} 
-                                hostVariables={hostVariables} 
-                                groupVariables={groupVariables} 
-                                systemVariables={systemVariables}
-                                setVariables={(variables) => this.handleSetVariables(variables)}
+                            active={this.state.active} 
+                            hostVariables={hostVariables} 
+                            groupVariables={groupVariables} 
+                            systemVariables={systemVariables}
+                            setVariables={(variables) => this.handleSetVariables(variables)}
                         />
-                        <GroupComponent active={this.state.active} host={this.state.selectedHost} groups={this.state.groups} selectedGroups={this.state.selectedGroups}/>
+                        <GroupComponent 
+                            active={this.state.active}
+                            host={this.state.selectedHost}
+                            groups={this.state.groups}
+                            selectedGroups={this.state.selectedGroups}
+                            setSelectedGroups={(groups) => this.handleSelectedGroups(groups)}
+                        />
                     </Col>
                 </Row>
             </div>
