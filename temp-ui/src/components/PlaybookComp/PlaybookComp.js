@@ -56,7 +56,9 @@ class PlaybookComp extends Component {
         } else {
             let prevName = this.state.playbooks[this.state.selectedPlaybookIndex];
             let prevSelElement = document.getElementById(prevName.trim());
-            prevSelElement.setAttribute("style", "background-color:white");
+            let selIndex = parseInt(prevSelElement.getAttribute("pbindex"))
+            let bgColor = "background-color:" + ((selIndex % 2) ? 'rgb(255,255,255)': 'rgb(227,227,227)');
+            prevSelElement.setAttribute("style", bgColor);
             
             if (this.state.selectedPlaybookIndex === index) { // Same selection or DE-SELECTION is make
                 this.setState({
@@ -74,7 +76,6 @@ class PlaybookComp extends Component {
     }
     
     handleSetVariables(variables) {
-        console.log(variables);
     }
     
 
@@ -84,11 +85,11 @@ class PlaybookComp extends Component {
         for (let playbookIndex in this.state.playbooks) {
             let playbookName = this.state.playbooks[playbookIndex];
             let playbookId = playbookName.trim();
-            let bgColor = playbookIndex % 2 ? 'rgb(255,255,255)': '';
+            let bgColor = playbookIndex % 2 ? 'rgb(255,255,255)': 'rgb(227,227,227)';
             
             retHTML.push(
-              <CardBody id={playbookId} key={playbookId}  style={{height:'50px', background:bgColor}} onClick={() => this.showPlaybookSelection(playbookId, playbookIndex, event)}>
-                <div id={'@'+playbookId}><strong>{playbookName}</strong></div>
+              <CardBody pbindex={playbookIndex} id={playbookId} key={playbookId} style={{height:'50px', background:bgColor}} onClick={() => this.showPlaybookSelection(playbookId, playbookIndex, event)}>
+                <div id={'@'+playbookId}>{playbookName}</div>
               </CardBody>
             );
         }
@@ -140,7 +141,6 @@ class PlaybookComp extends Component {
                     }
                     </Col>
                 </Row>
-                {console.log(listPlaybook)}
             </div>
         );
     }

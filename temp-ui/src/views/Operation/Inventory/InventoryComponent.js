@@ -42,6 +42,7 @@ class InventoryComponent extends Component {
             groups: server.allGroups,
             selectedGroups: [],
             selectedHost: "",
+            selectedHostDivId: "",
             show: false,
             isOpen: false,
             hostName: "",
@@ -92,55 +93,40 @@ class InventoryComponent extends Component {
     }
 
     showDetails(event, hostName) {
-        console.log("HOST SLEECTED:::" + hostName);
         let host = this.state.hosts[hostName];
+        let selElement = event.currentTarget;
         let selGroups = this.calculateSelectedGroups(host);
-        this.setState({
-            selectedHost: host,
-            active: true,
-            bgColor: 'white',
-            selectedGroups: selGroups,
-        });
-        this.highlightSelectedHost(event);
-        this.handleToggleClick();
-        
-    }
-
-    highlightSelectedHost(event){
-        let cardDiv;
-
-        switch(event.target.getAttribute('class')){
-            case 'card-body' : 
-                cardDiv=event.target.parentNode.childNodes;
-                break;
-            case 'row' : 
-                cardDiv=event.target.parentNode.parentNode.childNodes;
-                break;
-            case 'col col-md-11' : 
-                cardDiv=event.target.parentNode.parentNode.parentNode.childNodes;
-                break;
-            default : 
-                cardDiv=event.target.parentNode.parentNode.parentNode.parentNode.childNodes;
+        if (!this.state.active) {  // No previous Selection
+            selElement.setAttribute("style", "background-color:rgb(189,189,189)");
+            this.setState({
+                selectedHost: host,
+                selectedHostDivId: selElement.id,
+                active: true, 
+                selectedGroups: selGroups,
+            });
+        } else {
+            let prevName = this.state.selectedHostDivId;
+            let prevSelElement = document.getElementById(prevName);
+            let selIndex = parseInt(prevSelElement.getAttribute("pbindex"));
+            let bgColor = "background-color:" + ((selIndex % 2) ? 'rgb(255,255,255)': 'rgb(227,227,227)');
+            prevSelElement.setAttribute("style", bgColor);
+            if (this.state.selectedHost.hName === hostName) {   // Same host selected as prev.. Or de-selected
+                this.setState({
+                    selectedHost: "",
+                    selectedHostDivId: "",
+                    active: false,
+                    selectedGroups: "",
+                });
+            } else {
+                selElement.setAttribute("style", "background-color:rgb(189,189,189)");
+                this.setState({
+                    selectedHost: host,
+                    selectedHostDivId: selElement.id,
+                    active: true, 
+                    selectedGroups: selGroups,
+                });
+            }
         }
-
-        for(let i=0;i<cardDiv.length;i++){
-            cardDiv[i].style.background="white";
-        }
-
-        switch(event.target.getAttribute('class')){
-            case 'card-body' : 
-                event.target.style.background="rgb(204,204,204)";
-                break;
-            case 'row' : 
-                event.target.style.background="rgb(204,204,204)";
-                break;
-            case 'col col-md-11' : 
-                cardDiv=event.target.parentNode.parentNode.style.background="rgb(204,204,204)";
-                break;
-            default : 
-                event.target.parentNode.parentNode.parentNode.style.background="rgb(204,204,204)";
-        }
-
     }
 
     addHost() {
@@ -162,7 +148,6 @@ class InventoryComponent extends Component {
             selectedHost: selHost,
         });
         //MN::TODO:: Need to update Server with new values.
-        console.log(selHost.variables);
     }
 
     renderHosts() {
@@ -172,9 +157,9 @@ class InventoryComponent extends Component {
             let host = this.state.hosts[hostName];
             let hostId = hostName.trim() + "_" + host.IPAddress.trim();
             if (host.type > 0) { //Host.OTHER
-                //let bgColor = index % 2 ? 'rgb(237,237,237)' : '';
+                let bgColor = index % 2 ? 'rgb(255,255,255)': 'rgb(227,227,227)';
                 retHTML.push(
-                    <CardBody id={hostId} key={hostId} style={{ height: '50px' }} onClick={(event) => this.showDetails(event,hostName)}>
+                    <CardBody pbindex={index} id={hostId} key={hostId} style={{ height: '50px', background:bgColor}} onClick={(event) => this.showDetails(event,hostName)}>
                         <Row>
                             <Col md="11">
                                 <div><strong>{hostName}</strong> : {host.IPAddress}</div>
