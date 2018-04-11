@@ -309,12 +309,35 @@ export class Host {
         this.variables.push(ansiVar);
     }
     
+    generateHostDictionary(variables, groups) {
+        //{"sr4": { "vars": { "ansible_host_1": "168.53.142", "inv_port": "eth-14-1", "main_intf_3": "enp130s0", "ssl_engine": "nginx" }, "groups": {"servers":{}}}}
+        let varsDict = {};
+        varsDict[Host.IPAddressId] = this.IPAddress;
+        varsDict[Host.InvaderPort] = this.invaderPort;
+        for (let index in variables) {
+            let aVar = variables[index];
+            varsDict[aVar.key] = aVar.value;
+        }
+        
+        let groupsDict = {};
+        for (let groupId in groups) {
+            let grpName = groups[groupId];
+            groupsDict[grpName] = {};
+        }
+        
+        let hostDict = {"vars": varsDict, "groups":groupsDict};
+        let retDict = {};
+        retDict[this.hName] = hostDict;
+        return retDict;
+    }
+    
     setupVariable(variableDict) {
+        this.variables = [];
         for (let key in variableDict) {
             let val = variableDict[key];
-            if (key === "ansible_host")
+            if (key === Host.IPAddressId)
                 this.IPAddress = val;
-            else if (key === "inv_port")
+            else if (key === Host.InvaderPort)
                 this.invaderPort = val;
             else
                 this.addVariable(key, val);
@@ -326,6 +349,9 @@ Host.KEY = "host";
 Host.OTHER = 0;
 Host.INVADER = 1;
 Host.SERVER = 5;
+Host.IPAddressId = "ansible_host";
+Host.InvaderPort = "inv_port";
+
 
 
 
@@ -343,6 +369,7 @@ export class Group {
     }
 
     setupVariable(variableDict) {
+        this.variables = [];
         for (let key in variableDict) {
             let val = variableDict[key];
             this.addVariable(key, val);
@@ -390,12 +417,36 @@ export class ServerAPI {
         return grp.hosts;
     }
     
-    updateHostVariables(host, variables) {
-        //TODO:: Update server here.. ON successful, return update HOst/Variables
-    }
-    
-    updateHostGroups(host, groups) {
-        // TODO:: Update Server here.. On successful return, update Groups/Hosts
+    updateHostVariables(host, variables, groups) {
+        console.log("Host to update :: " + host.hName);
+        console.log("Variable to update :: " + variables);
+        let xhr = new XMLHttpRequest();
+        let sourceURL = this.DefaultInvader() + "/config/host/" + host.hName;
+        xhr.open("POST", sourceURL, true);
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                try {
+                    console.log("HOst update successful..");
+                } catch (err) {
+                    console.log("POST :: ERROR :: " + err);
+                }
+            }
+        };
+        xhr.onerror = function () {
+            console.log("POST :: Error :: ");
+        };
+        let requstJson = JSON.stringify(host.generateHostDictionary(variables, groups));
+        console.log("HOST UPdated :: " + requstJson);
+        // MN:: TODO:: FIXED ISSUE WITH SERVER.. NOT QUITE SURE WHY SERVER FAILS...
+        //xhr.send(requstJson);
+        for (let grpId in groups) {
+            let grpName = groups[grpId];
+            let grp = this.allGroups[grpName];
+            if (! host.hName in grp.hosts) {
+                grp.hosts.push(host.hName);
+            }
+        }
     }
     
     setupInventory(callback, instance) {

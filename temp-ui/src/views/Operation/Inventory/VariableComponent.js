@@ -47,7 +47,7 @@ class VariableComponent extends Component {
         let header = "";
         if (nextProps.playbookVariables !== undefined) {
             ansiVarArr = nextProps.playbookVariables;
-            header = "Playlist";
+            header = "Playbook";
         } else if (nextProps.hostVariables !== undefined) {
             header = "Host"
             ansiVarArr = nextProps.hostVariables;
@@ -187,7 +187,7 @@ class VariableComponent extends Component {
                 <div className="animated fadeIn">
                     <Card>
                         <CardHeader id="    ">
-                            <strong>Variables</strong>
+                            <strong className="fontBig">Variables</strong>
                         </CardHeader>
                         <div style={{height:"350px",marginBottom:"20px", overflowY:'scroll'}}>
                             {this.renderVariables()}

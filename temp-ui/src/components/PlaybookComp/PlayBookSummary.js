@@ -27,58 +27,47 @@ import Styles from '../PlaybookComp/PlayBookSummary.css';
 import Variables from '../Variable/Variable';
 export default class PlayBookSummary extends Component {
 
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = { status: false};
     }
-
-    addEntry() {
-        alert("To Add");
+    
+    componentWillReceiveProps(nextVars) {
+        this.setState({
+            status: false,
+        });
     }
-
-    save() {
-        alert("Saved");
-    }
-
-    showVariables(id) {
-        $('#variable').modal('show');
-    }
-
-    renderData() {
-        let retHTML = [];
-        let index = 0;
-        for (let idx in this.props.displayData) {
-            let key = this.props.displayData[idx].key;
-            let value = this.props.displayData[idx].value;
-
-            retHTML.push(
-                <Row>
-                    <Col xs="12" sm="6"> 
-                        <div className="Padding20"></div>
-                    </Col>
-                    <Col xs="12" sm="6">  
-                        <Row>
-                            <Col xs="12" sm="6" md="4"><div className="Padding11">{key}</div></Col>
-                            <Col xs="12" sm="6" md="4"><div className="Padding11">{value}</div></Col>
-                        </Row>
-                    </Col>
-                </Row>
-          // <CardBody id={playbookId} style={{height:'50px', background:bgColor}} onClick={() => this.showVariables(playbookIndex)}>
-          //   <strong>{playbookName}</strong>
-          // </CardBody>
-            );
-        }
-        return retHTML;
-    }
-
+    
     changeState() {
-
         this.setState({status : !this.state.status});
         console.log(this.state.status);
     }
 
     play() {
-        alert('Execute playbook...');
+        this.props.runVerifiedPlaybook();
+    }
+
+    renderVariables() {
+        let retHTML = [];
+        let index = 0;
+        for (let index in this.props.playBoookVariables) {
+            let keyId = "playbook_var_" + index;
+            retHTML.push(
+                    <Row key={keyId}>
+                        <Col xs="12" sm="6">  
+                            <Row>
+                                <Col xs="12" sm="6"> 
+                                    <div className="Padding20">{this.props.playBoookVariables[index].key}</div>
+                                </Col>
+                                <Col xs="12" sm="6"> 
+                                    <div className="Padding20">{this.props.playBoookVariables[index].value}</div>
+                                </Col>
+                            </Row> 
+                        </Col>
+                    </Row>
+            );
+        }
+        return retHTML;
     }
 
     render() {
@@ -87,20 +76,19 @@ export default class PlayBookSummary extends Component {
 
                 <Card>
                     <CardHeader>
-                        <strong>Selected Play Book Summary</strong>
+            <strong className="fontBig">Playbook (Run) Summary</strong>
                     </CardHeader>
                     <Row>
                         <Col xs="12" sm="6"> 
-                            <div className="Padding20">Playbook Name:</div>
-                        </Col>
-                        <Col xs="12" sm="6">
-                            <div className="Padding20"><strong><b>{this.props.playBookGist}</b></strong></div>
+                            <div className="Padding20">Selected Playbook : <strong>{this.props.selectedPlaybookName}</strong></div>
                         </Col>
                     </Row>
                     <Row>
                         <Col xs="12" sm="6"> 
-                            <div className="Padding20">Variables:</div>
+                            <div className="Padding20">Variables :</div>
                         </Col>
+                    </Row>
+                    <Row>
                         <Col xs="12" sm="6">  
                             <Row>
                                 <Col xs="12" sm="6"> 
@@ -112,13 +100,18 @@ export default class PlayBookSummary extends Component {
                             </Row> 
                         </Col>
                     </Row>
-                    {this.renderData()}
+                    {this.renderVariables()}
                     <Label className="switch switch-icon switch-secondary alignCenter">
-                        <Input type="checkbox" className="switch-input"  onClick={() => this.setState({status : !this.state.status})}/>
+                        <Input type="checkbox" checked={this.state.status} className="switch-input"  onClick={(event) => this.changeState(event)}/>
                         <span className="switch-label" data-on={'\uf087'} data-off={'\uf088'}></span>
                         <span className="switch-handle"></span>
                     </Label>
                     <Button disabled={this.state.status==false} className="alignCenter width25pc"onClick={() => this.play()} size="sm" color="secondary" ><b><strong>Play</strong></b></Button>
+                    <Row>
+                        <Col xs="12" sm="6"> 
+                            <div className="Padding20"></div>
+                        </Col>
+                    </Row>
                 </Card>
             </div>
         )

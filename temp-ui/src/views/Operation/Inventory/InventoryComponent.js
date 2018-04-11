@@ -144,14 +144,14 @@ class InventoryComponent extends Component {
         this.state.selectedHost.variables = variables;
 
         let server = ServerAPI.DefaultServer();
-        server.updateHostVariables(this.state.selectedHost, variables);
+        server.updateHostVariables(this.state.selectedHost, variables, this.state.selectedGroups);
     }
     
     handleSelectedGroups(groups) {
         this.state.selectedGroups = groups;
         
         let server = ServerAPI.DefaultServer();
-        server.updateHostGroups(this.state.selectedHost, this.state.selectedGroups);
+        server.updateHostGroups(this.state.selectedHost, this.state.selectedHost.variables, groups);
     }
 
     renderHosts() {
@@ -195,7 +195,7 @@ class InventoryComponent extends Component {
                     <Col xs="12" sm="6">
                         <Card>
                             <CardHeader>
-                                <strong>Hosts</strong>
+                                <strong className="fontBig">Hosts</strong>
                                 <div  className="floatRight" onClick={() => this.addHost()} ><strong>+</strong></div>
                             </CardHeader>
                             <div style={{ height: '300px', overflowY: 'scroll', cursor:'pointer' }}>

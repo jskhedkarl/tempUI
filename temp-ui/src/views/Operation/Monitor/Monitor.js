@@ -317,7 +317,7 @@ class Monitor extends React.Component {
             <div>
                 <Row>
                     <Col xs={12}>
-                        <h3>Service</h3>
+                        <strong className="fontBig">Service</strong>
                     </Col>
                 </Row>
                 <Grid>

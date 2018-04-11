@@ -8,11 +8,6 @@ import Styles from './PlayBookSummary.css';
 import { ServerAPI, AnsibleVariable } from '../../ServerAPI';
 
 
-/*const listPlaybook = {
-    'playbookName': [{'key': 'value'}]
-}*/
-const listPlaybook = {}
-
 class PlaybookComp extends Component {
 
     constructor(props) {
@@ -24,7 +19,6 @@ class PlaybookComp extends Component {
             playbooks : [], //new ServiceManager().fetchAllPlaybookNames(), 
             selectedPlaybookIndex: -1,
             data: ansiVars,
-            listPlaybook : listPlaybook,
         }
     }
     
@@ -33,14 +27,6 @@ class PlaybookComp extends Component {
         server.fetchAllPlaybookNames(this.playbooksStateUpdated, this);
     }
 
-    addEntry() {
-        alert("To Add");
-    }
-
-    save() {
-        alert("Saved");
-    }
-    
     playbooksStateUpdated(instance, playbooksObj) {
         instance.setState({
             playbooks: playbooksObj,
@@ -78,6 +64,13 @@ class PlaybookComp extends Component {
     }
     
     handleSetVariables(variables) {
+        this.setState({
+            data: variables,
+        });
+    }
+    
+    verifiedCurrentSelection() {
+        alert("Playbook Verified Play()");
     }
     
 
@@ -98,16 +91,6 @@ class PlaybookComp extends Component {
         return retHTML;
     }
 
-/*
-                        {
-                          this.state.childVisible
-                            ? <Variables onChange={() => this.render} playBook={selectedPlaybook}
-                                         data={this.state.listPlaybook} 
-                              />
-                            : null
-                        }
-*/
-
     render() {
         let selectedIdx = this.state.selectedPlaybookIndex;
         let selectedPlaybook = selectedIdx > -1? this.state.playbooks[selectedIdx] : '';
@@ -126,20 +109,24 @@ class PlaybookComp extends Component {
                         </Card>
                     </Col>
                     <Col xs="12" sm="6">
-                    <VariableComponent 
+                        <VariableComponent 
                             active={this.state.childVisible}
                             playbookVariables = {this.state.data}
                             setVariables={(variables) => this.handleSetVariables(variables)}
-                    />
+                        />
                     </Col>
                 </Row>
                 <Row>
                     <Col >
-                      {
-                      this.state.childVisible
-                        ? <PlayBookSummary playBookGist={selectedPlaybook} displayData={listPlaybook[selectedPlaybook]}/>
-                        : null
-                    }
+                        {
+                            this.state.childVisible
+                            ?   <PlayBookSummary 
+                                    selectedPlaybookName={selectedPlaybook} 
+                                    playBoookVariables={this.state.data}
+                                    runVerifiedPlaybook={() => this.verifiedCurrentSelection()}
+                                />
+                            : null
+                        }
                     </Col>
                 </Row>
             </div>
