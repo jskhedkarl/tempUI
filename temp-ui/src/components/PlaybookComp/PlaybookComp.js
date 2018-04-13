@@ -19,7 +19,8 @@ class PlaybookComp extends Component {
             playbooks : [], //new ServiceManager().fetchAllPlaybookNames(), 
             selectedPlaybookIndex: -1,
             data: ansiVars,
-        }
+            playbookRunTransaction: undefined,
+        };
     }
     
     componentDidMount() {
@@ -69,8 +70,27 @@ class PlaybookComp extends Component {
         });
     }
     
-    verifiedCurrentSelection() {
-        alert("Playbook Verified Play()");
+    playVerifiedCurrentSelection() {
+        if (this.state.selectedPlaybookIndex >= 0) {
+            let playbookName = this.state.playbooks[this.state.selectedPlaybookIndex];
+            let args = this.state.data;
+            let server = ServerAPI.DefaultServer();
+            server.runAnsiblePlaybook(playbookName, args, this.playSelectedPlaybookStateUpdated, this);
+        }
+    }
+    
+    queryTransactionStatus(instance) {
+        let server = ServerAPI.DefaultServer();
+        server.runAnsibleTransactionStatus(instance.state.playbookRunTransaction, instance.playSelectedPlaybookStateUpdated, instance);
+    }
+    
+    playSelectedPlaybookStateUpdated(instance, transactionObj) {
+        instance.setState({
+            playbookRunTransaction: transactionObj,
+        });
+        if (transactionObj.status > 0 && transactionObj.status < 10) { // UNCOMPLETED Transaction
+            setTimeout(instance.queryTransactionStatus, 1000, instance);
+        }
     }
     
 
@@ -123,7 +143,8 @@ class PlaybookComp extends Component {
                             ?   <PlayBookSummary 
                                     selectedPlaybookName={selectedPlaybook} 
                                     playBoookVariables={this.state.data}
-                                    runVerifiedPlaybook={() => this.verifiedCurrentSelection()}
+                                    runVerifiedPlaybook={() => this.playVerifiedCurrentSelection()}
+                                    playedTransactionId={this.state.playbookRunTransaction}
                                 />
                             : null
                         }

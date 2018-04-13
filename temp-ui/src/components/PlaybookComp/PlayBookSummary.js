@@ -69,6 +69,57 @@ export default class PlayBookSummary extends Component {
         }
         return retHTML;
     }
+    
+    renderPlayButton() {
+        if (this.props.playedTransactionId === undefined) {
+            let retHTML = [];
+            retHTML.push(
+                <Label className="switch switch-icon switch-secondary alignCenter">
+                    <Input type="checkbox" checked={this.state.status} className="switch-input"  onClick={(event) => this.changeState(event)}></Input>
+                    <span className="switch-label" data-on={'\uf087'} data-off={'\uf088'}></span>
+                    <span className="switch-handle"></span>
+                </Label>
+            );
+            retHTML.push(
+                <Button disabled={this.state.status==false} className="alignCenter width25pc" onClick={() => this.play()} size="sm" color="secondary">
+                    <strong>Play</strong>
+                </Button>
+            );
+            return (retHTML);
+        }
+        return(null);
+    }
+    
+    renderPlayedTransaction() {
+        if (this.props.playedTransactionId !== undefined) {
+            let retHTML = [];
+            let message = this.props.playedTransactionId.message;
+            let errMessage = this.props.playedTransactionId.errMessage;
+            retHTML.push(
+                <Row>
+                    <Col xs="12" sm="6"> 
+                        <div className="Padding20">Playback Results</div>
+                    </Col>
+                </Row>
+            );
+            retHTML.push(
+                <Row>
+                    <Col xs="12" sm="6"> 
+                        <div className="Padding20">{message}</div>
+                    </Col>
+                </Row>
+            );
+            retHTML.push(
+                <Row>
+                    <Col xs="12" sm="6"> 
+                        <div className="Padding20">{errMessage}</div>
+                    </Col>
+                </Row>
+            );
+            return retHTML;
+        }
+        return(null);
+    }
 
     render() {
         return (
@@ -101,12 +152,8 @@ export default class PlayBookSummary extends Component {
                         </Col>
                     </Row>
                     {this.renderVariables()}
-                    <Label className="switch switch-icon switch-secondary alignCenter">
-                        <Input type="checkbox" checked={this.state.status} className="switch-input"  onClick={(event) => this.changeState(event)}/>
-                        <span className="switch-label" data-on={'\uf087'} data-off={'\uf088'}></span>
-                        <span className="switch-handle"></span>
-                    </Label>
-                    <Button disabled={this.state.status==false} className="alignCenter width25pc"onClick={() => this.play()} size="sm" color="secondary" ><b><strong>Play</strong></b></Button>
+                    {this.renderPlayButton()}
+                    {this.renderPlayedTransaction()}
                     <Row>
                         <Col xs="12" sm="6"> 
                             <div className="Padding20"></div>

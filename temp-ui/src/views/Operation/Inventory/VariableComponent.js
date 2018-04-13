@@ -37,6 +37,7 @@ class VariableComponent extends Component {
             pairs: [{name: ''}],
             ansibleVariables: [],
             ansibleVariableHeader: "",
+            componentHeader: "Variables",
         };
         this.onKeyChanged = this.onKeyChanged.bind(this);
         this.onValueChanged = this.onValueChanged.bind(this);
@@ -45,9 +46,11 @@ class VariableComponent extends Component {
     componentWillReceiveProps(nextProps) {
         let ansiVarArr = [];
         let header = "";
+        let compHeader = "Variables"
         if (nextProps.playbookVariables !== undefined) {
             ansiVarArr = nextProps.playbookVariables;
             header = "Playbook";
+            compHeader = "Run Arguments"
         } else if (nextProps.hostVariables !== undefined) {
             header = "Host"
             ansiVarArr = nextProps.hostVariables;
@@ -55,6 +58,7 @@ class VariableComponent extends Component {
         this.setState({
             ansibleVariables: ansiVarArr,
             ansibleVariableHeader: header,
+            componentHeader: compHeader,
         });
     }
 
@@ -187,7 +191,7 @@ class VariableComponent extends Component {
                 <div className="animated fadeIn">
                     <Card>
                         <CardHeader id="    ">
-                            <strong className="fontBig">Variables</strong>
+                            <strong className="fontBig">{this.state.componentHeader}</strong>
                         </CardHeader>
                         <div style={{height:"350px",marginBottom:"20px", overflowY:'scroll'}}>
                             {this.renderVariables()}

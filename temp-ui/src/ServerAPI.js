@@ -389,6 +389,37 @@ function simulateAllStats() {
 }
 
 
+export class ServerTransaction {
+    constructor(tranId, tranStatus) {
+        this.Id = tranId;
+        this.status = tranStatus;
+        this.percentComplete = 0;
+        this.message = "";
+        this.errMessage = "";
+    }
+    
+    static TransactionWithJson(jsonObj) {
+        let tran = new ServerTransaction(jsonObj.id, jsonObj.status);
+        tran.percentComplete = jsonObj.percentcomplete;
+        tran.message = jsonObj.message;
+        tran.errMessage = jsonObj.errmessage;
+        return tran;
+    }
+    
+    statusStr() {
+        // 'started = 1', 'running = 5', 'completed = 10'
+        switch (this.status) {
+        case 1:
+            return "Created";
+        case 5:
+            return "Running";
+        case 10:
+            return "Completed";
+        }
+        return "err";
+    }
+}
+
 export class ServerAPI {
     constructor() {
         this.allGroups = new Object();
@@ -407,6 +438,7 @@ export class ServerAPI {
     fetchHosts() {
         return '{"hosts":["127.0.0.1","inv7","sr3","sr2"]}';
     }
+    
     allServerHostNames() {
         let grp = this.allGroups[Group.SERVER_KEY];
         return grp.hosts;
@@ -415,6 +447,59 @@ export class ServerAPI {
     allInvaderNames() {
         let grp = this.allGroups[Group.INVADER_KEY];
         return grp.hosts;
+    }
+    
+    runAnsibleTransactionStatus(transaction, callback, instance) {
+        if (transaction.status > 0) { // no err
+            let transactionId = transaction.Id;
+            let xhr = new XMLHttpRequest();
+            let sourceURL = this.DefaultInvader() + "/config/execplaybook/" + transactionId;
+            xhr.open("GET", sourceURL, true);
+            xhr.setRequestHeader("Content-type", "application/json");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    try {
+                        let jsonObj = JSON.parse(xhr.responseText);
+                        let tran = ServerTransaction.TransactionWithJson(jsonObj);
+                        callback(instance, tran);
+                    } catch (err) {
+                        let tran = new ServerTransaction("Errr", 0);
+                        callback(instance, tran);
+                    }
+                }
+            };
+            xhr.onerror = function () {
+                let tran = new ServerTransaction("Errr", 0);
+                callback(instance, tran);
+            };
+            xhr.send();
+        }
+    }
+    
+    runAnsiblePlaybook(playbook, args, callback, instance) {
+        let xhr = new XMLHttpRequest();
+        let sourceURL = this.DefaultInvader() + "/config/execplaybook";
+        xhr.open("POST", sourceURL, true);
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                try {
+                    let jsonObj = JSON.parse(xhr.responseText);
+                    let tran = ServerTransaction.TransactionWithJson(jsonObj);
+                    callback(instance, tran);
+                } catch (err) {
+                    let tran = new ServerTransaction("Errr", 0);
+                    callback(instance, tran);
+                }
+            }
+        };
+        xhr.onerror = function () {
+            let tran = new ServerTransaction("Errr", 0);
+            callback(instance, tran);
+        };
+        let playbookObj = {"playbook":playbook, "arguments":args};
+        let requstJson = JSON.stringify(playbookObj);
+        xhr.send(requstJson);
     }
     
     updateHostVariables(host, variables, groups) {
