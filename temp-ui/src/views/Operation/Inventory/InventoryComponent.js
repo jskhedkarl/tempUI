@@ -151,7 +151,8 @@ class InventoryComponent extends Component {
         this.state.selectedGroups = groups;
         
         let server = ServerAPI.DefaultServer();
-        server.updateHostGroups(this.state.selectedHost, this.state.selectedHost.variables, groups);
+        // TODO:: MN:: Need to add below call to ServerAPI
+        //server.updateHostGroups(this.state.selectedHost, this.state.selectedHost.variables, groups);
     }
 
     renderHosts() {
@@ -215,6 +216,7 @@ class InventoryComponent extends Component {
                         <GroupComponent 
                             active={this.state.active}
                             host={this.state.selectedHost}
+                            parentId={this.state.selectedHost.hName}
                             groups={this.state.groups}
                             selectedGroups={this.state.selectedGroups}
                             setSelectedGroups={(groups) => this.handleSelectedGroups(groups)}

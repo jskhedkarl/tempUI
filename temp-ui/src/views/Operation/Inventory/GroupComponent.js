@@ -28,9 +28,15 @@ export default class GroupComponent extends Component {
     constructor(props) {
         super(props);
         //let sGrps = this.generateSelectedGroups();
-        //this.state = {
-        //    selectedGroups: sGrps,
-        //};
+        this.state = {
+            stateChanged: false,
+        };
+    }
+    
+    componentWillReceiveProps(nextProps) {
+        this.setState({
+            stateChanged: !this.state.stateChanged,
+        });
     }
 
     //generateSelectedGroups() {
@@ -51,29 +57,35 @@ export default class GroupComponent extends Component {
     //    return selectedGroups;
     //}
 
-    groupSelected(event, gName) {
+    groupSelected(event, gName, gIndex) {
         let currentTarget=event.target.parentNode.parentNode;
-
-        currentTarget.style.background=(currentTarget.getAttribute("class")=='card') ? "white" : "rgb(204,204,204)";
-
-        let selGrps = this.props.selectedGroups;
-        if (selGrps.includes(gName)) {
-          if(currentTarget.getAttribute("class")!='card'){
-            currentTarget.style.background="white";
-            selGrps.splice(selGrps.indexOf(gName),1);
-          }
+        let selectedGroups = this.props.selectedGroups;
+        let bgColor = 'rgb(189,189,189)';
+        if (selectedGroups.includes(gName)) {
+            // remove it
+            selectedGroups.pop(gName);
+            //delete(selectedGroups, gName);
+            bgColor = gIndex % 2 ? 'rgb(255,255,255)': 'rgb(227,227,227)'; 
         } else {
-            if(currentTarget.getAttribute("class")!='card'){
-              currentTarget.style.background="rgb(204,204,204)";
-              selGrps.unshift(gName);
-            }
+            // add to group
+            selectedGroups.push(gName);
         }
+        currentTarget.style.background=bgColor;
 
-        this.props.setSelectedGroups(selGrps);
-        //MN:: TODO Update Server call goes here... Async call is good enough
-        //this.setState({
-        //    selectedGroups: selGrps,
-        //});
+        //let selGrps = this.props.selectedGroups;
+        //if (selGrps.includes(gName)) {
+        //  if(currentTarget.getAttribute("class")!='card'){
+        //    currentTarget.style.background="white";
+        //    selGrps.splice(selGrps.indexOf(gName),1);
+        //  }
+        //} else {
+        //    if(currentTarget.getAttribute("class")!='card'){
+        //      currentTarget.style.background="rgb(204,204,204)";
+        //      selGrps.unshift(gName);
+        //    }
+        //}
+
+        this.props.setSelectedGroups(selectedGroups);
     }
 
     renderGroups() {
@@ -82,21 +94,28 @@ export default class GroupComponent extends Component {
         if (this.props.groups === undefined) {
             return [];
         }
-
+        let index = 0;
         for (let gName in this.props.groups) {
             let grp = this.props.groups[gName];
             if (grp.gType == 0) {
                 continue;
             }
             let selected = this.props.selectedGroups.includes(gName);
-            let style = selected ? {backgroud: 'rgb(120,120,120)'} : {};
+            let bgColor = 'rgb(189,189,189)';
+            if (!selected) {
+                bgColor = index % 2 ? 'rgb(255,255,255)': 'rgb(227,227,227)'; 
+            }
+            let styleDict = {height: '50px', background: bgColor};
+            let keyId = this.props.parentId + "_" + gName;
+            //let style = selected ? {backgroud: 'rgb(120,120,120)'} : {};
             retHTML.push(
-                <CardBody id={gName} key={gName} style={{height: '50px'}} onClick={(event) => this.groupSelected(event,gName)}>
-                    <Row style={style}>
+                <CardBody id={keyId} key={keyId} style={styleDict} onClick={(event) => this.groupSelected(event,gName,index)}>
+                    <Row>
                         <Col>{gName}</Col>
                     </Row>
                 </CardBody>
             );
+            index++;
         }
         return retHTML;
     }
