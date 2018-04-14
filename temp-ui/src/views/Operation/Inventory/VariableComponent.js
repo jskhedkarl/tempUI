@@ -23,7 +23,7 @@ import {
     InputGroupText,
     Table
 } from 'reactstrap';
-import Styles from './Inventory.css';
+import Styles from './VariableComponent.css';
 import {AnsibleVariable} from '../../../ServerAPI';
 
 var total = 1;
@@ -84,31 +84,25 @@ class VariableComponent extends Component {
     
     onKeyChanged(event, index, origKey) {
         let newKey = event.target.value;
-        console.log("Key Changed :: " + index + "  :: orginal key = " + origKey + "  :: new key = " + newKey);
         this.state.ansibleVariables[index].key = newKey;
         let bVar = this.state.ansibleVariables[index];
-        console.log("Ansible Variable chnaged: " + bVar.key + ", " + bVar.value);
         this.props.setVariables(this.state.ansibleVariables);
     }
     
     onValueChanged(event, index, origValue) {
         let newValue = event.target.value;
-        console.log("Key Changed :: " + index + "  :: orginal Value = " + origValue + "  :: new Value = " + newValue);
         this.state.ansibleVariables[index].value = newValue;
         let bVar = this.state.ansibleVariables[index];
-        console.log("Ansible Variable chnaged: " + bVar.key + ", " + bVar.value);
         this.props.setVariables(this.state.ansibleVariables);
     }
     
     onKeyFocused(event, keyId) {
-        console.log("Key Focused :: " + keyId);
         console.log("Key Focused :: Event :: " + event);
     }
     
     renderVariables() {
         //onFocus={(e) => this.onKeyFocused(e, key)
         let retHTML = [];
-        console.log(this.props.hostVariables);
         retHTML.push(
             <CardHeader id="variables_host" key="variables_host">
                 <strong>{this.state.ansibleVariableHeader}</strong>
@@ -116,7 +110,8 @@ class VariableComponent extends Component {
             </CardHeader>);
         for (let index in this.state.ansibleVariables) {
             let key = this.state.ansibleVariables[index].key
-            let varId = "host_var_"+index;
+            let parentId = this.props.parentId !== undefined? this.props.parentId: 0;
+            let varId = "host_var_" + parentId + "_" + index;
             let styleHeight = "50px";
             retHTML.push(
                 <CardBody id={varId} key={varId} >
@@ -127,11 +122,6 @@ class VariableComponent extends Component {
                     </Row>
                 </CardBody>
             );
-            /*
-                        <Col md="2" onClick={() => this.removeVariable(index)}>
-                            <div size="md">-</div>
-                        </Col>
-            */
         }
         return retHTML;
     }
@@ -177,14 +167,7 @@ class VariableComponent extends Component {
         }
         return retHTML;
     }
-    
-    /*
-                            //{
-                            //    (this.props.groupVariables !== undefined)?
-                            //    this.renderGroupVariables() :
-                            //    null
-                            //}
-    */
+
     render() {
         if(this.props.active) {
             return (

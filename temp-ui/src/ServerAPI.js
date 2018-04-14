@@ -428,7 +428,8 @@ export class ServerAPI {
     }
     
     DefaultInvader() {
-        return "http://192.168.101.122:8080";
+        //return "http://192.168.101.122:8080";
+        return "http://192.168.53.130:8081";
     }
     
     static DefaultServer() {

@@ -1,10 +1,8 @@
 import React, {Component} from 'react';
 import {Card, CardBody, CardHeader, Col, Row} from 'reactstrap';
-//import Variables from '../Variable/Variable';
 import VariableComponent from '../../views/Operation/Inventory/VariableComponent';
 import PlayBookSummary from './PlayBookSummary';
 import Styles from './PlayBookSummary.css';
-//import ServiceManager from "../../services/serviceManager";
 import { ServerAPI, AnsibleVariable } from '../../ServerAPI';
 
 
@@ -18,7 +16,7 @@ class PlaybookComp extends Component {
             childVisible: false, 
             playbooks : [], //new ServiceManager().fetchAllPlaybookNames(), 
             selectedPlaybookIndex: -1,
-            data: ansiVars,
+            data: [],
             playbookRunTransaction: undefined,
         };
     }
@@ -65,15 +63,17 @@ class PlaybookComp extends Component {
     }
     
     handleSetVariables(variables) {
+        let currArgs = this.state.data;
+        currArgs[this.state.selectedPlaybookIndex] = variables;
         this.setState({
-            data: variables,
+            data: currArgs,
         });
     }
     
     playVerifiedCurrentSelection() {
         if (this.state.selectedPlaybookIndex >= 0) {
             let playbookName = this.state.playbooks[this.state.selectedPlaybookIndex];
-            let args = this.state.data;
+            let args = this.state.data[this.state.selectedPlaybookIndex];
             let server = ServerAPI.DefaultServer();
             server.runAnsiblePlaybook(playbookName, args, this.playSelectedPlaybookStateUpdated, this);
         }
@@ -114,7 +114,7 @@ class PlaybookComp extends Component {
     render() {
         let selectedIdx = this.state.selectedPlaybookIndex;
         let selectedPlaybook = selectedIdx > -1? this.state.playbooks[selectedIdx] : '';
-        
+        let selectedPlaybookArgs = this.state.data[selectedIdx] !== undefined? this.state.data[selectedIdx] : [];
         return (
             <div className="animated fadeIn">
                 <Row>
@@ -131,7 +131,8 @@ class PlaybookComp extends Component {
                     <Col xs="12" sm="6">
                         <VariableComponent 
                             active={this.state.childVisible}
-                            playbookVariables = {this.state.data}
+                            playbookVariables = {selectedPlaybookArgs}
+                            parentId = {selectedIdx}
                             setVariables={(variables) => this.handleSetVariables(variables)}
                         />
                     </Col>
@@ -142,7 +143,7 @@ class PlaybookComp extends Component {
                             this.state.childVisible
                             ?   <PlayBookSummary 
                                     selectedPlaybookName={selectedPlaybook} 
-                                    playBoookVariables={this.state.data}
+                                    playBoookVariables={this.state.data[selectedIdx]}
                                     runVerifiedPlaybook={() => this.playVerifiedCurrentSelection()}
                                     playedTransactionId={this.state.playbookRunTransaction}
                                 />

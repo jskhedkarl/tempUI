@@ -207,6 +207,7 @@ class InventoryComponent extends Component {
                         <VariableComponent 
                             active={this.state.active} 
                             hostVariables={hostVariables} 
+                            parentId={this.state.selectedHost.hName}
                             groupVariables={groupVariables} 
                             systemVariables={systemVariables}
                             setVariables={(variables) => this.handleSetVariables(variables)}

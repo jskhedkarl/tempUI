@@ -24,7 +24,6 @@ import {
   Table
 } from 'reactstrap';
 import Styles from '../PlaybookComp/PlayBookSummary.css';
-import Variables from '../Variable/Variable';
 export default class PlayBookSummary extends Component {
 
     constructor(props) {
@@ -50,10 +49,24 @@ export default class PlayBookSummary extends Component {
     renderVariables() {
         let retHTML = [];
         let index = 0;
+        retHTML.push(
+                    <Row key="playbook_var_header" style={{height:'40px'}}>
+                        <Col xs="12" sm="6">  
+                            <Row>
+                                <Col xs="12" sm="6"> 
+                                    <div className="Padding20"><strong>Key</strong></div>
+                                </Col>
+                                <Col xs="12" sm="6"> 
+                                    <div className="Padding20"><strong>Value</strong></div>
+                                </Col>
+                            </Row> 
+                        </Col>
+                    </Row>
+        );
         for (let index in this.props.playBoookVariables) {
             let keyId = "playbook_var_" + index;
             retHTML.push(
-                    <Row key={keyId}>
+                    <Row key={keyId}  style={{height:'40px'}}>
                         <Col xs="12" sm="6">  
                             <Row>
                                 <Col xs="12" sm="6"> 
@@ -127,33 +140,19 @@ export default class PlayBookSummary extends Component {
 
                 <Card>
                     <CardHeader>
-            <strong className="fontBig">Playbook (Run) Summary</strong>
+                        <strong className="fontBig">Playbook (Run) Summary</strong>
                     </CardHeader>
-                    <Row>
-                        <Col xs="12" sm="6"> 
-                            <div className="Padding20">Selected Playbook : <strong>{this.props.selectedPlaybookName}</strong></div>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col xs="12" sm="6"> 
-                            <div className="Padding20">Variables :</div>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col xs="12" sm="6">  
-                            <Row>
-                                <Col xs="12" sm="6"> 
-                                    <div className="Padding20">Key </div>
-                                </Col>
-                                <Col xs="12" sm="6"> 
-                                    <div className="Padding20">Value </div>
-                                </Col>
-                            </Row> 
-                        </Col>
-                    </Row>
-                    {this.renderVariables()}
+                    <CardBody key="Summary_Header">
+                        <div>Selected Playbook : <strong>{this.props.selectedPlaybookName}</strong></div>
+                    </CardBody>
+                    <CardBody key="Summary_Arguments">
+                        <div>Arguments :</div>
+                        {this.renderVariables()}
+                    </CardBody>
                     {this.renderPlayButton()}
-                    {this.renderPlayedTransaction()}
+                    <CardBody key="Summary_Results">
+                        {this.renderPlayedTransaction()}
+                    </CardBody>
                     <Row>
                         <Col xs="12" sm="6"> 
                             <div className="Padding20"></div>
