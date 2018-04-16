@@ -525,7 +525,7 @@ export class ServerAPI {
         let requstJson = JSON.stringify(host.generateHostDictionary(variables, groups));
         console.log("HOST UPdated :: " + requstJson);
         // MN:: TODO:: FIXED ISSUE WITH SERVER.. NOT QUITE SURE WHY SERVER FAILS...
-        //xhr.send(requstJson);
+        xhr.send(requstJson);
         for (let grpId in groups) {
             let grpName = groups[grpId];
             let grp = this.allGroups[grpName];

@@ -39,24 +39,6 @@ export default class GroupComponent extends Component {
         });
     }
 
-    //generateSelectedGroups() {
-    //    if (this.props.host === undefined ||
-    //        this.props.host === "")
-    //        return [];
-    //
-    //    let selectedGroups = [];
-    //    let hostName = this.props.host.hName;
-    //    if (hostName !== undefined) {
-    //        for (let groupName in this.props.groups) {
-    //            let group = this.props.groups[groupName];
-    //            if (group.hosts.includes(hostName)) {
-    //                selectedGroup.push(groupName);
-    //            }
-    //        }
-    //    }
-    //    return selectedGroups;
-    //}
-
     groupSelected(event, gName, gIndex) {
         let currentTarget=event.target.parentNode.parentNode;
         let selectedGroups = this.props.selectedGroups;
@@ -64,27 +46,12 @@ export default class GroupComponent extends Component {
         if (selectedGroups.includes(gName)) {
             // remove it
             selectedGroups.pop(gName);
-            //delete(selectedGroups, gName);
             bgColor = gIndex % 2 ? 'rgb(255,255,255)': 'rgb(227,227,227)'; 
         } else {
             // add to group
             selectedGroups.push(gName);
         }
         currentTarget.style.background=bgColor;
-
-        //let selGrps = this.props.selectedGroups;
-        //if (selGrps.includes(gName)) {
-        //  if(currentTarget.getAttribute("class")!='card'){
-        //    currentTarget.style.background="white";
-        //    selGrps.splice(selGrps.indexOf(gName),1);
-        //  }
-        //} else {
-        //    if(currentTarget.getAttribute("class")!='card'){
-        //      currentTarget.style.background="rgb(204,204,204)";
-        //      selGrps.unshift(gName);
-        //    }
-        //}
-
         this.props.setSelectedGroups(selectedGroups);
     }
 
@@ -107,7 +74,6 @@ export default class GroupComponent extends Component {
             }
             let styleDict = {height: '50px', background: bgColor};
             let keyId = this.props.parentId + "_" + gName;
-            //let style = selected ? {backgroud: 'rgb(120,120,120)'} : {};
             retHTML.push(
                 <CardBody id={keyId} key={keyId} style={styleDict} onClick={(event) => this.groupSelected(event,gName,index)}>
                     <Row>

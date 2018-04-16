@@ -38,6 +38,7 @@ class VariableComponent extends Component {
             ansibleVariables: [],
             ansibleVariableHeader: "",
             componentHeader: "Variables",
+            varGrpStateChanged: false,
         };
         this.onKeyChanged = this.onKeyChanged.bind(this);
         this.onValueChanged = this.onValueChanged.bind(this);
@@ -59,6 +60,7 @@ class VariableComponent extends Component {
             ansibleVariables: ansiVarArr,
             ansibleVariableHeader: header,
             componentHeader: compHeader,
+            varGrpStateChanged: false,
         });
     }
 
@@ -67,6 +69,9 @@ class VariableComponent extends Component {
     
     componentWillUnmount() {
         // Save here..
+        if (this.state.varGrpStateChanged) {
+            this.props.setVariables(this.state.ansibleVariables);
+        }
     }
     
     addVariable() {
@@ -83,17 +88,24 @@ class VariableComponent extends Component {
     }
     
     onKeyChanged(event, index, origKey) {
+        this.state.varGrpStateChanged = true;
         let newKey = event.target.value;
         this.state.ansibleVariables[index].key = newKey;
         let bVar = this.state.ansibleVariables[index];
-        this.props.setVariables(this.state.ansibleVariables);
+        if (this.state.ansibleVariables[index].value.length > 0) {
+            // make sure Value for same variable is already set before updating the server.
+            this.props.setVariables(this.state.ansibleVariables);
+        }
     }
     
     onValueChanged(event, index, origValue) {
+        this.state.varGrpStateChanged = true;
         let newValue = event.target.value;
         this.state.ansibleVariables[index].value = newValue;
         let bVar = this.state.ansibleVariables[index];
-        this.props.setVariables(this.state.ansibleVariables);
+        if (this.state.ansibleVariables[index].key.length > 0) {
+            this.props.setVariables(this.state.ansibleVariables);
+        }
     }
     
     onKeyFocused(event, keyId) {
@@ -114,7 +126,7 @@ class VariableComponent extends Component {
             let varId = "host_var_" + parentId + "_" + index;
             let styleHeight = "50px";
             retHTML.push(
-                <CardBody id={varId} key={varId} >
+                <CardBody id={varId} key={varId} className="card-body-var">
                     <Row>
                         <Col md="5"><Input type="text" placeholder="New Key" required defaultValue={this.state.ansibleVariables[index].key} onChange={(event) => this.onKeyChanged(event, index, this.state.ansibleVariables[index].key)} /></Col>
                         <Col md="1"><strong style={{textAlign:"center"}}>:</strong></Col>
@@ -135,7 +147,7 @@ class VariableComponent extends Component {
         for (let index in this.props.systemVariables) {
             let varId = "system_all_"+index;
             retHTML.push(
-                <CardBody id={varId} key={varId} style={{height:'35px'}}>
+                <CardBody id={varId} key={varId} className="card-body-var-sys">
                     <Row>
                         <Col md="5">{this.props.systemVariables[index].key}</Col>
                         <Col md="1"><strong style={{textAlign:"center"}}>:</strong></Col>

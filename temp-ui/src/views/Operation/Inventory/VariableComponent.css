@@ -21,3 +21,15 @@
     padding-top: 10px;
     padding-bottom: 10px;
 }
+
+.card-body-var {
+    padding-top: 2px;
+    padding-bottom: 3px;
+    height: 55px;
+}
+
+.card-body-var-sys {
+    padding-top: 2px;
+    padding-bottom: 3px;
+    height: 45px;
+}
