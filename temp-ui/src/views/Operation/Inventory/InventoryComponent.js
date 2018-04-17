@@ -40,7 +40,7 @@ class InventoryComponent extends Component {
             active: false,
             hosts: server.allHosts,
             groups: server.allGroups,
-            selectedGroups: [],
+            selectedGroups: {},
             selectedHost: "",
             selectedHostDivId: "",
             show: false,
@@ -77,15 +77,15 @@ class InventoryComponent extends Component {
     calculateSelectedGroups(host) {
         if (host === undefined ||
             host === "")
-            return [];
+            return {};
 
-        let selectedGroups = [];
+        let selectedGroups = {};
         let hostName = host.hName;
         if (hostName !== undefined) {
             for (let groupName in this.state.groups) {
                 let group = this.state.groups[groupName];
-                if (group.hosts.includes(hostName)) {
-                    selectedGroups.push(groupName);
+                if (hostName in group.hosts) {
+                    selectedGroups[groupName] = groupName;
                 }
             }
         }
@@ -115,7 +115,7 @@ class InventoryComponent extends Component {
                     selectedHost: "",
                     selectedHostDivId: "",
                     active: false,
-                    selectedGroups: "",
+                    selectedGroups: {},
                 });
             } else {
                 selElement.setAttribute("style", "background-color:rgb(189,189,189)");
@@ -144,15 +144,20 @@ class InventoryComponent extends Component {
         this.state.selectedHost.variables = variables;
 
         let server = ServerAPI.DefaultServer();
-        server.updateHostVariables(this.state.selectedHost, variables, this.state.selectedGroups);
+        server.updateHostVariables(this.updateHostEntries, this, this.state.selectedHost, variables, this.state.selectedGroups);
     }
     
     handleSelectedGroups(groups) {
         this.state.selectedGroups = groups;
         
         let server = ServerAPI.DefaultServer();
-        // TODO:: MN:: Need to add below call to ServerAPI
-        server.updateHostVariables(this.state.selectedHost, this.state.selectedHost.variables, groups);
+        server.updateHostVariables(this.updateHostEntries, this, this.state.selectedHost, this.state.selectedHost.variables, groups);
+    }
+    
+    updateHostEntries(instance, allGroups) {
+        instance.setState({
+            groups: allGroups,
+        });
     }
 
     renderHosts() {

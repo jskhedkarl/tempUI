@@ -277,6 +277,9 @@ export class Service {
 
 export class AnsibleVariable {
     constructor(key, value) {
+        if (parseInt(key) > 0) {
+            console.log("Ansible Variable now hitting Keys with numbers");
+        }
         this.key = key;
         this.value = value;
     }
@@ -348,7 +351,8 @@ export class Host {
 Host.KEY = "host";
 Host.OTHER = 0;
 Host.INVADER = 1;
-Host.SERVER = 5;
+Host.UNGROUPED = 5;
+Host.SERVER = 10;
 Host.IPAddressId = "ansible_host";
 Host.InvaderPort = "inv_port";
 
@@ -359,9 +363,10 @@ export class Group {
     constructor(gName, gType) {
         this.gName = gName;
         this.gType = gType;
-        this.hosts = [];
+        this.hosts = {};
         this.variables = [];
     }
+    
     
     addVariable(key, value) {
         let ansiVar = new AnsibleVariable(key, value);
@@ -380,6 +385,7 @@ export class Group {
 Group.KEY = "group";
 Group.INVADER_KEY = "clients";
 Group.SERVER_KEY = "servers";
+Group.UNGROUPED = "ungrouped";
 Group.VARIABLES = "vars";
 Group.SYSTEM_VARIABLES = "all";
 
@@ -503,17 +509,33 @@ export class ServerAPI {
         xhr.send(requstJson);
     }
     
-    updateHostVariables(host, variables, groups) {
-        console.log("Host to update :: " + host.hName);
-        console.log("Variable to update :: " + variables);
+    updateHostVariables(callback, instance, host, variables, groups) {
         let xhr = new XMLHttpRequest();
         let sourceURL = this.DefaultInvader() + "/config/host/" + host.hName;
+        let serverInstance = this;
         xhr.open("POST", sourceURL, true);
         xhr.setRequestHeader("Content-type", "application/json");
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4 && xhr.status === 200) {
                 try {
-                    console.log("HOst update successful..");
+                    let jsonObj = JSON.parse(xhr.responseText);
+                    if (host.hName in jsonObj) {
+                        let hostSuccess = jsonObj[host.hName];
+                        if (hostSuccess["success"]) {
+                            for (let grpId in serverInstance.allGroups) {
+                                let grp = serverInstance.allGroups[grpId];
+                                if (grpId in groups) {
+                                    if (! host.hName in grp.hosts) {
+                                        grp.hosts[host.hName] = host.hName;
+                                    }
+                                } else if (host.hName in grp.hosts) {
+                                    delete grp.hosts[host.hName]
+                                }
+                                serverInstance.allGroups[grpId] = grp;
+                            }
+                            callback(instance, serverInstance.allGroups);
+                        }
+                    }
                 } catch (err) {
                     console.log("POST :: ERROR :: " + err);
                 }
@@ -523,16 +545,8 @@ export class ServerAPI {
             console.log("POST :: Error :: ");
         };
         let requstJson = JSON.stringify(host.generateHostDictionary(variables, groups));
-        console.log("HOST UPdated :: " + requstJson);
-        // MN:: TODO:: FIXED ISSUE WITH SERVER.. NOT QUITE SURE WHY SERVER FAILS...
+        console.log("HOst update:: " + requstJson);
         xhr.send(requstJson);
-        for (let grpId in groups) {
-            let grpName = groups[grpId];
-            let grp = this.allGroups[grpName];
-            if (! host.hName in grp.hosts) {
-                grp.hosts.push(host.hName);
-            }
-        }
     }
     
     setupInventory(callback, instance) {
@@ -562,6 +576,8 @@ export class ServerAPI {
                             hostType = Host.INVADER;
                         else if (groupName === Group.SERVER_KEY)
                             hostType = Host.SERVER;
+                        else if (groupName === Group.UNGROUPED)
+                            hostType = Host.UNGROUPED;
 
                         let grp = new Group(groupName, hostType);
                         if (groupName === Group.SYSTEM_VARIABLES) {
@@ -586,7 +602,7 @@ export class ServerAPI {
                                         else
                                             console.log("ERROR :: Host :: " + hostName + " :: belongs to both 'Server' and 'Invader' Groups");
                                     }
-                                    grp.hosts.push(hostName);
+                                    grp.hosts[hostName] = hostName;
                                 }
                             }
                             let grpVars = groupDict[Group.VARIABLES];
