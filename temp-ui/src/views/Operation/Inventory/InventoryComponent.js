@@ -152,7 +152,7 @@ class InventoryComponent extends Component {
         
         let server = ServerAPI.DefaultServer();
         // TODO:: MN:: Need to add below call to ServerAPI
-        //server.updateHostGroups(this.state.selectedHost, this.state.selectedHost.variables, groups);
+        server.updateHostVariables(this.state.selectedHost, this.state.selectedHost.variables, groups);
     }
 
     renderHosts() {
