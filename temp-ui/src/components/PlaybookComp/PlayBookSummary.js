@@ -108,22 +108,25 @@ export default class PlayBookSummary extends Component {
             let retHTML = [];
             let message = this.props.playedTransactionId.message;
             let errMessage = this.props.playedTransactionId.errMessage;
+            let key = this.props.playedTransactionId.Id + "_header"
             retHTML.push(
-                <Row>
+                <Row key={key}>
                     <Col xs="12" sm="6"> 
                         <div className="Padding20">Playback Results</div>
                     </Col>
                 </Row>
             );
+            key = this.props.playedTransactionId.Id + "_message"
             retHTML.push(
-                <Row>
+                <Row key={key}>
                     <Col xs="12" sm="6"> 
                         <div className="Padding20">{message}</div>
                     </Col>
                 </Row>
             );
+            key = this.props.playedTransactionId.Id + "_err"
             retHTML.push(
-                <Row>
+                <Row key={key}>
                     <Col xs="12" sm="6"> 
                         <div className="Padding20">{errMessage}</div>
                     </Col>
