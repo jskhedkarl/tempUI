@@ -10,14 +10,13 @@ class PlaybookComp extends Component {
 
     constructor(props) {
         super(props);
-        let aVar = new AnsibleVariable("", "");
         let ansiVars = [];
         this.state = {
             childVisible: false, 
             playbooks : [], //new ServiceManager().fetchAllPlaybookNames(), 
             selectedPlaybookIndex: -1,
             data: [],
-            playbookRunTransaction: undefined,
+            playbookRunTransaction: [],
         };
     }
     
@@ -80,13 +79,16 @@ class PlaybookComp extends Component {
     }
     
     queryTransactionStatus(instance) {
+        let tran = instance.state.playbookRunTransaction[instance.state.selectedPlaybookIndex]
         let server = ServerAPI.DefaultServer();
-        server.runAnsibleTransactionStatus(instance.state.playbookRunTransaction, instance.playSelectedPlaybookStateUpdated, instance);
+        server.runAnsibleTransactionStatus(tran, instance.playSelectedPlaybookStateUpdated, instance);
     }
     
     playSelectedPlaybookStateUpdated(instance, transactionObj) {
+        let trans = instance.state.playbookRunTransaction
+        trans[instance.state.selectedPlaybookIndex] = transactionObj
         instance.setState({
-            playbookRunTransaction: transactionObj,
+            playbookRunTransaction: trans,
         });
         if (transactionObj.status > 0 && transactionObj.status < 10) { // UNCOMPLETED Transaction
             setTimeout(instance.queryTransactionStatus, 1000, instance);
@@ -115,6 +117,7 @@ class PlaybookComp extends Component {
         let selectedIdx = this.state.selectedPlaybookIndex;
         let selectedPlaybook = selectedIdx > -1? this.state.playbooks[selectedIdx] : '';
         let selectedPlaybookArgs = this.state.data[selectedIdx] !== undefined? this.state.data[selectedIdx] : [];
+        let transactionObj = this.state.playbookRunTransaction[selectedIdx]
         return (
             <div className="animated fadeIn">
                 <Row>
@@ -145,7 +148,7 @@ class PlaybookComp extends Component {
                                     selectedPlaybookName={selectedPlaybook} 
                                     playBoookVariables={this.state.data[selectedIdx]}
                                     runVerifiedPlaybook={() => this.playVerifiedCurrentSelection()}
-                                    playedTransactionId={this.state.playbookRunTransaction}
+                                    playedTransactionId={transactionObj}
                                 />
                             : null
                         }
