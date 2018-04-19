@@ -93,16 +93,24 @@ export default class PlayBookSummary extends Component {
                     <span className="switch-handle"></span>
                 </Label>
             );
-            retHTML.push(
-                <Button disabled={this.state.status==false} className="alignCenter width25pc" onClick={() => this.play()} size="sm" color="secondary">
-                    <strong>Play</strong>
-                </Button>
-            );
+            if (this.state.status == false) { // disabled
+                retHTML.push(
+                    <Button disabled outline color="primary" size="lg" onClick={() => this.play()}> Play </Button>
+                );
+            } else {
+                retHTML.push(
+                    <Button outline color="primary" size="lg" onClick={() => this.play()}> Play </Button>
+                );
+            }
             return (retHTML);
         }
         return(null);
     }
     
+    /*                <Button disabled={this.state.status==false} className="alignCenter width25pc" onClick={() => this.play()} size="sm" color="secondary">
+                    <strong>Play</strong>
+                </Button>
+*/
     renderPlayedTransaction() {
         if (this.props.playedTransactionId !== undefined) {
             let retHTML = [];
@@ -146,7 +154,7 @@ export default class PlayBookSummary extends Component {
                         <h2>Playbook (Run) Summary</h2>
                     </CardHeader>
                     <CardBody key="Summary_Header">
-                        <div><h4>Selected Playbook : <Badge>{this.props.selectedPlaybookName}</Badge></h4></div>
+                        <div><h4>Selected Playbook : <Badge pill>{this.props.selectedPlaybookName}</Badge></h4></div>
                     </CardBody>
                     <CardBody key="Summary_Arguments">
                         <div><h4>Arguments :</h4></div>
