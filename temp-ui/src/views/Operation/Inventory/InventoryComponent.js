@@ -22,6 +22,9 @@ import {
     InputGroupAddon,
     InputGroupText,
     Modal,
+    ModalHeader,
+    ModalBody,
+    ModalFooter,
     Table
 } from 'reactstrap';
 
@@ -38,32 +41,103 @@ class InventoryComponent extends Component {
         this.state = {
             childVisible: false,
             active: false,
-            hosts: server.allHosts,
-            groups: server.allGroups,
+            hosts: {},
+            groups: {},
             selectedGroups: {},
             selectedHost: "",
             selectedHostDivId: "",
             show: false,
             isOpen: false,
             hostName: "",
-            hostIP: ""
+            hostIP: "",
+            showAddHost: false,
+            createdHost: "",
+            createHostValidated: false,
         };
         this.handleToggleClick = this.handleToggleClick.bind(this);
+        this.toggleCreateHost = this.toggleCreateHost.bind(this);
+        this.createNewHost = this.createNewHost.bind(this);
+        this.onHostNameChange = this.onHostNameChange.bind(this);
+        this.onIPAddressChange = this.onIPAddressChange.bind(this);
+        this.inventoryCallback = this.inventoryCallback.bind(this);
+        this.updateHostEntries = this.updateHostEntries.bind(this);
     }
+    
+    componentDidMount() {
+        this.updateInventory();
+    }
+    
+    updateInventory() {
+        let server = ServerAPI.DefaultServer();
+        server.setupInventory(this.inventoryCallback, this);
+    }
+    
+    inventoryCallback(instance) {
+        let server = ServerAPI.DefaultServer();
+        instance.setState({
+            hosts : server.allHosts,
+            groups: server.allGroups,
+        });
+    }
+    
 
     handleToggleClick() {
         this.setState(prevState => ({
             showWarning: !prevState.active
         }));
     }
-
-
-    addEntry() {
-        alert("To Add");
+    
+    toggleCreateHost() {
+        let toggled = !this.state.showAddHost;
+        let host = "";
+        if (toggled) {
+            host = new Host("", ""); 
+        }
+        this.setState({
+            showAddHost: toggled,
+            createdHost: host,
+            createHostValidated: false,
+        })
     }
+    
+    createNewHost() {
+        let host = this.state.createdHost;
 
-    save() {
-        alert("Saved");
+        if (host.hName.length > 0 && host.IPAddress.length > 0) {
+            host.addVariable(Host.InvaderPort, "");
+            
+            let server = ServerAPI.DefaultServer();
+            let vars = host.variables;
+            server.updateHostVariables(this.updateHostEntries, this, host, vars, {});
+            this.toggleCreateHost();
+        }
+    }
+    
+    onHostNameChange(event) {
+        let valid = false;
+        let host = this.state.createdHost;
+        host.hName = event.target.value;
+
+        if (host.hName.length > 0 && host.IPAddress.length > 0) {
+            valid = true;
+        }
+        this.setState({
+            createHostValidated: valid,
+            createdHost: host,
+        });
+    }
+    
+    onIPAddressChange(event) {
+        let valid = false;
+        let host = this.state.createdHost;
+        host.IPAddress = event.target.value;
+        if (host.hName.length > 0 && host.IPAddress.length > 0) {
+            valid = true;
+        }
+        this.setState({
+            createHostValidated: valid,
+            createdHost: host,
+        });
     }
 
     showVariables(id) {
@@ -129,10 +203,6 @@ class InventoryComponent extends Component {
         }
     }
 
-    addHost() {
-        alert("Placeholder for addHost()");
-    }
-
     removeHost(event,hostName) {
         event.stopPropagation();
         alert("removed host : "+hostName);
@@ -155,9 +225,33 @@ class InventoryComponent extends Component {
     }
     
     updateHostEntries(instance, allGroups) {
-        instance.setState({
-            groups: allGroups,
-        });
+        instance.updateInventory();
+        //instance.setState({
+        //    groups: allGroups,
+        //});
+    }
+    
+    renderAddHostModel() {
+        console.log("Adding host model");
+        let className="Create_Host_Dialog";
+        return (
+            <Modal isOpen={this.state.showAddHost} size="sm" centered="true" className={className}>
+                <ModalHeader toggle={this.toggleCreateHost}>New Host</ModalHeader>
+                <ModalBody>
+                    <Row>
+                        <Col md="5"><Input type="text" style={{width:'250px'}} placeholder="Host Name" required defaultValue={this.state.createdHost.hName} onChange={(event) => this.onHostNameChange(event)}/></Col>
+                    </Row>
+                    <Row><Col mn="5" style={{height:'10px'}}></Col></Row>
+                    <Row>
+                        <Col md="5"><Input type="text" style={{width:'250px'}} placeholder="Host IP" required defaultValue={this.state.createdHost.IPAddress} onChange={(event) => this.onIPAddressChange(event)}/></Col>
+                    </Row>
+                </ModalBody>
+                <ModalFooter>
+                    <Button disabled={!this.state.createHostValidated} color="primary" onClick={this.createNewHost}>Create</Button>{' '}
+                    <Button color="secondary" onClick={this.toggleCreateHost}>Cancel</Button>
+                </ModalFooter>
+            </Modal>
+        );
     }
 
     renderHosts() {
@@ -197,12 +291,13 @@ class InventoryComponent extends Component {
         }
         return (
             <div className="animated fadeIn">
+                {this.renderAddHostModel()}
                 <Row>
                     <Col xs="12" sm="6">
                         <Card>
-                            <CardHeader>
+                            <CardHeader id="host_header" key="host_header">
                                 <strong className="fontBig">Hosts</strong>
-                                <div  className="floatRight" onClick={() => this.addHost()} ><strong>+</strong></div>
+                                <div className="floatRight" onClick={() => this.toggleCreateHost()} ><strong>+</strong></div>
                             </CardHeader>
                             <div style={{ height: '300px', overflowY: 'scroll', cursor:'pointer' }}>
                                 {this.renderHosts()}

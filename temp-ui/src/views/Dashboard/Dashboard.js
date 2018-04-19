@@ -13,15 +13,15 @@ class Dashboard extends Component {
     }
     
     componentDidMount() {
-        let server = ServerAPI.DefaultServer();
-        server.setupInventory(this.inventoryCallback, this);
+        //let server = ServerAPI.DefaultServer();
+        //server.setupInventory(this.inventoryCallback, this);
     }
     
     inventoryCallback(instance) {
-        console.log("DONE..");
-        instance.setState({
-            inventoryReady : true,
-        });
+        //console.log("DONE..");
+        //instance.setState({
+        //    inventoryReady : true,
+        //});
     }
     
     renderInventoryComplete() {
