@@ -48,36 +48,36 @@ export default class PlayBookSummary extends Component {
 
     renderVariables() {
         let retHTML = [];
-        let index = 0;
+        let varCount = (this.props.playBoookVariables !== undefined)?this.props.playBoookVariables.length : 0;
+        let ltKeyHeader = (varCount > 0)? "Key":"";
+        let ltValHeader = (varCount > 0)? "Value":"";
+        let rtKeyHeader = (varCount > 1)? "Key":"";
+        let rtValHeader = (varCount > 1)? "Value":"";
         retHTML.push(
-                    <Row key="playbook_var_header" style={{height:'40px'}}>
-                        <Col xs="12" sm="6">  
-                            <Row>
-                                <Col xs="12" sm="6"> 
-                                    <div className="Padding20"><strong>Key</strong></div>
-                                </Col>
-                                <Col xs="12" sm="6"> 
-                                    <div className="Padding20"><strong>Value</strong></div>
-                                </Col>
-                            </Row> 
-                        </Col>
-                    </Row>
+            <Row key="playbook_var_header">
+                <Col><strong>{ltKeyHeader}</strong></Col>
+                <Col><strong>{ltValHeader}</strong></Col>
+                <Col xs="1"></Col>
+                <Col><strong>{rtKeyHeader}</strong></Col>
+                <Col><strong>{rtValHeader}</strong></Col>
+            </Row>
         );
-        for (let index in this.props.playBoookVariables) {
+        for (let index = 0; index < varCount; index=index+2) {
+            let rtIndex = ((index + 1) >= varCount) ? -1 : index+1;
             let keyId = "playbook_var_" + index;
+            let ltKey = this.props.playBoookVariables[index].key;
+            let ltVal = this.props.playBoookVariables[index].value;
+            let rtKey = (rtIndex > 0)?this.props.playBoookVariables[rtIndex].key : "";
+            let rtVal = (rtIndex > 0)?this.props.playBoookVariables[rtIndex].value : "";
+            
             retHTML.push(
-                    <Row key={keyId}  style={{height:'40px'}}>
-                        <Col xs="12" sm="6">  
-                            <Row>
-                                <Col xs="12" sm="6"> 
-                                    <div className="Padding20">{this.props.playBoookVariables[index].key}</div>
-                                </Col>
-                                <Col xs="12" sm="6"> 
-                                    <div className="Padding20">{this.props.playBoookVariables[index].value}</div>
-                                </Col>
-                            </Row> 
-                        </Col>
-                    </Row>
+                <Row key={keyId}>
+                    <Col>{ltKey}</Col>
+                    <Col>{ltVal}</Col>
+                    <Col xs="1"></Col>
+                    <Col>{rtKey}</Col>
+                    <Col>{rtVal}</Col>
+                </Row>
             );
         }
         return retHTML;
@@ -112,7 +112,7 @@ export default class PlayBookSummary extends Component {
             retHTML.push(
                 <Row key={key}>
                     <Col xs="12" sm="6"> 
-                        <div className="Padding20">Playback Results</div>
+                        <div><h4>Playback Results :</h4></div>
                     </Col>
                 </Row>
             );
@@ -143,13 +143,13 @@ export default class PlayBookSummary extends Component {
 
                 <Card>
                     <CardHeader>
-                        <strong className="fontBig">Playbook (Run) Summary</strong>
+                        <h2>Playbook (Run) Summary</h2>
                     </CardHeader>
                     <CardBody key="Summary_Header">
-                        <div>Selected Playbook : <strong>{this.props.selectedPlaybookName}</strong></div>
+                        <div><h4>Selected Playbook : <Badge>{this.props.selectedPlaybookName}</Badge></h4></div>
                     </CardBody>
                     <CardBody key="Summary_Arguments">
-                        <div>Arguments :</div>
+                        <div><h4>Arguments :</h4></div>
                         {this.renderVariables()}
                     </CardBody>
                     {this.renderPlayButton()}

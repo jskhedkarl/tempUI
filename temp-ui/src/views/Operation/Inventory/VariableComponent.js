@@ -115,10 +115,12 @@ class VariableComponent extends Component {
     renderVariables() {
         //onFocus={(e) => this.onKeyFocused(e, key)
         let retHTML = [];
+        //                <div className="floatRight" onClick={() => this.addVariable()} ><strong>+</strong></div>
+
         retHTML.push(
             <CardHeader id="variables_host" key="variables_host">
                 <strong>{this.state.ansibleVariableHeader}</strong>
-                <div className="floatRight" onClick={() => this.addVariable()} ><strong>+</strong></div>
+            <Button className="floatRight" color="link" size="lg" onClick={() => this.addVariable()}> + </Button>
             </CardHeader>);
         for (let index in this.state.ansibleVariables) {
             let key = this.state.ansibleVariables[index].key
@@ -128,9 +130,9 @@ class VariableComponent extends Component {
             retHTML.push(
                 <CardBody id={varId} key={varId} className="card-body-var">
                     <Row>
-                        <Col md="5"><Input type="text" placeholder="New Key" required defaultValue={this.state.ansibleVariables[index].key} onChange={(event) => this.onKeyChanged(event, index, this.state.ansibleVariables[index].key)} /></Col>
+                        <Col md="5"><Input type="text" placeholder="Key" required defaultValue={this.state.ansibleVariables[index].key} onChange={(event) => this.onKeyChanged(event, index, this.state.ansibleVariables[index].key)} /></Col>
                         <Col md="1"><strong style={{textAlign:"center"}}>:</strong></Col>
-                        <Col md="5"><Input type="text" placeholder="New Value" required defaultValue={this.state.ansibleVariables[index].value} onChange={(event) => this.onValueChanged(event, index, this.state.ansibleVariables[index].value)}/></Col>
+                        <Col md="5"><Input type="text" placeholder="Value" required defaultValue={this.state.ansibleVariables[index].value} onChange={(event) => this.onValueChanged(event, index, this.state.ansibleVariables[index].value)}/></Col>
                     </Row>
                 </CardBody>
             );
@@ -140,6 +142,7 @@ class VariableComponent extends Component {
     
     renderSystemVariables() {
         let retHTML = [];
+        retHTML.push(<div style={{height:'20px'}}> </div>);
         retHTML.push(
             <CardHeader id="variables_system" key="variables_system">
                 <strong>System</strong>

@@ -247,12 +247,14 @@ class InventoryComponent extends Component {
                     </Row>
                 </ModalBody>
                 <ModalFooter>
-                    <Button disabled={!this.state.createHostValidated} color="primary" onClick={this.createNewHost}>Create</Button>{' '}
-                    <Button color="secondary" onClick={this.toggleCreateHost}>Cancel</Button>
+                    <Button outline disabled={!this.state.createHostValidated} color="primary" onClick={this.createNewHost}>Create</Button>{' '}
+                    <Button outline color="secondary" onClick={this.toggleCreateHost}>Cancel</Button>
                 </ModalFooter>
             </Modal>
         );
     }
+
+//                                <div style={{fontSize: '18px' }} onClick={(event) => this.removeHost(event,hostName)} >-</div>
 
     renderHosts() {
         let retHTML = [];
@@ -263,13 +265,19 @@ class InventoryComponent extends Component {
             if (host.type > 0) { //Host.OTHER
                 let bgColor = index % 2 ? 'rgb(255,255,255)': 'rgb(227,227,227)';
                 retHTML.push(
-                    <CardBody pbindex={index} id={hostId} key={hostId} style={{ height: '50px', background:bgColor}} onClick={(event) => this.showDetails(event,hostName)}>
+                    <CardBody pbindex={index} id={hostId} key={hostId} style={{ background:bgColor}} onClick={(event) => this.showDetails(event,hostName)}>
                         <Row>
                             <Col md="11">
-                                <div><strong>{hostName}</strong> : {host.IPAddress}</div>
+                                <Row>
+                                    <Col><strong>{hostName}</strong></Col>
+                                </Row>
+                                <Row>
+                                    <Col md="1"></Col>
+                                    <Col md="5">{host.IPAddress}</Col>
+                                </Row>
                             </Col>
                             <Col md="1">
-                                <div style={{fontSize: '18px' }} onClick={(event) => this.removeHost(event,hostName)} >-</div>
+                                <Button className="floatRight" color="link" size="lg" onClick={(event) => this.removeHost(event,hostName)}> - </Button>
                             </Col>
                         </Row>
                     </CardBody>
@@ -289,6 +297,8 @@ class InventoryComponent extends Component {
         } else {
             systemVariables = "";
         }
+        //                                <div className="floatRight" onClick={() => this.toggleCreateHost()} ><strong>+</strong></div>
+
         return (
             <div className="animated fadeIn">
                 {this.renderAddHostModel()}
@@ -297,9 +307,9 @@ class InventoryComponent extends Component {
                         <Card>
                             <CardHeader id="host_header" key="host_header">
                                 <strong className="fontBig">Hosts</strong>
-                                <div className="floatRight" onClick={() => this.toggleCreateHost()} ><strong>+</strong></div>
+                                <Button className="floatRight" color="link" size="lg" onClick={this.toggleCreateHost}> + </Button>
                             </CardHeader>
-                            <div style={{ height: '300px', overflowY: 'scroll', cursor:'pointer' }}>
+                            <div style={{ height: '600px', overflowY: 'scroll', cursor:'pointer' }}>
                                 {this.renderHosts()}
                             </div>
                         </Card>
@@ -324,7 +334,7 @@ class InventoryComponent extends Component {
                     </Col>
                 </Row>
             </div>
-        )
+        );
     }
 }
 export default InventoryComponent;

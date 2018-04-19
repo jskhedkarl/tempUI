@@ -97,17 +97,25 @@ class PlaybookComp extends Component {
     
 
     renderPlaybooks() {
+//                    <div id={'@'+playbookId}>{playbookName}</div>
         let retHTML = [];
         let index = 0;
         for (let playbookIndex in this.state.playbooks) {
             let playbookName = this.state.playbooks[playbookIndex];
             let playbookId = playbookName.trim();
             let bgColor = playbookIndex % 2 ? 'rgb(255,255,255)': 'rgb(227,227,227)';
+            let description = "Playbook Descripton needs to be filled out and goes here.. If available.";
             
             retHTML.push(
-              <CardBody pbindex={playbookIndex} id={playbookId} key={playbookId} style={{height:'50px', background:bgColor}} onClick={() => this.showPlaybookSelection(playbookId, playbookIndex, event)}>
-                <div id={'@'+playbookId}>{playbookName}</div>
-              </CardBody>
+                <CardBody pbindex={playbookIndex} id={playbookId} key={playbookId} style={{background:bgColor}} onClick={() => this.showPlaybookSelection(playbookId, playbookIndex, event)}>
+                    <Row>
+                        <Col><strong>{playbookName}</strong></Col>
+                    </Row>
+                    <Row>
+                        <Col md="1"></Col>
+                        <Col>{description}</Col>
+                    </Row>
+                </CardBody>
             );
         }
         return retHTML;
@@ -126,7 +134,7 @@ class PlaybookComp extends Component {
                             <CardHeader>
                                 <strong className="fontBig">Playbooks</strong>
                             </CardHeader>
-                            <div style={{height:'300px', overflowY:'scroll', cursor:'pointer'}}>
+                            <div style={{height:'370px', overflowY:'scroll', cursor:'pointer'}}>
                             {this.renderPlaybooks()}
                             </div>
                         </Card>
