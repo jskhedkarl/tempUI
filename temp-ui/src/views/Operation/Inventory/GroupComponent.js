@@ -92,10 +92,18 @@ export default class GroupComponent extends Component {
 
     render() {
         if(this.props.active) {
+            let selGrpCount = Object.keys(this.props.selectedGroups).length;
         return (
             <Card>
                 <CardHeader>
-                    <h2>Groups</h2>
+                    <Row>
+                        <Col>
+                            <h2>Groups</h2>
+                        </Col>
+                        <Col md="1">
+                            <Badge pill>{selGrpCount}</Badge>
+                        </Col>
+                    </Row>
                 </CardHeader>
 
                 <div style={{height:'300px', overflowY:'scroll'}}>
