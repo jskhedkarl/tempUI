@@ -109,7 +109,7 @@ class PlaybookComp extends Component {
             retHTML.push(
                 <CardBody pbindex={playbookIndex} id={playbookId} key={playbookId} style={{background:bgColor}} onClick={() => this.showPlaybookSelection(playbookId, playbookIndex, event)}>
                     <Row>
-                        <Col><strong>{playbookName}</strong></Col>
+                        <Col><h5>{playbookName}</h5></Col>
                     </Row>
                     <Row>
                         <Col md="1"></Col>
