@@ -132,7 +132,7 @@ class PlaybookComp extends Component {
                     <Col xs="12" sm="6">
                         <Card>
                             <CardHeader>
-                                <strong className="fontBig">Playbooks</strong>
+                                <h2>Playbooks</h2>
                             </CardHeader>
                             <div style={{height:'370px', overflowY:'scroll', cursor:'pointer'}}>
                             {this.renderPlaybooks()}

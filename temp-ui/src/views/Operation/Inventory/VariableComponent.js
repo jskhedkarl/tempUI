@@ -119,8 +119,14 @@ class VariableComponent extends Component {
 
         retHTML.push(
             <CardHeader id="variables_host" key="variables_host">
-                <strong>{this.state.ansibleVariableHeader}</strong>
-            <Button className="floatRight" color="link" size="lg" onClick={() => this.addVariable()}> + </Button>
+                <Row>
+                    <Col>
+                        <h5>{this.state.ansibleVariableHeader}</h5>
+                    </Col>
+                    <Col>
+                        <Button className="floatRight" color="link" size="lg" onClick={() => this.addVariable()}> + </Button>
+                    </Col>
+                </Row>
             </CardHeader>);
         for (let index in this.state.ansibleVariables) {
             let key = this.state.ansibleVariables[index].key
@@ -145,7 +151,7 @@ class VariableComponent extends Component {
         retHTML.push(<div style={{height:'20px'}}> </div>);
         retHTML.push(
             <CardHeader id="variables_system" key="variables_system">
-                <strong>System</strong>
+                <h5>System</h5>
             </CardHeader>);
         for (let index in this.props.systemVariables) {
             let varId = "system_all_"+index;
@@ -166,7 +172,7 @@ class VariableComponent extends Component {
         let retHTML = [];
         retHTML.push(
             <CardHeader id="variables_groups" key="variables_groups">
-                <strong>Groups</strong>
+                <h5>Groups</h5>
             </CardHeader>);
         for (let index in this.props.groupVariables) {
             let varId = "group_"+index;
@@ -189,7 +195,7 @@ class VariableComponent extends Component {
                 <div className="animated fadeIn">
                     <Card>
                         <CardHeader id="    ">
-                            <strong className="fontBig">{this.state.componentHeader}</strong>
+                            <h2>{this.state.componentHeader}</h2>
                         </CardHeader>
                         <div style={{height:"350px",marginBottom:"20px", overflowY:'scroll'}}>
                             {this.renderVariables()}

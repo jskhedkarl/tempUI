@@ -306,8 +306,14 @@ class InventoryComponent extends Component {
                     <Col xs="12" sm="6">
                         <Card>
                             <CardHeader id="host_header" key="host_header">
-                                <strong className="fontBig">Hosts</strong>
-                                <Button className="floatRight" color="link" size="lg" onClick={this.toggleCreateHost}> + </Button>
+                                <Row>
+                                    <Col>
+                                        <h2>Hosts</h2>
+                                    </Col>
+                                    <Col>
+                                        <Button className="floatRight" color="link" size="lg" onClick={this.toggleCreateHost}> + </Button>
+                                    </Col>
+                                </Row>
                             </CardHeader>
                             <div style={{ height: '600px', overflowY: 'scroll', cursor:'pointer' }}>
                                 {this.renderHosts()}

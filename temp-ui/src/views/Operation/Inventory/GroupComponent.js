@@ -95,7 +95,7 @@ export default class GroupComponent extends Component {
         return (
             <Card>
                 <CardHeader>
-                    <strong className="fontBig">Groups</strong>
+                    <h2>Groups</h2>
                 </CardHeader>
 
                 <div style={{height:'300px', overflowY:'scroll'}}>
