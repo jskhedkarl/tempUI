@@ -430,12 +430,16 @@ export class ServerAPI {
     constructor() {
         this.allGroups = new Object();
         this.allHosts = new Object();
+        this.invaderServerAddress = "http://192.168.53.130:8081";
         //this.setupInventory();
     }
     
     DefaultInvader() {
-        //return "http://192.168.101.122:8080";
-        return "http://192.168.53.130:8081";
+        return this.invaderServerAddress;
+    }
+    
+    updateInvaderAddress(invaderAddress) {
+        this.invaderServerAddress = invaderAddress;
     }
     
     static DefaultServer() {
