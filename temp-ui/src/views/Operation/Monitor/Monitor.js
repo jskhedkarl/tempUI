@@ -11,31 +11,45 @@ const StatsCounter = 15;
 class Monitor extends React.Component {
     constructor(props) {
         super(props)
-        let stats = [];
-        let server = ServerAPI.DefaultServer();
-        let serverCtr = 0;
-        for (serverCtr = 0; serverCtr < StatsCounter; serverCtr++) {
-          stats.push(server.fetchMonitorZeroStates(true));
-        }
-        //TODO::MN:: Need to calculate this rather then hard coded..
-        let serviceCtr = 2;
-
         this.state = {
-            hostStats: stats,
-            serverCounter: serverCtr,
-            serviceCounter: serviceCtr,
-            continueStats: true,
+            hostStats: [],
+            serverCounter: 0,
+            serviceCounter: 0,
+            continueStats: false,
+            inventoryReady: false,
         };
+        
         this.fetchStats = this.fetchStats.bind(this);
+        this.updateMonitorWithInventory = this.updateMonitorWithInventory.bind(this);
     }
 
     componentDidMount() {
-        this.state.continueStats = true;
-        setTimeout(this.fetchStats, 50, this)
+        ServerAPI.DefaultServer().setupInventory(this.updateMonitorWithInventory, this);
     }
     
     componentWillUnmount() {
         this.state.continueStats = false;
+    }
+    
+    updateMonitorWithInventory(instance) {
+        let server = ServerAPI.DefaultServer();
+        let stats = [];
+        let serverCtr = 0;
+        for (serverCtr = 0; serverCtr < StatsCounter; serverCtr++) {
+            let s = server.fetchMonitorZeroStates(true);
+            stats.push(s);
+        }
+        //TODO::MN:: Need to calculate this rather then hard coded..
+        let serviceCtr = 2;
+
+        instance.setState({
+            hostStats: stats,
+            serverCounter: serverCtr,
+            serviceCounter: serviceCtr,
+            continueStats: true,
+            inventoryReady: true,
+        });
+        setTimeout(this.fetchStats, 50, this)
     }
     
     fetchStats(instance) {
@@ -313,6 +327,9 @@ class Monitor extends React.Component {
     }
   
     render() {
+        if (!this.state.inventoryReady) {
+            return <div>Loading.....</div>
+        }
         return (
             <div>
                 <Row>
