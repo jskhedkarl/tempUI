@@ -128,7 +128,8 @@ class Monitor extends React.Component {
     generateEngixChartObject(labels, totalReqStats, activeConnStats, totalConnStats) {
         let obj = {
                 labels: labels,
-                datasets: [{
+                datasets: [
+                    {
                     label: 'Total Requests',
                     type: 'line',
                     data: totalReqStats,
@@ -140,7 +141,8 @@ class Monitor extends React.Component {
                     pointHoverBackgroundColor: '#EC932F',
                     pointHoverBorderColor: '#EC932F',
                     yAxisID: 'y-axis-2'
-                },{
+                },
+                {
                     type: 'line',
                     label: 'Active Connection',
                     data: activeConnStats,
@@ -150,7 +152,8 @@ class Monitor extends React.Component {
                     hoverBackgroundColor: '#71B37C',
                     hoverBorderColor: '#71B37C',
                     yAxisID: 'y-axis-1'
-                }, {
+                },
+                {
                     type: 'line',
                     label: 'Total Connection',
                     data: totalConnStats,
@@ -160,7 +163,8 @@ class Monitor extends React.Component {
                     hoverBackgroundColor: '#dbd9c6',
                     hoverBorderColor: '#e7dae1',
                     yAxisID: 'y-axis-1'
-                }]
+                }
+            ]
             };
         return obj;
     }

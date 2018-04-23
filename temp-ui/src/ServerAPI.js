@@ -432,7 +432,6 @@ export class ServerAPI {
         this.allHosts = new Object();
         this.invaderServerAddress = "http://192.168.101.122:8080";
         //this.invaderServerAddress = "http://192.168.53.130:8081";
-        //this.setupInventory();
     }
     
     DefaultInvader() {
@@ -627,36 +626,6 @@ export class ServerAPI {
             console.log("POST :: Error :: ");
         }
         xhr.send();
-    }
-
-    fetchAllSystemStats() {
-        let jsonCPUString = this.fetchCPUStats();
-        let jsonDiskString = this.fetchDiskStats();
-        let jsonMemoryString = this.fetchMemoryStats();
-
-        let cpuStatsObj = JSON.parse(jsonCPUString);
-        let diskStatsObj = JSON.parse(jsonDiskString);
-        let memStatsObj = JSON.parse(jsonMemoryString);
-
-        let a = "";
-    }
-
-    fetchAllServiceStats() {
-        let jsonEGINXString = this.fetchEGINXStats();
-        let jsonVarnishString = this.fetchVarnishStats();
-        let jsonIPVSString = this.fetchIPVSStats();
-    }
-
-    fetchAllGroupNames() {
-        let jsonStr = this.fetchGroups();
-        let jsonObj = JSON.parse(jsonStr);
-        return jsonObj["groups"];
-    }
-
-    fetchAllHostNames() {
-        let jsonStr = this.fetchHosts();
-        let jsonObj = JSON.parse(jsonStr);
-        return jsonObj["hosts"];
     }
 
     fetchAllPlaybookNames(callback, instance) {
@@ -918,7 +887,7 @@ export class ServerAPI {
         }
         return new MonitorStats(invaderStatObj, hostsStats);
     }
-
+/*
     fetchInvetoryAll() {
         return '{"all":{"group":{"all":{"client_ip":"10.10.30.110","containers":4,"vip":"4.3.2.1"},"clients":{"hosts":["inv7"]},"inv":{"hosts":["127.0.0.1"],"vars":{"ansible_connection":"local","check_digest":"0ac91d27021904d30dbafce186223c81","check_url":"/","keepalived_conf":"/etc/keepalived/keepalived.conf","keepalived_daemon":"/usr/sbin/keepalived","lb_intfs":"eth-14-1 eth-16-1","script_inv":"/home/ansible/ipvs_inv.sh"}},"servers":{"hosts":["sr3","sr2"]}},"host":{"127.0.0.1":{"vars":{}},"inv7":{"vars":{}},"sr2":{"vars":{"ansible_host":"192.168.101.222","inv_port":"eth-14-1","main_intf":"enp130s0","server_num":1,"ssl_engine":"nginx"}},"sr3":{"vars":{"ansible_host":"192.168.101.223","inv_port":"eth-16-1","main_intf":"enp130s0","server_num":2,"ssl_engine":"hitch"}}}}}';
     }
@@ -954,7 +923,7 @@ export class ServerAPI {
     fetchGroups() {
         return '{"groups":["servers","inv","clients"]}';
     }
-
+*/
 }
 
 let defaultAPIServer = new ServerAPI();
