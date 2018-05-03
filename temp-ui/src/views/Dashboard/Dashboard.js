@@ -54,13 +54,6 @@ class Dashboard extends Component {
         });
     }
     
-    inventoryCallback(instance) {
-        //console.log("DONE..");
-        //instance.setState({
-        //    inventoryReady : true,
-        //});
-    }
-    
     renderInvaderIP() {
         let retHTML = [];
         retHTML.push(

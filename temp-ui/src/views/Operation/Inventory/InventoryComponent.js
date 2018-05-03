@@ -103,12 +103,17 @@ class InventoryComponent extends Component {
     createNewHost() {
         let host = this.state.createdHost;
 
-        if (host.hName.length > 0 && host.IPAddress.length > 0) {
-            host.addVariable(Host.InvaderPort, "");
-            
+        if (host.hName.length > 0 && host.IPAddress.length > 0 && host.invaderPort.length > 0) {
             let server = ServerAPI.DefaultServer();
             let vars = host.variables;
-            server.updateHostVariables(this.updateHostEntries, this, host, vars, {});
+            let serverGrp = {};
+            for (let grpId in this.state.groups) {
+                let grp = this.state.groups[grpId];
+                if (grp.gType === Host.SERVER) {
+                    serverGrp[grpId] = grpId;
+                }
+            }
+            server.updateHostVariables(this.updateHostEntries, this, host, vars, serverGrp);
             this.toggleCreateHost();
         }
     }
@@ -118,7 +123,7 @@ class InventoryComponent extends Component {
         let host = this.state.createdHost;
         host.hName = event.target.value;
 
-        if (host.hName.length > 0 && host.IPAddress.length > 0) {
+        if (host.hName.length > 0 && host.IPAddress.length > 0 && host.invaderPort.length > 0) {
             valid = true;
         }
         this.setState({
@@ -131,7 +136,20 @@ class InventoryComponent extends Component {
         let valid = false;
         let host = this.state.createdHost;
         host.IPAddress = event.target.value;
-        if (host.hName.length > 0 && host.IPAddress.length > 0) {
+        if (host.hName.length > 0 && host.IPAddress.length > 0 && host.invaderPort.length > 0) {
+            valid = true;
+        }
+        this.setState({
+            createHostValidated: valid,
+            createdHost: host,
+        });
+    }
+    
+    onPlatinaPortChange(event) {
+        let valid = false;
+        let host = this.state.createdHost;
+        host.invaderPort = event.target.value;
+        if (host.hName.length > 0 && host.IPAddress.length > 0 && host.invaderPort.length > 0) {
             valid = true;
         }
         this.setState({
@@ -245,6 +263,10 @@ class InventoryComponent extends Component {
                     <Row>
                         <Col md="5"><Input type="text" style={{width:'250px'}} placeholder="Host IP" required defaultValue={this.state.createdHost.IPAddress} onChange={(event) => this.onIPAddressChange(event)}/></Col>
                     </Row>
+                    <Row><Col mn="5" style={{height:'10px'}}></Col></Row>
+                    <Row>
+                        <Col md="5"><Input type="text" style={{width:'250px'}} placeholder="Platina Port #" required defaultValue={this.state.createdHost.invaderPort} onChange={(event) => this.onPlatinaPortChange(event)}/></Col>
+                    </Row>
                 </ModalBody>
                 <ModalFooter>
                     <Button outline disabled={!this.state.createHostValidated} color="primary" onClick={this.createNewHost}>Create</Button>{' '}
@@ -273,7 +295,13 @@ class InventoryComponent extends Component {
                                 </Row>
                                 <Row>
                                     <Col md="1"></Col>
-                                    <Col md="5">{host.IPAddress}</Col>
+                                    <Col md="4">IP Address: </Col>
+                                    <Col md="5"><strong>{host.IPAddress}</strong></Col>
+                                </Row>
+                                <Row>
+                                    <Col md="1"></Col>
+                                    <Col md="4">Platina Port: </Col>
+                                    <Col md="5"><strong>{host.invaderPort}</strong></Col>
                                 </Row>
                             </Col>
                             <Col md="1">

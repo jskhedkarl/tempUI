@@ -102,14 +102,20 @@ class PlaybookComp extends Component {
         let index = 0;
         for (let playbookIndex in this.state.playbooks) {
             let playbookName = this.state.playbooks[playbookIndex];
+            let playbookDisplayName = playbookName.split(".yml")[0];
             let playbookId = playbookName.trim();
             let bgColor = playbookIndex % 2 ? 'rgb(255,255,255)': 'rgb(227,227,227)';
-            let description = "Playbook Descripton needs to be filled out and goes here.. If available.";
+            //let description = "Playbook Descripton needs to be filled out and goes here.. If available.";
+            let description = "";
             
             retHTML.push(
                 <CardBody pbindex={playbookIndex} id={playbookId} key={playbookId} style={{background:bgColor}} onClick={() => this.showPlaybookSelection(playbookId, playbookIndex, event)}>
                     <Row>
-                        <Col><h5>{playbookName}</h5></Col>
+                        <Col><h5>{playbookDisplayName}</h5></Col>
+                    </Row>
+                    <Row>
+                        <Col md="1"></Col>
+                        <Col>{playbookName}</Col>
                     </Row>
                     <Row>
                         <Col md="1"></Col>
@@ -132,7 +138,7 @@ class PlaybookComp extends Component {
                     <Col xs="12" sm="6">
                         <Card>
                             <CardHeader>
-                                <h2>Playbooks</h2>
+                                <h2>Actions</h2>
                             </CardHeader>
                             <div style={{height:'370px', overflowY:'scroll', cursor:'pointer'}}>
                             {this.renderPlaybooks()}

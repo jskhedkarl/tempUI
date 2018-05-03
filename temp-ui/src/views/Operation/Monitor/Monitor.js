@@ -13,8 +13,6 @@ class Monitor extends React.Component {
         super(props)
         this.state = {
             hostStats: [],
-            serverCounter: 0,
-            serviceCounter: 0,
             continueStats: false,
             inventoryReady: false,
         };
@@ -44,8 +42,6 @@ class Monitor extends React.Component {
 
         instance.setState({
             hostStats: stats,
-            serverCounter: serverCtr,
-            serviceCounter: serviceCtr,
             continueStats: true,
             inventoryReady: true,
         });
@@ -102,24 +98,34 @@ class Monitor extends React.Component {
             datasets: [{
                 label: 'Cpu Stats',
                 type: 'line',
+                line: {
+                    fill: false,
+                    lineTension: 0,
+                },
                 fill: false,
                 data: cpuStats,
-                borderColor: '#EC932F',
-                pointBorderColor: '#EC932F',
-                pointBackgroundColor: '#EC932F',
-                pointHoverBackgroundColor: '#EC932F',
-                pointHoverBorderColor: '#EC932F',
-                yAxisID: 'y-axis-2'
+                borderColor: '#BEBEBE',
+                point: {
+                    fill: false,
+                    radius: 0,
+                },
+                pointRadius: 0,
+                //pointBorderColor: '', //'#fff',
+                //pointBackgroundColor: '', //'#fff',
+                //pointHoverBackgroundColor: '', //'#fff',
+                //pointHoverBorderColor: '', //'#EC932F',
+                yAxisID: 'y-axis-2',
+                lineWidth: 1,
             }, {
                 type: 'bar',
                 label: 'Memory Stats Data',
                 data: memoryStats,
                 fill: false,
-                backgroundColor: '#71B37C',
-                borderColor: '#71B37C',
+                backgroundColor: '#808080',
+                borderColor: '#808080',
                 hoverBackgroundColor: '#71B37C',
                 hoverBorderColor: '#71B37C',
-                yAxisID: 'y-axis-1'
+                yAxisID: 'y-axis-1',
             }]
         };
         return obj;
@@ -132,21 +138,31 @@ class Monitor extends React.Component {
                     {
                     label: 'Total Requests',
                     type: 'line',
+                    line: {
+                        fill: false,
+                        lineTension: 0,
+                    },
                     data: totalReqStats,
                     fill: false,
                     borderColor: '#EC932F',
                     backgroundColor: '#EC932F',
-                    pointBorderColor: '#EC932F',
-                    pointBackgroundColor: '#EC932F',
-                    pointHoverBackgroundColor: '#EC932F',
-                    pointHoverBorderColor: '#EC932F',
+                    pointRadius: 0,
+                    //pointBorderColor: '#EC932F',
+                    //pointBackgroundColor: '#EC932F',
+                    //pointHoverBackgroundColor: '#EC932F',
+                    //pointHoverBorderColor: '#EC932F',
                     yAxisID: 'y-axis-2'
                 },
                 {
                     type: 'line',
                     label: 'Active Connection',
                     data: activeConnStats,
+                    line: {
+                        fill: false,
+                        lineTension: 0,
+                    },
                     fill: false,
+                    pointRadius: 0,
                     backgroundColor: '#71B37C',
                     borderColor: '#71B37C',
                     hoverBackgroundColor: '#71B37C',
@@ -158,6 +174,11 @@ class Monitor extends React.Component {
                     label: 'Total Connection',
                     data: totalConnStats,
                     fill: false,
+                    line: {
+                        fill: false,
+                        lineTension: 0,
+                    },
+                    pointRadius: 0,
                     backgroundColor: '#b8c7d5',
                     borderColor: '#b8cdca',
                     hoverBackgroundColor: '#dbd9c6',
@@ -179,10 +200,11 @@ class Monitor extends React.Component {
                     fill: false,
                     borderColor: '#EC932F',
                     backgroundColor: '#EC932F',
-                    pointBorderColor: '#EC932F',
-                    pointBackgroundColor: '#EC932F',
-                    pointHoverBackgroundColor: '#EC932F',
-                    pointHoverBorderColor: '#EC932F',
+                    pointRadius: 0,
+                    //pointBorderColor: '#EC932F',
+                    //pointBackgroundColor: '#EC932F',
+                    //pointHoverBackgroundColor: '#EC932F',
+                    //pointHoverBorderColor: '#EC932F',
                     yAxisID: 'y-axis-2'
                 },{
                     type: 'line',

@@ -24,7 +24,7 @@ export default {
       icon: 'icon-layers',
     },
     {
-      name: 'Playbook',
+      name: 'Actions',
       url: '/operation/playbook',
       icon: 'icon-control-play',
     },

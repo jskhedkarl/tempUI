@@ -383,7 +383,7 @@ export class Group {
 }
 
 Group.KEY = "group";
-Group.INVADER_KEY = "client";
+Group.INVADER_KEY = "inv";
 Group.SERVER_KEY = "servers";
 Group.UNGROUPED = "ungrouped";
 Group.VARIABLES = "vars";
