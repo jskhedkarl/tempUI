@@ -151,7 +151,7 @@ export default class PlayBookSummary extends Component {
 
                 <Card>
                     <CardHeader>
-                        <h2>Playbook (Run) Summary</h2>
+                        <h2>Action (Run) Summary</h2>
                     </CardHeader>
                     <CardBody key="Summary_Header">
                         <div><h4>Selected Playbook : <Badge pill>{this.props.selectedPlaybookName}</Badge></h4></div>

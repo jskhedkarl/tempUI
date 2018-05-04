@@ -390,6 +390,47 @@ Group.VARIABLES = "vars";
 Group.SYSTEM_VARIABLES = "all";
 
 
+export class Action {
+    constructor(jsonObj) {
+        this.actionId = jsonObj["id"];
+        this.actionName = jsonObj["aName"];
+        this.description = jsonObj["description"];
+        this.keyValues = KeyValueStore.keyValuesFromJson(jsonObj["keyValues"]);
+    }
+    
+    static actionsFromArray(aArray) {
+        let actionArr = [];
+        if (aArray !== undefined) {
+            for (let index in aArray) {
+                let jsonObj = aArray[index];
+                let actionObj = new Action(jsonObj);
+                actionArr.push(actionObj);
+            }
+        }
+        return actionArr;
+    }
+}
+
+export class KeyValueStore {
+    constructor(key, value) {
+        this.key = key;
+        this.value = value;
+    }
+    
+    static keyValuesFromJson(keyValueArray) {
+        let objArr = [];
+        if (keyValueArray !== undefined) {
+            for (let index in keyValueArray) {
+                let kvPair = keyValueArray[index];
+                let kvObj = new KeyValueStore(kvPair["key"]);
+                objArr.push(kvObj);
+            }
+        }
+        return objArr;
+    }
+}
+
+
 function simulateAllStats() {
     
 }
@@ -487,7 +528,7 @@ export class ServerAPI {
         }
     }
     
-    runAnsiblePlaybook(playbook, args, callback, instance) {
+    runAnsiblePlaybook(playbook, callback, instance) {
         let xhr = new XMLHttpRequest();
         let sourceURL = this.DefaultInvader() + "/config/execplaybook";
         xhr.open("POST", sourceURL, true);
@@ -508,7 +549,7 @@ export class ServerAPI {
             let tran = new ServerTransaction("Errr", 0);
             callback(instance, tran);
         };
-        let playbookObj = {"playbook":playbook, "arguments":args};
+        let playbookObj = {"playbook":playbook.actionId, "arguments":playbook.keyValues};
         let requstJson = JSON.stringify(playbookObj);
         xhr.send(requstJson);
     }
@@ -653,7 +694,34 @@ export class ServerAPI {
             console.log("POST :: Error :: ");
         }
         xhr.send();
-        
+    }
+    
+    fetchAllActions(callback, instance) {
+        //let jsonStr = this.fetchPlaybooks();
+        //let jsonObj = JSON.parse(jsonStr);
+        //return jsonObj["playbooks"];
+        let serverInstance = this;
+        let xhr = new XMLHttpRequest();
+        let sourceURL = this.DefaultInvader() + "/config/actions";
+        xhr.open("GET", sourceURL, true);
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                try {
+                    let jsonObj = JSON.parse(xhr.responseText);
+                    let actions = Action.actionsFromArray(jsonObj["actions"])
+                    callback(instance, actions);
+                    //setTimeout(callback, 1000, instance);
+                    
+                } catch (err) {
+                    console.log("POST :: ERROR :: " + err);
+                }
+            }
+        };
+        xhr.onerror = function () {
+            console.log("POST :: Error :: ");
+        }
+        xhr.send();
     }
     
     fetchMonitorServerStat(callback, instance) {
