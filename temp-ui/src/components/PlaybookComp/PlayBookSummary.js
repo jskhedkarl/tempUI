@@ -87,19 +87,19 @@ export default class PlayBookSummary extends Component {
         if (this.props.playedTransactionId === undefined) {
             let retHTML = [];
             retHTML.push(
-                <Label className="switch switch-icon switch-secondary alignCenter">
-                    <Input type="checkbox" checked={this.state.status} className="switch-input"  onClick={(event) => this.changeState(event)}></Input>
+                <Label key="render_playbutton_label_1" className="switch switch-icon switch-secondary alignCenter">
+                    <Input key="render_playbutton_checkbox" type="checkbox" checked={this.state.status} className="switch-input"  onClick={(event) => this.changeState(event)}></Input>
                     <span className="switch-label" data-on={'\uf087'} data-off={'\uf088'}></span>
                     <span className="switch-handle"></span>
                 </Label>
             );
             if (this.state.status == false) { // disabled
                 retHTML.push(
-                    <Button disabled outline color="primary" size="lg" onClick={() => this.play()}> Play </Button>
+                    <Button key="render_playbutton_button_disabled" disabled outline color="primary" size="lg" onClick={() => this.play()}> Play </Button>
                 );
             } else {
                 retHTML.push(
-                    <Button outline color="primary" size="lg" onClick={() => this.play()}> Play </Button>
+                    <Button key="render_playbutton_button_enabled" outline color="primary" size="lg" onClick={() => this.play()}> Play </Button>
                 );
             }
             return (retHTML);
@@ -150,10 +150,10 @@ export default class PlayBookSummary extends Component {
             <div className="animated fadeIn">
 
                 <Card>
-                    <CardHeader>
+                    <CardHeader key="Summary_header">
                         <h2>Action (Run) Summary</h2>
                     </CardHeader>
-                    <CardBody key="Summary_Header">
+                    <CardBody key="Summary_Header_body">
                         <div><h4>Selected Playbook : <Badge pill>{this.props.selectedPlaybookName}</Badge></h4></div>
                     </CardBody>
                     <CardBody key="Summary_Arguments">
@@ -164,8 +164,8 @@ export default class PlayBookSummary extends Component {
                     <CardBody key="Summary_Results">
                         {this.renderPlayedTransaction()}
                     </CardBody>
-                    <Row>
-                        <Col xs="12" sm="6"> 
+                    <Row key="playbook_summary_bottom_padding_row">
+                        <Col key="playbook_summary_bottom_padding_col" xs="12" sm="6"> 
                             <div className="Padding20"></div>
                         </Col>
                     </Row>
