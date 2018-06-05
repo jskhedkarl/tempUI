@@ -4,6 +4,8 @@ const routes = {
   '/operation': 'Operation',
   '/operation/inventory': 'Host Inventory',
   '/operation/playbook': 'Actions',
-  '/operation/monitor': 'Monitor'
+  '/operation/monitor': 'Monitor',
+  '/node': 'Node',
+  '/node/Summary': 'Summary',
 };
 export default routes;

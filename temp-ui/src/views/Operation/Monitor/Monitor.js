@@ -6,6 +6,7 @@ import Styles from '../Monitor/Monitor.css';
 import {Grid, Col, Row} from 'react-bootstrap';
 import {HostStats, Host, ServerAPI} from '../../../ServerAPI';
 
+
 const StatsCounter = 15;
 
 class Monitor extends React.Component {
@@ -21,9 +22,9 @@ class Monitor extends React.Component {
         this.updateMonitorWithInventory = this.updateMonitorWithInventory.bind(this);
     }
 
-    componentDidMount() {
-        ServerAPI.DefaultServer().setupInventory(this.updateMonitorWithInventory, this);
-    }
+    //componentDidMount() {
+    //    ServerAPI.DefaultServer().setupInventory(this.updateMonitorWithInventory, this);
+    //}
     
     componentWillUnmount() {
         this.state.continueStats = false;
@@ -357,34 +358,39 @@ class Monitor extends React.Component {
     }
   
     render() {
-        if (!this.state.inventoryReady) {
-            return <div>Loading.....</div>
-        }
+        let x = 10;
+        let editable=false;
         return (
-            <div>
-                <Row>
-                    <Col xs={12}>
-                        <strong className="fontBig">Service</strong>
-                    </Col>
-                </Row>
-                <Grid>
-                    <Row className="show-grid">
-                        <Col xs={12} md={2}>
-                        </Col>
-                        <Col xs={12} md={4} className="borderLeft">
-                            <h5>System</h5>
-                        </Col>
-                        <Col xs={12} md={3} className="borderLeft">
-                            <h5>Varnish[:80]</h5>
-                        </Col>
-                        <Col xs={12} md={3} className="borderLeft">
-                            <h5>Nginx[:443]</h5>
-                        </Col>
-                    </Row>
-                    {this.renderAllHostsAndServices()}
-                </Grid>
-            </div>
+            <SpreadSheet columns={x} rows={x} editable={editable}></SpreadSheet>
         );
+        //if (!this.state.inventoryReady) {
+        //    return <div>Loading.....</div>
+        //}
+        //return (
+        //    <div>
+        //        <Row>
+        //            <Col xs={12}>
+        //                <strong className="fontBig">Service</strong>
+        //            </Col>
+        //        </Row>
+        //        <Grid>
+        //            <Row className="show-grid">
+        //                <Col xs={12} md={2}>
+        //                </Col>
+        //                <Col xs={12} md={4} className="borderLeft">
+        //                    <h5>System</h5>
+        //                </Col>
+        //                <Col xs={12} md={3} className="borderLeft">
+        //                    <h5>Varnish[:80]</h5>
+        //                </Col>
+        //                <Col xs={12} md={3} className="borderLeft">
+        //                    <h5>Nginx[:443]</h5>
+        //                </Col>
+        //            </Row>
+        //            {this.renderAllHostsAndServices()}
+        //        </Grid>
+        //    </div>
+        //);
     }
 }
 

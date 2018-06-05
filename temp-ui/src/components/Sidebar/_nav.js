@@ -11,6 +11,15 @@ export default {
     },
     {
       title: true,
+      name: 'Node',
+    },
+    {
+      name: 'Summary',
+      url: '/node/Summary',
+      icon: 'icon-layers',
+    },
+    {
+      title: true,
       name: 'Operations',
       wrapper: {            
         element: '',        
