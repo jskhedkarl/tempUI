@@ -46,157 +46,233 @@ class Summary extends React.Component {
                     </div>
                 </div>
                 <div className="SummaryContentView">
-                    <div className="Row-Content" style={{top:'1px'}}>
-                        <div className="Col-Content Col-Content1">1</div>
+                    <div className="Row-Content" style={{top:'0px'}}>
+                        <div className="Col-Content Col-Content1 Content-Active">sjc01-pd1-1f01<br/>P1234567</div>
                         <div className="Col-Sep Col-Sep1"></div>
-                        <div className="Col-Content Col-Content2">2</div>
+                        <div className="Col-Content Col-Content2 Content-Active">2</div>
                         <div className="Col-Sep Col-Sep2"></div>
-                        <div className="Col-Content Col-Content3">3</div>
+                        <div className="Col-Content Col-Content3 Content-Active">3</div>
                         <div className="Col-Sep Col-Sep3"></div>
-                        <div className="Col-Content Col-Content4">4</div>
+                        <div className="Col-Content Col-Content4 Content-Active">Super Micro Server X</div>
                         <div className="Col-Sep Col-Sep4"></div>
-                        <div className="Col-Content Col-Content5">5</div>
+                        <div className="Col-Content Col-Content5 Content-Active">5</div>
                         <div className="Col-Sep Col-Sep5"></div>
-                        <div className="Col-Content Col-Content6">6</div>
+                        <div className="Col-Content Col-Content6 Content-Active">32-Core / 128GB / 128GB</div>
                         <div className="Col-Sep Col-Sep6"></div>
-                        <div className="Col-Content Col-Content7">7</div>
+                        <div className="Col-Content Col-Content7 Content-Active">www.example.com</div>
                         <div className="Col-Sep Col-Sep7"></div>
-                        <div className="Col-Content Col-Content8">8</div>
+                        <div className="Col-Content Col-Content8 Content-Active">11.12 /<br/>11.34</div>
                         <div className="Col-Sep Col-Sep8"></div>
-                        <div className="Col-Content Col-Content9">9</div>
+                        <div className="Col-Content Col-Content9 Content-Active">255.255.255.255</div>
                     </div>
                     <div className="Row-Content" style={{top:'3px'}}>
-                        <div className="Col-Content Col-Content1">10</div>
+                        <div className="Col-Content Col-Content1 Content-InActive">sjc01-pd1-1f01<br/>P1234567</div>
                         <div className="Col-Sep Col-Sep1"></div>
-                        <div className="Col-Content Col-Content2">20</div>
+                        <div className="Col-Content Col-Content2 Content-InActive">20</div>
                         <div className="Col-Sep Col-Sep2"></div>
-                        <div className="Col-Content Col-Content3">3</div>
+                        <div className="Col-Content Col-Content3 Content-InActive">3</div>
                         <div className="Col-Sep Col-Sep3"></div>
-                        <div className="Col-Content Col-Content4">4</div>
+                        <div className="Col-Content Col-Content4 Content-InActive">Super Micro Server X</div>
                         <div className="Col-Sep Col-Sep4"></div>
-                        <div className="Col-Content Col-Content5">5</div>
+                        <div className="Col-Content Col-Content5 Content-InActive">5</div>
                         <div className="Col-Sep Col-Sep5"></div>
-                        <div className="Col-Content Col-Content6">6</div>
+                        <div className="Col-Content Col-Content6 Content-InActive">32-Core / 128GB / 128GB</div>
                         <div className="Col-Sep Col-Sep6"></div>
-                        <div className="Col-Content Col-Content7">7</div>
+                        <div className="Col-Content Col-Content7 Content-InActive">www.example.com</div>
                         <div className="Col-Sep Col-Sep7"></div>
-                        <div className="Col-Content Col-Content8">8</div>
+                        <div className="Col-Content Col-Content8 Content-InActive">11.12 /<br/>11.34</div>
                         <div className="Col-Sep Col-Sep8"></div>
-                        <div className="Col-Content Col-Content9">9</div>
+                        <div className="Col-Content Col-Content9 Content-InActive">255.255.255.255</div>
                     </div>
-                    <div className="Row-Content" style={{top:'5px'}}>
-                        <div className="Col-Content Col-Content1">100</div>
+                    <div className="Row-Content" style={{top:'6px'}}>
+                        <div className="Col-Content Col-Content1 Content-Active">1</div>
                         <div className="Col-Sep Col-Sep1"></div>
-                        <div className="Col-Content Col-Content2">2</div>
+                        <div className="Col-Content Col-Content2 Content-Active">2</div>
                         <div className="Col-Sep Col-Sep2"></div>
-                        <div className="Col-Content Col-Content3">3</div>
+                        <div className="Col-Content Col-Content3 Content-Active">3</div>
                         <div className="Col-Sep Col-Sep3"></div>
-                        <div className="Col-Content Col-Content4">4</div>
+                        <div className="Col-Content Col-Content4 Content-Active">4</div>
                         <div className="Col-Sep Col-Sep4"></div>
-                        <div className="Col-Content Col-Content5">5</div>
+                        <div className="Col-Content Col-Content5 Content-Active">5</div>
                         <div className="Col-Sep Col-Sep5"></div>
-                        <div className="Col-Content Col-Content6">6</div>
+                        <div className="Col-Content Col-Content6 Content-Active">6</div>
                         <div className="Col-Sep Col-Sep6"></div>
-                        <div className="Col-Content Col-Content7">7</div>
+                        <div className="Col-Content Col-Content7 Content-Active">7</div>
                         <div className="Col-Sep Col-Sep7"></div>
-                        <div className="Col-Content Col-Content8">8</div>
+                        <div className="Col-Content Col-Content8 Content-Active">8</div>
                         <div className="Col-Sep Col-Sep8"></div>
-                        <div className="Col-Content Col-Content9">9</div>
-                    </div>
-                    <div className="Row-Content" style={{top:'7px'}}>
-                        <div className="Col-Content Col-Content1">1000</div>
-                        <div className="Col-Sep Col-Sep1"></div>
-                        <div className="Col-Content Col-Content2">2</div>
-                        <div className="Col-Sep Col-Sep2"></div>
-                        <div className="Col-Content Col-Content3">3</div>
-                        <div className="Col-Sep Col-Sep3"></div>
-                        <div className="Col-Content Col-Content4">4</div>
-                        <div className="Col-Sep Col-Sep4"></div>
-                        <div className="Col-Content Col-Content5">5</div>
-                        <div className="Col-Sep Col-Sep5"></div>
-                        <div className="Col-Content Col-Content6">6</div>
-                        <div className="Col-Sep Col-Sep6"></div>
-                        <div className="Col-Content Col-Content7">7</div>
-                        <div className="Col-Sep Col-Sep7"></div>
-                        <div className="Col-Content Col-Content8">8</div>
-                        <div className="Col-Sep Col-Sep8"></div>
-                        <div className="Col-Content Col-Content9">9</div>
+                        <div className="Col-Content Col-Content9 Content-Active">9</div>
                     </div>
                     <div className="Row-Content" style={{top:'9px'}}>
-                        <div className="Col-Content Col-Content1">10000</div>
+                        <div className="Col-Content Col-Content1 Content-InActive">10</div>
                         <div className="Col-Sep Col-Sep1"></div>
-                        <div className="Col-Content Col-Content2">2</div>
+                        <div className="Col-Content Col-Content2 Content-InActive">20</div>
                         <div className="Col-Sep Col-Sep2"></div>
-                        <div className="Col-Content Col-Content3">3</div>
+                        <div className="Col-Content Col-Content3 Content-InActive">3</div>
                         <div className="Col-Sep Col-Sep3"></div>
-                        <div className="Col-Content Col-Content4">4</div>
+                        <div className="Col-Content Col-Content4 Content-InActive">4</div>
                         <div className="Col-Sep Col-Sep4"></div>
-                        <div className="Col-Content Col-Content5">5</div>
+                        <div className="Col-Content Col-Content5 Content-InActive">5</div>
                         <div className="Col-Sep Col-Sep5"></div>
-                        <div className="Col-Content Col-Content6">6</div>
+                        <div className="Col-Content Col-Content6 Content-InActive">6</div>
                         <div className="Col-Sep Col-Sep6"></div>
-                        <div className="Col-Content Col-Content7">7</div>
+                        <div className="Col-Content Col-Content7 Content-InActive">7</div>
                         <div className="Col-Sep Col-Sep7"></div>
-                        <div className="Col-Content Col-Content8">8</div>
+                        <div className="Col-Content Col-Content8 Content-InActive">8</div>
                         <div className="Col-Sep Col-Sep8"></div>
-                        <div className="Col-Content Col-Content9">9</div>
+                        <div className="Col-Content Col-Content9 Content-InActive">9</div>
                     </div>
-                    <div className="Row-Content" style={{top:'11px'}}>
-                        <div className="Col-Content Col-Content1">100000</div>
+                    <div className="Row-Content" style={{top:'12px'}}>
+                        <div className="Col-Content Col-Content1 Content-Active">1</div>
                         <div className="Col-Sep Col-Sep1"></div>
-                        <div className="Col-Content Col-Content2">2</div>
+                        <div className="Col-Content Col-Content2 Content-Active">2</div>
                         <div className="Col-Sep Col-Sep2"></div>
-                        <div className="Col-Content Col-Content3">3</div>
+                        <div className="Col-Content Col-Content3 Content-Active">3</div>
                         <div className="Col-Sep Col-Sep3"></div>
-                        <div className="Col-Content Col-Content4">4</div>
+                        <div className="Col-Content Col-Content4 Content-Active">4</div>
                         <div className="Col-Sep Col-Sep4"></div>
-                        <div className="Col-Content Col-Content5">5</div>
+                        <div className="Col-Content Col-Content5 Content-Active">5</div>
                         <div className="Col-Sep Col-Sep5"></div>
-                        <div className="Col-Content Col-Content6">6</div>
+                        <div className="Col-Content Col-Content6 Content-Active">6</div>
                         <div className="Col-Sep Col-Sep6"></div>
-                        <div className="Col-Content Col-Content7">7</div>
+                        <div className="Col-Content Col-Content7 Content-Active">7</div>
                         <div className="Col-Sep Col-Sep7"></div>
-                        <div className="Col-Content Col-Content8">8</div>
+                        <div className="Col-Content Col-Content8 Content-Active">8</div>
                         <div className="Col-Sep Col-Sep8"></div>
-                        <div className="Col-Content Col-Content9">9</div>
-                    </div>
-                    <div className="Row-Content" style={{top:'13px'}}>
-                        <div className="Col-Content Col-Content1">1000000</div>
-                        <div className="Col-Sep Col-Sep1"></div>
-                        <div className="Col-Content Col-Content2">2</div>
-                        <div className="Col-Sep Col-Sep2"></div>
-                        <div className="Col-Content Col-Content3">3</div>
-                        <div className="Col-Sep Col-Sep3"></div>
-                        <div className="Col-Content Col-Content4">4</div>
-                        <div className="Col-Sep Col-Sep4"></div>
-                        <div className="Col-Content Col-Content5">5</div>
-                        <div className="Col-Sep Col-Sep5"></div>
-                        <div className="Col-Content Col-Content6">6</div>
-                        <div className="Col-Sep Col-Sep6"></div>
-                        <div className="Col-Content Col-Content7">7</div>
-                        <div className="Col-Sep Col-Sep7"></div>
-                        <div className="Col-Content Col-Content8">8</div>
-                        <div className="Col-Sep Col-Sep8"></div>
-                        <div className="Col-Content Col-Content9">9</div>
+                        <div className="Col-Content Col-Content9 Content-Active">9</div>
                     </div>
                     <div className="Row-Content" style={{top:'15px'}}>
-                        <div className="Col-Content Col-Content1">10000000</div>
+                        <div className="Col-Content Col-Content1 Content-InActive">10</div>
                         <div className="Col-Sep Col-Sep1"></div>
-                        <div className="Col-Content Col-Content2">2</div>
+                        <div className="Col-Content Col-Content2 Content-InActive">20</div>
                         <div className="Col-Sep Col-Sep2"></div>
-                        <div className="Col-Content Col-Content3">3</div>
+                        <div className="Col-Content Col-Content3 Content-InActive">3</div>
                         <div className="Col-Sep Col-Sep3"></div>
-                        <div className="Col-Content Col-Content4">4</div>
+                        <div className="Col-Content Col-Content4 Content-InActive">4</div>
                         <div className="Col-Sep Col-Sep4"></div>
-                        <div className="Col-Content Col-Content5">5</div>
+                        <div className="Col-Content Col-Content5 Content-InActive">5</div>
                         <div className="Col-Sep Col-Sep5"></div>
-                        <div className="Col-Content Col-Content6">6</div>
+                        <div className="Col-Content Col-Content6 Content-InActive">6</div>
                         <div className="Col-Sep Col-Sep6"></div>
-                        <div className="Col-Content Col-Content7">7</div>
+                        <div className="Col-Content Col-Content7 Content-InActive">7</div>
                         <div className="Col-Sep Col-Sep7"></div>
-                        <div className="Col-Content Col-Content8">8</div>
+                        <div className="Col-Content Col-Content8 Content-InActive">8</div>
                         <div className="Col-Sep Col-Sep8"></div>
-                        <div className="Col-Content Col-Content9">9</div>
+                        <div className="Col-Content Col-Content9 Content-InActive">9</div>
+                    </div>
+                    <div className="Row-Content" style={{top:'18px'}}>
+                        <div className="Col-Content Col-Content1 Content-Active">1</div>
+                        <div className="Col-Sep Col-Sep1"></div>
+                        <div className="Col-Content Col-Content2 Content-Active">2</div>
+                        <div className="Col-Sep Col-Sep2"></div>
+                        <div className="Col-Content Col-Content3 Content-Active">3</div>
+                        <div className="Col-Sep Col-Sep3"></div>
+                        <div className="Col-Content Col-Content4 Content-Active">4</div>
+                        <div className="Col-Sep Col-Sep4"></div>
+                        <div className="Col-Content Col-Content5 Content-Active">5</div>
+                        <div className="Col-Sep Col-Sep5"></div>
+                        <div className="Col-Content Col-Content6 Content-Active">6</div>
+                        <div className="Col-Sep Col-Sep6"></div>
+                        <div className="Col-Content Col-Content7 Content-Active">7</div>
+                        <div className="Col-Sep Col-Sep7"></div>
+                        <div className="Col-Content Col-Content8 Content-Active">8</div>
+                        <div className="Col-Sep Col-Sep8"></div>
+                        <div className="Col-Content Col-Content9 Content-Active">9</div>
+                    </div>
+                    <div className="Row-Content" style={{top:'21px'}}>
+                        <div className="Col-Content Col-Content1 Content-InActive">10</div>
+                        <div className="Col-Sep Col-Sep1"></div>
+                        <div className="Col-Content Col-Content2 Content-InActive">20</div>
+                        <div className="Col-Sep Col-Sep2"></div>
+                        <div className="Col-Content Col-Content3 Content-InActive">3</div>
+                        <div className="Col-Sep Col-Sep3"></div>
+                        <div className="Col-Content Col-Content4 Content-InActive">4</div>
+                        <div className="Col-Sep Col-Sep4"></div>
+                        <div className="Col-Content Col-Content5 Content-InActive">5</div>
+                        <div className="Col-Sep Col-Sep5"></div>
+                        <div className="Col-Content Col-Content6 Content-InActive">6</div>
+                        <div className="Col-Sep Col-Sep6"></div>
+                        <div className="Col-Content Col-Content7 Content-InActive">7</div>
+                        <div className="Col-Sep Col-Sep7"></div>
+                        <div className="Col-Content Col-Content8 Content-InActive">8</div>
+                        <div className="Col-Sep Col-Sep8"></div>
+                        <div className="Col-Content Col-Content9 Content-InActive">9</div>
+                    </div>
+                    <div className="Row-Content" style={{top:'24px'}}>
+                        <div className="Col-Content Col-Content1 Content-Active">1</div>
+                        <div className="Col-Sep Col-Sep1"></div>
+                        <div className="Col-Content Col-Content2 Content-Active">2</div>
+                        <div className="Col-Sep Col-Sep2"></div>
+                        <div className="Col-Content Col-Content3 Content-Active">3</div>
+                        <div className="Col-Sep Col-Sep3"></div>
+                        <div className="Col-Content Col-Content4 Content-Active">4</div>
+                        <div className="Col-Sep Col-Sep4"></div>
+                        <div className="Col-Content Col-Content5 Content-Active">5</div>
+                        <div className="Col-Sep Col-Sep5"></div>
+                        <div className="Col-Content Col-Content6 Content-Active">6</div>
+                        <div className="Col-Sep Col-Sep6"></div>
+                        <div className="Col-Content Col-Content7 Content-Active">7</div>
+                        <div className="Col-Sep Col-Sep7"></div>
+                        <div className="Col-Content Col-Content8 Content-Active">8</div>
+                        <div className="Col-Sep Col-Sep8"></div>
+                        <div className="Col-Content Col-Content9 Content-Active">9</div>
+                    </div>
+                    <div className="Row-Content" style={{top:'27px'}}>
+                        <div className="Col-Content Col-Content1 Content-InActive">10</div>
+                        <div className="Col-Sep Col-Sep1"></div>
+                        <div className="Col-Content Col-Content2 Content-InActive">20</div>
+                        <div className="Col-Sep Col-Sep2"></div>
+                        <div className="Col-Content Col-Content3 Content-InActive">3</div>
+                        <div className="Col-Sep Col-Sep3"></div>
+                        <div className="Col-Content Col-Content4 Content-InActive">4</div>
+                        <div className="Col-Sep Col-Sep4"></div>
+                        <div className="Col-Content Col-Content5 Content-InActive">5</div>
+                        <div className="Col-Sep Col-Sep5"></div>
+                        <div className="Col-Content Col-Content6 Content-InActive">6</div>
+                        <div className="Col-Sep Col-Sep6"></div>
+                        <div className="Col-Content Col-Content7 Content-InActive">7</div>
+                        <div className="Col-Sep Col-Sep7"></div>
+                        <div className="Col-Content Col-Content8 Content-InActive">8</div>
+                        <div className="Col-Sep Col-Sep8"></div>
+                        <div className="Col-Content Col-Content9 Content-InActive">9</div>
+                    </div>
+                    <div className="Row-Content" style={{top:'30px'}}>
+                        <div className="Col-Content Col-Content1 Content-Active">1</div>
+                        <div className="Col-Sep Col-Sep1"></div>
+                        <div className="Col-Content Col-Content2 Content-Active">2</div>
+                        <div className="Col-Sep Col-Sep2"></div>
+                        <div className="Col-Content Col-Content3 Content-Active">3</div>
+                        <div className="Col-Sep Col-Sep3"></div>
+                        <div className="Col-Content Col-Content4 Content-Active">4</div>
+                        <div className="Col-Sep Col-Sep4"></div>
+                        <div className="Col-Content Col-Content5 Content-Active">5</div>
+                        <div className="Col-Sep Col-Sep5"></div>
+                        <div className="Col-Content Col-Content6 Content-Active">6</div>
+                        <div className="Col-Sep Col-Sep6"></div>
+                        <div className="Col-Content Col-Content7 Content-Active">7</div>
+                        <div className="Col-Sep Col-Sep7"></div>
+                        <div className="Col-Content Col-Content8 Content-Active">8</div>
+                        <div className="Col-Sep Col-Sep8"></div>
+                        <div className="Col-Content Col-Content9 Content-Active">9</div>
+                    </div>
+                    <div className="Row-Content" style={{top:'33px'}}>
+                        <div className="Col-Content Col-Content1 Content-InActive">10</div>
+                        <div className="Col-Sep Col-Sep1"></div>
+                        <div className="Col-Content Col-Content2 Content-InActive">20</div>
+                        <div className="Col-Sep Col-Sep2"></div>
+                        <div className="Col-Content Col-Content3 Content-InActive">3</div>
+                        <div className="Col-Sep Col-Sep3"></div>
+                        <div className="Col-Content Col-Content4 Content-InActive">4</div>
+                        <div className="Col-Sep Col-Sep4"></div>
+                        <div className="Col-Content Col-Content5 Content-InActive">5</div>
+                        <div className="Col-Sep Col-Sep5"></div>
+                        <div className="Col-Content Col-Content6 Content-InActive">6</div>
+                        <div className="Col-Sep Col-Sep6"></div>
+                        <div className="Col-Content Col-Content7 Content-InActive">7</div>
+                        <div className="Col-Sep Col-Sep7"></div>
+                        <div className="Col-Content Col-Content8 Content-InActive">8</div>
+                        <div className="Col-Sep Col-Sep8"></div>
+                        <div className="Col-Content Col-Content9 Content-InActive">9</div>
                     </div>
                 </div>
             </div>
