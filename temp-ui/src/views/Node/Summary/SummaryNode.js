@@ -13,14 +13,18 @@ class SummaryNode extends React.Component {
         //props.upgradeNodeCallback((node, updateKernel, updateISO))
         this.state = {
             node: props.Node,
+            upgradeInProgress: props.upgradeInProgress,
             selectedLabels:["spine", "leaf", "k8Master"],
             selectedISO: "1",
             selectedKernel: "1",
+            upgradeISOTo: null,
+            upgradeKernelTo: null,
             selectedSystemType: props.Node%2,
             xxxx: { value: 'two', label: 'Two'},
             ISOs : [
                 {label: "Debain Jessie - Platina", value: "1", description: "Standard Debian Jessie 4.13, inclues GOES, Platina Factory Defaults"},
                 {label: "Centos", value: "2", description: "Standard Centos"},
+                {label: "Wipe", value: "3", description: "Wipe System Clean"},
             ],
             kernel: [
                 {label: "4.13.0-platina-mk1-amd64", value: "1", description: "Standard Debian + plantina-mk1-ko"},
@@ -53,25 +57,50 @@ class SummaryNode extends React.Component {
     componentWillUnmount() {
         
     }
-    
-    updateKernelConfirmation() {
-        console.log("Kernel Confiramation");
+
+    componentWillReceiveProps(nextProps) {
+        if (this.state.upgradeInProgress != nextProps.upgradeInProgress)
+        {
+            this.setState({
+                upgradeInProgress: nextProps.upgradeInProgress,
+            });
+        }
     }
-    
-    updateISOConfiramation() {
-        console.log("updateISOConfiramation ");
+
+    updateKernelConfirmation(confirmed) {
+        console.log("updateKernelConfirmation, " + confirmed);
+        if (confirmed) {
+            this.props.upgradeNodeCallback(this.state.node, true, this.state.upgradeKernelTo);
+            this.setState({
+                selectedKernel: this.state.upgradeKernelTo.value,
+                upgradeInProgress: true,
+            });
+        }
     }
-    
+
+    updateISOConfiramation(confirmed) {
+        console.log("updateISOConfiramation, " + confirmed);
+        if (confirmed) {
+            this.props.upgradeNodeCallback(this.state.node, false, this.state.upgradeISOTo);
+            this.setState({
+                selectedKernel: this.state.selectedISO.value,
+                upgradeInProgress: true,
+            });
+        }
+    }
+
     sbKernelSelectionChanged(obj) {
         console.log("Selection Changed for Kernel");
-        this.props.ModelDialogCallback(true, "Upgrade Kernel", "Update Kernel from xxxx to yyyy.", this.updateKernelConfirmation)
+        this.state.upgradeKernelTo = obj;
+        this.props.modelDialogCallback(true, "Upgrade Kernel", "Update Kernel from xxxx to yyyy.", this.updateKernelConfirmation);
     }
 
     sbISOSelectionChanged(obj) {
         console.log("Selection Changed for ISO");
-        this.props.ModelDialogCallback(true, "Upgrade ISO", "Update IOS from xxxx to yyyy.", this.updateISOConfiramation)
+        this.state.upgradeISOTo = obj;
+        this.props.modelDialogCallback(true, "Upgrade ISO", "Update IOS from xxxx to yyyy.", this.updateISOConfiramation);
     }
-    
+
     columnClassName(columnId, withSelection) {
         let active = this.state.node%2;
         let colClasses = "Col-Content " + (active? "Content-Active ": "Content-InActive ");
@@ -81,9 +110,10 @@ class SummaryNode extends React.Component {
         }
         return colClasses;
     }
-    
+
     renderLinuxKernel(keyId) {
-        if (this.state.selectedSystemType == 0) {
+        if (this.state.selectedSystemType == 0 || 
+            !this.props.upgradeInProgress) {
             return(<Select
                         key={keyId}
                         id={keyId}
@@ -97,9 +127,10 @@ class SummaryNode extends React.Component {
             return(<div>{kernelType}</div>);
         }
     }
-    
+
     renderLinuxISO(keyId) {
-        if (this.state.selectedSystemType == 0) {
+        if (this.state.selectedSystemType == 0|| 
+            !this.props.upgradeInProgress) {
             return(
                 <Select
                     key={keyId}
@@ -115,7 +146,7 @@ class SummaryNode extends React.Component {
             return(<div>{typeISO}</div>);
         }
     }
-        
+
     renderNode() {
         let keyId = "NodeId_"+this.state.node;
         let selectId_1 = "SelectionNodeId_" + this.state.node + "_1";
@@ -149,6 +180,7 @@ class SummaryNode extends React.Component {
                 </div>
         );
     }
+
     render() {
         return (
             <div>

@@ -3,6 +3,13 @@ import Styles from './Summary.css';
 import {Grid, Col, Row} from 'react-bootstrap';
 import {HostStats, Host, ServerAPI} from '../../../ServerAPI';
 import SummaryNode from './SummaryNode'
+import {
+    Button,
+    Modal,
+    ModalHeader,
+    ModalBody,
+    ModalFooter,
+} from 'reactstrap';
 
 class Summary extends React.Component {
     constructor(props) {
@@ -12,10 +19,13 @@ class Summary extends React.Component {
             displayModel: false,
             modelTitle: "",
             modelDescription: "",
+            modelConfirmationCallBack: null,
         };
         this.updateNodeSummary = this.updateNodeSummary.bind(this);
         this.displayModelDialog = this.displayModelDialog.bind(this);
         this.upgradeNode = this.upgradeNode.bind(this);
+        this.cancelUpgrade = this.cancelUpgrade.bind(this);
+        this.upgradeConfirmation = this.upgradeConfirmation.bind(this);
     }
 
     componentDidMount() {
@@ -29,13 +39,41 @@ class Summary extends React.Component {
     updateNodeSummary(summaryObj) {
         
     }
-    
-    displayModelDialog(displayModel, modelTitle, modelDescription, confirmationCallback) {
-        console.log(modelTitle+modelDescription);
+
+    cancelUpgrade() {
+        let confirmationCallback = this.state.modelConfirmationCallBack;
+        this.setState({
+            displayModel: false,
+            modelTitle: "",
+            modelDescription: "",
+            modelConfirmationCallBack: null,
+        });
+        confirmationCallback(false);
     }
-    
-    upgradeNode(node, updateKernel, updateISO) {
-        console.log(modelTitle+modelDescription);
+
+    upgradeConfirmation() {
+        let confirmationCallback = this.state.modelConfirmationCallBack;
+        this.setState({
+            displayModel: false,
+            modelTitle: "",
+            modelDescription: "",
+            modelConfirmationCallBack: null,
+        });
+        confirmationCallback(true);
+    }
+
+    displayModelDialog(displayModel, modelTitle, modelDescription, confirmationCallback) {
+        this.setState({
+            displayModel: displayModel,
+            modelTitle: modelTitle,
+            modelDescription: modelDescription,
+            modelConfirmationCallBack: confirmationCallback,
+        });
+    }
+
+    upgradeNode(node, updateKernel, updateObject) {
+        console.log(node + ", " + updateKernel + ", " + updateObject);
+        //MN:: TODO:: API Server call for Upgrade....
     }
 
     renderNodesHeader() {
@@ -68,16 +106,31 @@ class Summary extends React.Component {
         let retHTML = [];
         for (let node in this.state.nodes) {
             retHTML.push(
-                <SummaryNode Node={node} ModelDialogCallback={this.displayModelDialog} upgradeNodeCallback={this.upgradeNode}/>
+                <SummaryNode Node={node} upgradeInProgress={true} modelDialogCallback={this.displayModelDialog} upgradeNodeCallback={this.upgradeNode}/>
             );
         }
         return retHTML;
     }
     
+    renderUpgradeModelDialog() {
+        if (this.state.displayModel) {
+            return (
+                <Modal isOpen={this.state.displayModel} size="sm" centered="true" >
+                    <ModalHeader toggle={this.toggleCreateHost}>{this.state.modelTitle}</ModalHeader>
+                    <ModalBody>{this.state.modelDescription}</ModalBody>
+                    <ModalFooter>
+                        <Button outline color="primary" onClick={this.upgradeConfirmation}>Upgrade</Button>{'  '}
+                        <Button outline color="secondary" onClick={this.cancelUpgrade}>Cancel</Button>
+                    </ModalFooter>
+                </Modal>
+            );
+        }
+    }
     
     render() {
         return (
             <div>
+                {this.renderUpgradeModelDialog()}
                 {this.renderNodesHeader()}
                 {this.renderNodesContent()}
             </div>
