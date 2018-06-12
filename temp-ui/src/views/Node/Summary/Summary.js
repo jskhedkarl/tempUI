@@ -15,7 +15,7 @@ class Summary extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            nodes : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+            nodes : [],
             displayModel: false,
             modelTitle: "",
             modelDescription: "",
@@ -29,15 +29,17 @@ class Summary extends React.Component {
     }
 
     componentDidMount() {
-        //ServerAPI.DefaultServer().fetchNodes(this.updateNodeSummary, this);
+        ServerAPI.DefaultServer().fetchAllServerNodes(this.updateNodeSummary, this);
     }
 
     componentWillUnmount() {
         
     }
 
-    updateNodeSummary(summaryObj) {
-        
+    updateNodeSummary(instane, nodes) {
+        instance.setState({
+            nodes: nodes,
+        });
     }
 
     cancelUpgrade() {
@@ -104,10 +106,12 @@ class Summary extends React.Component {
     
     renderNodes() {
         let retHTML = [];
+        let nodePos = 1;
         for (let node in this.state.nodes) {
             retHTML.push(
-                <SummaryNode Node={node} upgradeInProgress={true} modelDialogCallback={this.displayModelDialog} upgradeNodeCallback={this.upgradeNode}/>
+                <SummaryNode nodeObj={node} nodePosition={nodePos} upgradeInProgress={true} modelDialogCallback={this.displayModelDialog} upgradeNodeCallback={this.upgradeNode}/>
             );
+            nodePos++;
         }
         return retHTML;
     }

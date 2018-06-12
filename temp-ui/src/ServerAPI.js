@@ -467,12 +467,75 @@ export class ServerTransaction {
     }
 }
 
+
+export class ServerNode {
+    constructor(jsonObj) {
+        this.serialNumber = jsonObj.serialNumber;
+        this.name = jsonObj.name;
+        this.labels = jsonObj.labels;
+        this.nodeType = jsonObj.nodeType;
+        this.kernel = jsonObj.kernel;
+        this.kernelVersion = jsonObj.kernelVersion;
+        this.linuxISO = jsonObj.linuxISO;
+        this.linuxISODesc = jsonObj.linuxISODesc;
+        this.cpuInGHz = jsonObj.cpuInGHz;
+        this.memoryInGB = jsonObj.memoryInGB;
+        this.storageInGB = jsonObj.storageInGB;
+        this.hostNameIP = jsonObj.hostNameIP;
+        this.goesVersion = jsonObj.goesVersion;
+        this.coreBootVersion = jsonObj.coreBootVersion;
+        this.bmcAddressIP = jsonObj.bmcAddressIP;
+    }
+}
+
+export class ServerISO {
+    constructor(jsonObj) {
+        this.label = jsonObj.Name;
+        this.description = jsonObj.Description;
+    }
+}
+
+export class ServerKernelTypes {
+    constructor(jsonObj) {
+        this.label = jsonObj.Name;
+        this.description = jsonObj.Description;
+    }
+}
+
+export class ServerLabels {
+    constructor(labelName) {
+        this.label = labelName;
+        this.description = "";
+    }
+}
+
+export class ServerSystemType {
+    constructor(jsonObj) {
+        this.label = jsonObj.Id;
+        this.vendor = jsonObj.Vendor;
+        //this.description = jsonObj.Description;
+        this.rackUnit = jsonObj.RackUnit;
+        this.airflow = jsonObj.Airflow;
+        this.numFrontPanelInterface = jsonObj.NumFrontPanelInterface
+        this.speedFrontPanelInterface = jsonObj.SpeedFrontPanelInterface;
+        this.numMgmtInterface = jsonObj.NumMgmtInterface;
+        this.speedMgmtInterafce = jsonObj.SpeedMgmtInterafce;
+    }
+}
+
 export class ServerAPI {
     constructor() {
         this.allGroups = new Object();
         this.allHosts = new Object();
+        this.allNodes = [];
+        this.allISOs = [];
+        this.allKernelTypes = [];
+        this.allLabels = [];
+        this.allSystemTypes = [];
+        
         //this.invaderServerAddress = "http://192.168.101.122:8080";
         this.invaderServerAddress = "http://192.168.53.130:8080";
+        this.fetchAllNodeSetupInfo();
     }
     
     DefaultInvader() {
@@ -485,6 +548,106 @@ export class ServerAPI {
     
     static DefaultServer() {
         return defaultAPIServer;
+    }
+    
+    fetchAllNodeSetupInfo() {
+        let serverInstance = this;
+        let xhr = new XMLHttpRequest();
+        let sourceURL = this.DefaultInvader() + "/node/setup_info";
+        xhr.open("GET", sourceURL, true);
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                try {
+                    let jsonObj = JSON.parse(xhr.responseText);
+                    let jsonSetup = jsonObj.setup;
+                    {
+                        let mainCtr = 0;
+                        // generate all kernel
+                        let kernels = jsonSetup.kernel;
+                        this.allKernelTypes = [];
+                        for (let kCtr in kernels) {
+                            let k = kernels[kCtr];
+                            let kernel = new ServerKernelTypes(k);
+                            this.allKernelTypes[mainCtr] = kernel;
+                            mainCtr++;
+                        }
+                        
+                        mainCtr = 0;
+                        // generate all ISO's
+                        let isoS = jsonSetup.linuxiso;
+                        this.allISOs = [];
+                        for (let ctr in isoS) {
+                            let i = isoS[ctr];
+                            let iso = new ServerISO(i);
+                            this.allISOs[mainCtr] = iso;
+                            mainCtr++;
+                        }
+                        
+                        // generate all Labels
+                        mainCtr = 0;
+                        let labels = jsonSetup.labels;
+                        this.allLabels = [];
+                        for (let ctr in labels) {
+                            let i = labels[ctr];
+                            let label = new ServerLabels(i);
+                            this.allLabels[mainCtr] = label;
+                            mainCtr++;
+                        }
+                        
+                        // generate System Types
+                        mainCtr = 0;
+                        let types = jsonSetup.type;
+                        this.allSystemTypes = [];
+                        for (let ctr in types) {
+                            let i = types[ctr];
+                            let type = new ServerSystemType(i);
+                            this.allSystemTypes[mainCtr] = type;
+                            mainCtr++
+                        }
+                    }
+                } catch (err) {
+                    console.log("POST :: ERROR :: " + err);
+                }
+            }
+        };
+        xhr.onerror = function () {
+            console.log("POST :: Error :: ");
+            callback(instance, null);
+        }
+        xhr.send();
+    }
+    
+    fetchAllServerNodes(callback, instance) {
+        let serverInstance = this;
+        let xhr = new XMLHttpRequest();
+        let sourceURL = this.DefaultInvader() + "/node/";
+        xhr.open("GET", sourceURL, true);
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                try {
+                    let jsonObj = JSON.parse(xhr.responseText);
+                    let jsonNodes = jsonObj.nodes;
+                    let retNodes = [];
+                    let nodeCtr = 0;
+                    for (nodeCtr in jsonNodes) {
+                        let jNode = jsonNodes[nodeCtr];
+                        let node = new ServerNode(jNode);
+                        retNodes.append(node);
+                    }
+                    callback(instance, retNodes);
+                    
+                } catch (err) {
+                    console.log("POST :: ERROR :: " + err);
+                }
+            }
+        };
+        xhr.onerror = function () {
+            console.log("POST :: Error :: ");
+            callback(instance, null);
+        }
+        xhr.send();
     }
     
     fetchHosts() {

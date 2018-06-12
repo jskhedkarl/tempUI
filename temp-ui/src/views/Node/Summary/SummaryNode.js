@@ -12,14 +12,14 @@ class SummaryNode extends React.Component {
         //props.ModelDialogCallback((displayModel, modelTitle, modelDescription, confirmationCallback))
         //props.upgradeNodeCallback((node, updateKernel, updateISO))
         this.state = {
-            node: props.Node,
+            node: props.nodeObj,
             upgradeInProgress: props.upgradeInProgress,
             selectedLabels:["spine", "leaf", "k8Master"],
             selectedISO: "1",
             selectedKernel: "1",
             upgradeISOTo: null,
             upgradeKernelTo: null,
-            selectedSystemType: props.Node%2,
+            selectedSystemType: props.nodePosition%2,
             xxxx: { value: 'two', label: 'Two'},
             ISOs : [
                 {label: "Debain Jessie - Platina", value: "1", description: "Standard Debian Jessie 4.13, inclues GOES, Platina Factory Defaults"},
@@ -148,13 +148,13 @@ class SummaryNode extends React.Component {
     }
 
     renderNode() {
-        let keyId = "NodeId_"+this.state.node;
+        let keyId = "NodeId_"+this.state.node.name;
         let selectId_1 = "SelectionNodeId_" + this.state.node + "_1";
         let selectId_2 = "SelectionNodeId_" + this.state.node + "_2";
         let selectId_3 = "SelectionNodeId_" + this.state.node + "_3";
         let selectedLabels = this.state.selectedLabels.join(", ");
         let selectedSystemType = this.state.systemType[this.state.selectedSystemType].label;
-        let topStyle = (this.state.node * 3) + 'px';
+        let topStyle = (this.props.nodePosition * 3) + 'px';
         let styleObj={top:topStyle};
         return (
             <div key={keyId} id={keyId} className="Row-Content" style={styleObj}>
