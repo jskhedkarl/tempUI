@@ -491,6 +491,7 @@ export class ServerNode {
 export class ServerISO {
     constructor(jsonObj) {
         this.label = jsonObj.Name;
+        this.value = jsonObj.Name;
         this.description = jsonObj.Description;
     }
 }
@@ -498,6 +499,7 @@ export class ServerISO {
 export class ServerKernelTypes {
     constructor(jsonObj) {
         this.label = jsonObj.Name;
+        this.value = jsonObj.Name;
         this.description = jsonObj.Description;
     }
 }
@@ -505,13 +507,15 @@ export class ServerKernelTypes {
 export class ServerLabels {
     constructor(labelName) {
         this.label = labelName;
+        this.value = labelName;
         this.description = "";
     }
 }
 
 export class ServerSystemType {
     constructor(jsonObj) {
-        this.label = jsonObj.Id;
+        this.value = jsonObj.Id;
+        this.label = jsonObj.Vendor + ":" + jsonObj.Id;
         this.vendor = jsonObj.Vendor;
         //this.description = jsonObj.Description;
         this.rackUnit = jsonObj.RackUnit;
@@ -565,44 +569,44 @@ export class ServerAPI {
                         let mainCtr = 0;
                         // generate all kernel
                         let kernels = jsonSetup.kernel;
-                        this.allKernelTypes = [];
+                        serverInstance.allKernelTypes = [];
                         for (let kCtr in kernels) {
                             let k = kernels[kCtr];
                             let kernel = new ServerKernelTypes(k);
-                            this.allKernelTypes[mainCtr] = kernel;
+                            serverInstance.allKernelTypes[mainCtr] = kernel;
                             mainCtr++;
                         }
                         
                         mainCtr = 0;
                         // generate all ISO's
                         let isoS = jsonSetup.linuxiso;
-                        this.allISOs = [];
+                        serverInstance.allISOs = [];
                         for (let ctr in isoS) {
                             let i = isoS[ctr];
                             let iso = new ServerISO(i);
-                            this.allISOs[mainCtr] = iso;
+                            serverInstance.allISOs[mainCtr] = iso;
                             mainCtr++;
                         }
                         
                         // generate all Labels
                         mainCtr = 0;
                         let labels = jsonSetup.labels;
-                        this.allLabels = [];
+                        serverInstance.allLabels = [];
                         for (let ctr in labels) {
                             let i = labels[ctr];
                             let label = new ServerLabels(i);
-                            this.allLabels[mainCtr] = label;
+                            serverInstance.allLabels[mainCtr] = label;
                             mainCtr++;
                         }
                         
                         // generate System Types
                         mainCtr = 0;
                         let types = jsonSetup.type;
-                        this.allSystemTypes = [];
+                        serverInstance.allSystemTypes = [];
                         for (let ctr in types) {
                             let i = types[ctr];
                             let type = new ServerSystemType(i);
-                            this.allSystemTypes[mainCtr] = type;
+                            serverInstance.allSystemTypes[mainCtr] = type;
                             mainCtr++
                         }
                     }
@@ -634,7 +638,7 @@ export class ServerAPI {
                     for (nodeCtr in jsonNodes) {
                         let jNode = jsonNodes[nodeCtr];
                         let node = new ServerNode(jNode);
-                        retNodes.append(node);
+                        retNodes[nodeCtr] = node;
                     }
                     callback(instance, retNodes);
                     

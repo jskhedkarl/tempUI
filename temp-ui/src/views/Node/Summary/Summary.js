@@ -36,7 +36,7 @@ class Summary extends React.Component {
         
     }
 
-    updateNodeSummary(instane, nodes) {
+    updateNodeSummary(instance, nodes) {
         instance.setState({
             nodes: nodes,
         });
@@ -107,9 +107,10 @@ class Summary extends React.Component {
     renderNodes() {
         let retHTML = [];
         let nodePos = 1;
-        for (let node in this.state.nodes) {
+        for (let nodeId in this.state.nodes) {
+            let node = this.state.nodes[nodeId];
             retHTML.push(
-                <SummaryNode nodeObj={node} nodePosition={nodePos} upgradeInProgress={true} modelDialogCallback={this.displayModelDialog} upgradeNodeCallback={this.upgradeNode}/>
+                <SummaryNode serverObj={ServerAPI.DefaultServer()} nodeObj={node} nodePosition={nodePos} upgradeInProgress={false} modelDialogCallback={this.displayModelDialog} upgradeNodeCallback={this.upgradeNode}/>
             );
             nodePos++;
         }
