@@ -72,10 +72,15 @@ class Summary extends React.Component {
             modelConfirmationCallBack: confirmationCallback,
         });
     }
+    
+    upgradeNodeConfirmationCallback(wipeInfo) {
+        console.log("Updated :: " + wipeInfo);
+    }
 
     upgradeNode(node, updateKernel, updateObject) {
         console.log(node + ", " + updateKernel + ", " + updateObject);
         //MN:: TODO:: API Server call for Upgrade....
+        ServerAPI.DefaultServer().upgradeOrWipeServerNode(node, this.upgradeNodeConfirmationCallback, this);
     }
 
     renderNodesHeader() {

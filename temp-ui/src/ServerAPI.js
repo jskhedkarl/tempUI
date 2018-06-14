@@ -617,9 +617,41 @@ export class ServerAPI {
         };
         xhr.onerror = function () {
             console.log("POST :: Error :: ");
+            serverInstance.allKernelTypes = [];
+            serverInstance.allISOs = [];
+            serverInstance.allLabels = [];
+            serverInstance.allSystemTypes = [];
+        }
+        xhr.send();
+    }
+    
+    // MN:: TODO:: Currently only added Wipe as that is the only feature supported by backend calls
+    // Later need to support Upgrade whcih will require Type of OS / ISO details.
+    upgradeOrWipeServerNode(node, callback, instance) {
+        let serverInstance = this;
+        let xhr = new XMLHttpRequest();
+        let sourceURL = this.DefaultInvader() + "/node/wipe/" + node.name;
+        // MN:: TODO:: Need to change below from GET TO POST once information needs to be passed.
+        xhr.open("GET", sourceURL, true);
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                try {
+                    let jsonObj = JSON.parse(xhr.responseText);
+                    let wipeInfo = jsonObj.wipe;
+                    callback(instance, wipeInfo);
+                } catch (err) {
+                    console.log("POST :: ERROR :: " + err);
+                    callback(instance, null);
+                }
+            }
+        };
+        xhr.onerror = function () {
+            console.log("POST :: Error :: ");
             callback(instance, null);
         }
         xhr.send();
+        
     }
     
     fetchAllServerNodes(callback, instance) {
