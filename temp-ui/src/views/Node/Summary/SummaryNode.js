@@ -24,30 +24,6 @@ class SummaryNode extends React.Component {
             upgradeISOTo: null,
             upgradeKernelTo: null,
             selectedSystemType: props.nodeObj.nodeType,
-/* 
-            xxxx: { value: 'two', label: 'Two'},
-            ISOs : [
-                {label: "Debain Jessie - Platina", value: "1", description: "Standard Debian Jessie 4.13, inclues GOES, Platina Factory Defaults"},
-                {label: "Centos", value: "2", description: "Standard Centos"},
-                {label: "Wipe", value: "3", description: "Wipe System Clean"},
-            ],
-            kernel: [
-                {label: "4.13.0-platina-mk1-amd64", value: "1", description: "Standard Debian + plantina-mk1-ko"},
-                {label: "4.13.0-Debian", value: "2", description: "Standard debian"},
-            ],
-            labels: [
-                {label: "spine", value: "1", description: "Interconnect all leafs"},
-                {label: "leaf", value: "2", description: "Top of rack, all servers connect to leaf"},
-                {label: "k8Master", value: "3", description: "Kubernetes master node"},
-                {label: "k8Worker", value: "4", description: "Kubernetes worker node"},
-                {label: "etcD", value: "5", description: "Hosts for etcD"},
-                {label: "cache", value: "6", description: "Available for http content cache"},
-            ],
-            systemType: [
-                {label: "PS-3001", value: "1", description: ""},
-                {label: "Super Micro x", value: "2", description: ""},
-            ],
-*/
         };
         this.sbKernelSelectionChanged = this.sbKernelSelectionChanged.bind(this);
         this.sbISOSelectionChanged = this.sbISOSelectionChanged.bind(this);

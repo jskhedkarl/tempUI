@@ -548,6 +548,8 @@ export class ServerAPI {
     
     updateInvaderAddress(invaderAddress) {
         this.invaderServerAddress = invaderAddress;
+        // If IP address is changing we need to update Inventory information.
+        this.fetchAllNodeSetupInfo();
     }
     
     static DefaultServer() {
