@@ -41,7 +41,9 @@ class InventoryComponent extends Component {
         this.state = {
             childVisible: false,
             active: false,
-            hosts: {},
+            nodes: [],
+            selectedNode: null,
+            //hosts: {},
             groups: {},
             selectedGroups: {},
             selectedHost: "",
@@ -59,8 +61,9 @@ class InventoryComponent extends Component {
         this.createNewHost = this.createNewHost.bind(this);
         this.onHostNameChange = this.onHostNameChange.bind(this);
         this.onIPAddressChange = this.onIPAddressChange.bind(this);
-        this.inventoryCallback = this.inventoryCallback.bind(this);
+        //this.inventoryCallback = this.inventoryCallback.bind(this);
         this.updateHostEntries = this.updateHostEntries.bind(this);
+        this.updateNodeSummary = this.updateNodeSummary.bind(this);
     }
     
     componentDidMount() {
@@ -69,16 +72,22 @@ class InventoryComponent extends Component {
     
     updateInventory() {
         let server = ServerAPI.DefaultServer();
-        server.setupInventory(this.inventoryCallback, this);
+        //server.setupInventory(this.inventoryCallback, this);
+        server.fetchAllServerNodes(this.updateNodeSummary, this);
     }
     
-    inventoryCallback(instance) {
-        let server = ServerAPI.DefaultServer();
+    updateNodeSummary(instance, nodes) {
         instance.setState({
-            hosts : server.allHosts,
-            groups: server.allGroups,
+            nodes: nodes,
         });
     }
+    //inventoryCallback(instance) {
+    //    let server = ServerAPI.DefaultServer();
+    //    instance.setState({
+    //        hosts : server.allHosts,
+    //        groups: server.allGroups,
+    //    });
+    //}
     
 
     handleToggleClick() {
@@ -315,21 +324,50 @@ class InventoryComponent extends Component {
         }
         return retHTML;
     }
-
-    render() {
-        let hostVariables = (this.state.selectedHost !== undefined) ? this.state.selectedHost.variables : null;
-        let groupVariables = "";
-        let systemVariables = this.state.groups[Group.SYSTEM_VARIABLES];
-        if (systemVariables !== undefined) {
-            systemVariables = systemVariables.variables;
-        } else {
-            systemVariables = "";
-        }
-        //                                <div className="floatRight" onClick={() => this.toggleCreateHost()} ><strong>+</strong></div>
-
+    
+    renderNode(node, index) {
+        let bgColor = index % 2 ? 'rgb(255,255,255)': 'rgb(227,227,227)';
+        //onClick={(event) => this.showDetails(event,hostName)}
+        /*
+                    <Col md="1">
+                        <Button className="floatRight" color="link" size="lg" onClick={(event) => this.removeHost(event,hostName)}> - </Button>
+                    </Col>
+        */
         return (
+            <CardBody pbindex={index} id={node.name} key={node.name} style={{ background:bgColor}}>
+                <Row>
+                    <Col md="11">
+                        <Row>
+                            <Col><strong>{node.name}</strong></Col>
+                        </Row>
+                        <Row>
+                            <Col md="1"></Col>
+                            <Col md="4">IP Address: </Col>
+                            <Col md="5"><strong>{node.hostNameIP}</strong></Col>
+                        </Row>
+                        <Row>
+                            <Col md="1"></Col>
+                            <Col md="4"> BMC IP: </Col>
+                            <Col md="5"><strong>{node.bmcAddressIP}</strong></Col>
+                        </Row>
+                    </Col>
+                </Row>
+            </CardBody>
+        );
+    }
+    
+    renderNodes() {
+        let retHTML = [];
+        for (let ctr in this.state.nodes) {
+            let node = this.state.nodes[ctr];
+            retHTML.push(this.renderNode(node, ctr));
+        }
+        return retHTML;
+    }
+    
+    render() {
+        return(
             <div className="animated fadeIn">
-                {this.renderAddHostModel()}
                 <Row>
                     <Col xs="12" sm="6">
                         <Card>
@@ -344,31 +382,70 @@ class InventoryComponent extends Component {
                                 </Row>
                             </CardHeader>
                             <div style={{ height: '600px', overflowY: 'scroll', cursor:'pointer' }}>
-                                {this.renderHosts()}
+                                {this.renderNodes()}
                             </div>
                         </Card>
                     </Col>
                     <Col xs="12" sm="6">
-                        <VariableComponent 
-                            active={this.state.active} 
-                            hostVariables={hostVariables} 
-                            parentId={this.state.selectedHost.hName}
-                            groupVariables={groupVariables} 
-                            systemVariables={systemVariables}
-                            setVariables={(variables) => this.handleSetVariables(variables)}
-                        />
-                        <GroupComponent 
-                            active={this.state.active}
-                            host={this.state.selectedHost}
-                            parentId={this.state.selectedHost.hName}
-                            groups={this.state.groups}
-                            selectedGroups={this.state.selectedGroups}
-                            setSelectedGroups={(groups) => this.handleSelectedGroups(groups)}
-                        />
                     </Col>
                 </Row>
             </div>
         );
     }
+
+    //render() {
+    //    let hostVariables = (this.state.selectedHost !== undefined) ? this.state.selectedHost.variables : null;
+    //    let groupVariables = "";
+    //    let systemVariables = this.state.groups[Group.SYSTEM_VARIABLES];
+    //    if (systemVariables !== undefined) {
+    //        systemVariables = systemVariables.variables;
+    //    } else {
+    //        systemVariables = "";
+    //    }
+    //    //                                <div className="floatRight" onClick={() => this.toggleCreateHost()} ><strong>+</strong></div>
+    //
+    //    return (
+    //        <div className="animated fadeIn">
+    //            {this.renderAddHostModel()}
+    //            <Row>
+    //                <Col xs="12" sm="6">
+    //                    <Card>
+    //                        <CardHeader id="host_header" key="host_header">
+    //                            <Row>
+    //                                <Col>
+    //                                    <h2>Hosts</h2>
+    //                                </Col>
+    //                                <Col>
+    //                                    <Button className="floatRight" color="link" size="lg" onClick={this.toggleCreateHost}> + </Button>
+    //                                </Col>
+    //                            </Row>
+    //                        </CardHeader>
+    //                        <div style={{ height: '600px', overflowY: 'scroll', cursor:'pointer' }}>
+    //                            {this.renderHosts()}
+    //                        </div>
+    //                    </Card>
+    //                </Col>
+    //                <Col xs="12" sm="6">
+    //                    <VariableComponent 
+    //                        active={this.state.active} 
+    //                        hostVariables={hostVariables} 
+    //                        parentId={this.state.selectedHost.hName}
+    //                        groupVariables={groupVariables} 
+    //                        systemVariables={systemVariables}
+    //                        setVariables={(variables) => this.handleSetVariables(variables)}
+    //                    />
+    //                    <GroupComponent 
+    //                        active={this.state.active}
+    //                        host={this.state.selectedHost}
+    //                        parentId={this.state.selectedHost.hName}
+    //                        groups={this.state.groups}
+    //                        selectedGroups={this.state.selectedGroups}
+    //                        setSelectedGroups={(groups) => this.handleSelectedGroups(groups)}
+    //                    />
+    //                </Col>
+    //            </Row>
+    //        </div>
+    //    );
+    //}
 }
 export default InventoryComponent;
