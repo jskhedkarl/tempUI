@@ -42,12 +42,13 @@ class InventoryComponent extends Component {
             childVisible: false,
             active: false,
             nodes: [],
-            selectedNode: null,
+            selectedNode: "",
+            selectedNodeDivId: "",
             //hosts: {},
-            groups: {},
+            groups: server.allLabels,
             selectedGroups: {},
-            selectedHost: "",
-            selectedHostDivId: "",
+            //selectedHost: "",
+            //selectedHostDivId: "",
             show: false,
             isOpen: false,
             hostName: "",
@@ -193,38 +194,74 @@ class InventoryComponent extends Component {
         return selectedGroups;
     }
 
-    showDetails(event, hostName) {
-        let host = this.state.hosts[hostName];
+    //showDetails(event, hostName) {
+    //    let host = this.state.hosts[hostName];
+    //    
+    //    let selElement = event.currentTarget;
+    //    let selGroups = this.calculateSelectedGroups(host);
+    //    if (!this.state.active) {  // No previous Selection
+    //        selElement.setAttribute("style", "background-color:rgb(189,189,189)");
+    //        this.setState({
+    //            selectedHost: host,
+    //            selectedHostDivId: selElement.id,
+    //            active: true, 
+    //            selectedGroups: selGroups,
+    //        });
+    //    } else {
+    //        let prevName = this.state.selectedHostDivId;
+    //        let prevSelElement = document.getElementById(prevName);
+    //        let selIndex = parseInt(prevSelElement.getAttribute("pbindex"));
+    //        let bgColor = "background-color:" + ((selIndex % 2) ? 'rgb(255,255,255)': 'rgb(227,227,227)');
+    //        prevSelElement.setAttribute("style", bgColor);
+    //        if (this.state.selectedHost.hName === hostName) {   // Same host selected as prev.. Or de-selected
+    //            this.setState({
+    //                selectedHost: "",
+    //                selectedHostDivId: "",
+    //                active: false,
+    //                selectedGroups: {},
+    //            });
+    //        } else {
+    //            selElement.setAttribute("style", "background-color:rgb(189,189,189)");
+    //            this.setState({
+    //                selectedHost: host,
+    //                selectedHostDivId: selElement.id,
+    //                active: true, 
+    //                selectedGroups: selGroups,
+    //            });
+    //        }
+    //    }
+    //}
+    
+    showDetails(event, node) {
         let selElement = event.currentTarget;
-        let selGroups = this.calculateSelectedGroups(host);
-        if (!this.state.active) {  // No previous Selection
-            selElement.setAttribute("style", "background-color:rgb(189,189,189)");
+        if (!this.state.active) {
+            selElement.setAttribute("style", "background-color:rgb(189,189,189)")
             this.setState({
-                selectedHost: host,
-                selectedHostDivId: selElement.id,
-                active: true, 
-                selectedGroups: selGroups,
+                selectedNode: node,
+                selectedNodeDivId: selElement.id,
+                active: true,
+                selectedGroups: node.labels,
             });
         } else {
-            let prevName = this.state.selectedHostDivId;
+            let prevName = this.state.selectedNodeDivId;
             let prevSelElement = document.getElementById(prevName);
             let selIndex = parseInt(prevSelElement.getAttribute("pbindex"));
-            let bgColor = "background-color:" + ((selIndex % 2) ? 'rgb(255,255,255)': 'rgb(227,227,227)');
+            let bgColor = "background-color:" + ((selIndex %2) ? 'rgb(255,255,255)': 'rgb(227,227,227)');
             prevSelElement.setAttribute("style", bgColor);
-            if (this.state.selectedHost.hName === hostName) {   // Same host selected as prev.. Or de-selected
+            if (this.state.selectedNode.name === node.name) {
                 this.setState({
-                    selectedHost: "",
-                    selectedHostDivId: "",
+                    selectedNode: "",
+                    selectedNodeDivId: "",
                     active: false,
-                    selectedGroups: {},
+                    selectedGroups: [],
                 });
             } else {
                 selElement.setAttribute("style", "background-color:rgb(189,189,189)");
                 this.setState({
-                    selectedHost: host,
-                    selectedHostDivId: selElement.id,
+                    selectedNode: node,
+                    selectedNodeDivId: selElement.id,
                     active: true, 
-                    selectedGroups: selGroups,
+                    selectedGroups: node.labels,
                 });
             }
         }
@@ -287,43 +324,43 @@ class InventoryComponent extends Component {
 
 //                                <div style={{fontSize: '18px' }} onClick={(event) => this.removeHost(event,hostName)} >-</div>
 
-    renderHosts() {
-        let retHTML = [];
-        let index = 0;
-        for (let hostName in this.state.hosts) {
-            let host = this.state.hosts[hostName];
-            let hostId = hostName.trim() + "_" + host.IPAddress.trim();
-            if (host.type > 0) { //Host.OTHER
-                let bgColor = index % 2 ? 'rgb(255,255,255)': 'rgb(227,227,227)';
-                retHTML.push(
-                    <CardBody pbindex={index} id={hostId} key={hostId} style={{ background:bgColor}} onClick={(event) => this.showDetails(event,hostName)}>
-                        <Row>
-                            <Col md="11">
-                                <Row>
-                                    <Col><strong>{hostName}</strong></Col>
-                                </Row>
-                                <Row>
-                                    <Col md="1"></Col>
-                                    <Col md="4">IP Address: </Col>
-                                    <Col md="5"><strong>{host.IPAddress}</strong></Col>
-                                </Row>
-                                <Row>
-                                    <Col md="1"></Col>
-                                    <Col md="4">Platina Port: </Col>
-                                    <Col md="5"><strong>{host.invaderPort}</strong></Col>
-                                </Row>
-                            </Col>
-                            <Col md="1">
-                                <Button className="floatRight" color="link" size="lg" onClick={(event) => this.removeHost(event,hostName)}> - </Button>
-                            </Col>
-                        </Row>
-                    </CardBody>
-                );
-                index++;
-            }
-        }
-        return retHTML;
-    }
+    //renderHosts() {
+    //    let retHTML = [];
+    //    let index = 0;
+    //    for (let hostName in this.state.hosts) {
+    //        let host = this.state.hosts[hostName];
+    //        let hostId = hostName.trim() + "_" + host.IPAddress.trim();
+    //        if (host.type > 0) { //Host.OTHER
+    //            let bgColor = index % 2 ? 'rgb(255,255,255)': 'rgb(227,227,227)';
+    //            retHTML.push(
+    //                <CardBody pbindex={index} id={hostId} key={hostId} style={{ background:bgColor}} onClick={(event) => this.showDetails(event,hostName)}>
+    //                    <Row>
+    //                        <Col md="11">
+    //                            <Row>
+    //                                <Col><strong>{hostName}</strong></Col>
+    //                            </Row>
+    //                            <Row>
+    //                                <Col md="1"></Col>
+    //                                <Col md="4">IP Address: </Col>
+    //                                <Col md="5"><strong>{host.IPAddress}</strong></Col>
+    //                            </Row>
+    //                            <Row>
+    //                                <Col md="1"></Col>
+    //                                <Col md="4">Platina Port: </Col>
+    //                                <Col md="5"><strong>{host.invaderPort}</strong></Col>
+    //                            </Row>
+    //                        </Col>
+    //                        <Col md="1">
+    //                            <Button className="floatRight" color="link" size="lg" onClick={(event) => this.removeHost(event,hostName)}> - </Button>
+    //                        </Col>
+    //                    </Row>
+    //                </CardBody>
+    //            );
+    //            index++;
+    //        }
+    //    }
+    //    return retHTML;
+    //}
     
     renderNode(node, index) {
         let bgColor = index % 2 ? 'rgb(255,255,255)': 'rgb(227,227,227)';
@@ -334,7 +371,9 @@ class InventoryComponent extends Component {
                     </Col>
         */
         return (
-            <CardBody pbindex={index} id={node.name} key={node.name} style={{ background:bgColor}}>
+            <CardBody pbindex={index} id={node.name} 
+                key={node.name} style={{ background:bgColor}} 
+                onClick={(event) => this.showDetails(event, node)}>
                 <Row>
                     <Col md="11">
                         <Row>
@@ -387,6 +426,14 @@ class InventoryComponent extends Component {
                         </Card>
                     </Col>
                     <Col xs="12" sm="6">
+                        <GroupComponent 
+                            active={this.state.active}
+                            host={this.state.selectedNode}
+                            parentId={this.state.selectedNode.name}
+                            groups={this.state.groups}
+                            selectedGroups={this.state.selectedGroups}
+                            setSelectedGroups={(groups) => this.handleSelectedGroups(groups)}
+                        />
                     </Col>
                 </Row>
             </div>

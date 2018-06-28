@@ -538,7 +538,8 @@ export class ServerAPI {
         this.allSystemTypes = [];
         
         //this.invaderServerAddress = "http://192.168.101.122:8080";
-        this.invaderServerAddress = "http://192.168.53.130:8080";
+        //this.invaderServerAddress = "http://192.168.53.130:8080";
+        this.invaderServerAddress = "http://172.17.2.37:8080"
         this.fetchAllNodeSetupInfo();
     }
     

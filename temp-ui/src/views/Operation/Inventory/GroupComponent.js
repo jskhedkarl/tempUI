@@ -31,27 +31,34 @@ export default class GroupComponent extends Component {
         super(props);
         //let sGrps = this.generateSelectedGroups();
         this.state = {
+            selectedGroups: {},
             stateChanged: false,
         };
     }
     
     componentWillReceiveProps(nextProps) {
+        let selectedGrpDict = {};
+        for (let grpIndex in nextProps.selectedGroups) {
+            let labelStr = nextProps.selectedGroups[grpIndex];
+            selectedGrpDict[labelStr] = labelStr;
+        }
         this.setState({
             stateChanged: !this.state.stateChanged,
+            selectedGroups: selectedGrpDict,
         });
     }
 
-    groupSelected(event, gName, gIndex) {
+    groupSelected(event, labelObj, gIndex) {
         let currentTarget=event.target.parentNode.parentNode;
-        let selectedGroups = this.props.selectedGroups;
+        let selectedGroups = this.state.selectedGroups;
         let bgColor = 'rgb(189,189,189)';
-        if (gName in selectedGroups) {
+        if (labelObj.label in selectedGroups) {
             // remove it
-            delete selectedGroups[gName];
+            delete selectedGroups[labelObj.label];
             bgColor = gIndex % 2 ? 'rgb(255,255,255)': 'rgb(227,227,227)'; 
         } else {
             // add to group
-            selectedGroups[gName] = gName;
+            selectedGroups[labelObj.label] = labelObj.label;
         }
         currentTarget.style.background=bgColor;
         this.props.setSelectedGroups(selectedGroups);
@@ -64,22 +71,22 @@ export default class GroupComponent extends Component {
             return [];
         }
         let index = 0;
-        for (let gName in this.props.groups) {
-            let grp = this.props.groups[gName];
-            if (grp.gType == Host.OTHER || grp.gType == Host.UNGROUPED) {
-                continue;
-            }
-            let selected = gName in this.props.selectedGroups;
+        for (let labelCtr in this.props.groups) {
+            let labelObj = this.props.groups[labelCtr];
+            //if (grp.gType == Host.OTHER || grp.gType == Host.UNGROUPED) {
+            //    continue;
+            //}
+            let selected = labelObj.label in this.state.selectedGroups;
             let bgColor = 'rgb(189,189,189)';
             if (!selected) {
                 bgColor = index % 2 ? 'rgb(255,255,255)': 'rgb(227,227,227)'; 
             }
             let styleDict = {height: '50px', background: bgColor};
-            let keyId = this.props.parentId + "_" + gName;
+            let keyId = this.props.parentId + "_" + labelObj.label;
             retHTML.push(
-                <CardBody id={keyId} key={keyId} style={styleDict} onClick={(event) => this.groupSelected(event,gName,index)}>
+                <CardBody id={keyId} key={keyId} style={styleDict} onClick={(event) => this.groupSelected(event,labelObj,index)}>
                     <Row>
-                        <Col>{gName}</Col>
+                        <Col>{labelObj.label}</Col>
                     </Row>
                 </CardBody>
             );
@@ -87,6 +94,36 @@ export default class GroupComponent extends Component {
         }
         return retHTML;
     }
+    //renderGroups() {
+    //    let retHTML = [];
+    //
+    //    if (this.props.groups === undefined) {
+    //        return [];
+    //    }
+    //    let index = 0;
+    //    for (let gName in this.props.groups) {
+    //        let grp = this.props.groups[gName];
+    //        if (grp.gType == Host.OTHER || grp.gType == Host.UNGROUPED) {
+    //            continue;
+    //        }
+    //        let selected = gName in this.props.selectedGroups;
+    //        let bgColor = 'rgb(189,189,189)';
+    //        if (!selected) {
+    //            bgColor = index % 2 ? 'rgb(255,255,255)': 'rgb(227,227,227)'; 
+    //        }
+    //        let styleDict = {height: '50px', background: bgColor};
+    //        let keyId = this.props.parentId + "_" + gName;
+    //        retHTML.push(
+    //            <CardBody id={keyId} key={keyId} style={styleDict} onClick={(event) => this.groupSelected(event,gName,index)}>
+    //                <Row>
+    //                    <Col>{gName}</Col>
+    //                </Row>
+    //            </CardBody>
+    //        );
+    //        index++;
+    //    }
+    //    return retHTML;
+    //}
 
 //                    <Button className="floatRight">{this.props.selectedGroups.length}</Button>
 
