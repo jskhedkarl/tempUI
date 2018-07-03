@@ -152,11 +152,11 @@ class SummaryNode extends React.Component {
                 <div className="Col-Sep Col-Sep5"></div>
                 <div className={this.columnClassName(6, false)}>32-Core / 128GB / 128GB</div>
                 <div className="Col-Sep Col-Sep6"></div>
-                <div className={this.columnClassName(7, false)}>{this.state.node.hostNameIP}</div>
+                <div className={this.columnClassName(7, false)}>{this.state.node.mainInterface.IPAddress}</div>
                 <div className="Col-Sep Col-Sep7"></div>
                 <div className={this.columnClassName(8, false)}>{this.state.node.goesVersion} /<br/>{this.state.node.coreBootVersion}</div>
                 <div className="Col-Sep Col-Sep8"></div>
-                <div className={this.columnClassName(9, false)}>{this.state.node.bmcAddressIP}</div>
+                <div className={this.columnClassName(9, false)}>{this.state.node.bmcInterface.IPAddress}</div>
                 </div>
         );
     }

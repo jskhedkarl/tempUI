@@ -298,6 +298,7 @@ class InventoryComponent extends Component {
     renderAddHostModel() {
         console.log("Adding host model");
         let className="Create_Host_Dialog";
+        //TODO:: MN:: FIX Create Host Structure for Interfaces and other values and relationships needed...
         return (
             <Modal isOpen={this.state.showAddHost} size="sm" centered="true" className={className}>
                 <ModalHeader toggle={this.toggleCreateHost}>New Host</ModalHeader>
@@ -382,12 +383,12 @@ class InventoryComponent extends Component {
                         <Row>
                             <Col md="1"></Col>
                             <Col md="4">IP Address: </Col>
-                            <Col md="5"><strong>{node.hostNameIP}</strong></Col>
+                            <Col md="5"><strong>{node.mainInterface.IPAddress}</strong></Col>
                         </Row>
                         <Row>
                             <Col md="1"></Col>
                             <Col md="4"> BMC IP: </Col>
-                            <Col md="5"><strong>{node.bmcAddressIP}</strong></Col>
+                            <Col md="5"><strong>{node.bmcInterface.IPAddress}</strong></Col>
                         </Row>
                     </Col>
                 </Row>

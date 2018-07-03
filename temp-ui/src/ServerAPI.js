@@ -476,7 +476,7 @@ export class ServerNode {
             this.labels = [];
         else
             this.labels = jsonObj.labels;
-        this.nodeType = jsonObj.nodeType;
+        this.nodeType = jsonObj.type;
         this.kernel = jsonObj.kernel;
         this.kernelVersion = jsonObj.kernelVersion;
         this.linuxISO = jsonObj.linuxISO;
@@ -487,7 +487,34 @@ export class ServerNode {
         this.hostNameIP = jsonObj.hostNameIP;
         this.goesVersion = jsonObj.goesVersion;
         this.coreBootVersion = jsonObj.coreBootVersion;
-        this.bmcAddressIP = jsonObj.bmcAddressIP;
+        this.mainInterface = new ServerInterface(jsonObj.mainInterface);
+        this.bmcInterface = new ServerInterface(jsonObj.bmcInterface);
+        this.allInterfaces = ServerNode.SetupInterface(jsonObj.interfaces);
+    }
+
+    static SetupInterface(allInterfaces) {
+        let aInterface = [];
+        for (let iCtr in allInterfaces) {
+            aInterface[iCtr] = new ServerInterface(allInterfaces[iCtr]);
+        }
+        return aInterface;
+    }
+}
+
+export class ServerInterface {
+    constructor(jsonObj) {
+        this.port = jsonObj.port;
+        this.type = jsonObj.type;
+        this.IPAddress = jsonObj.ip;
+        this.macAddress = jsonObj.macAddress;
+        this.connectedTo = new ServerConnectedTo(jsonObj.connectedTo);
+    }
+}
+
+export class ServerConnectedTo {
+    constructor(jsonObj) {
+        this.serverPort = jsonObj.port;
+        this.serverName = jsonObj.name;
     }
 }
 
