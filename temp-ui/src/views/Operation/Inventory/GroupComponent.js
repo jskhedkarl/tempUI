@@ -152,3 +152,8 @@ export default class GroupComponent extends Component {
         }
     }
 }
+
+
+GroupComponent.defaultProps = {
+  selectedGroups: [],
+};

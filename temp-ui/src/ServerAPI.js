@@ -472,7 +472,10 @@ export class ServerNode {
     constructor(jsonObj) {
         this.serialNumber = jsonObj.serialNumber;
         this.name = jsonObj.name;
-        this.labels = jsonObj.labels;
+        if (jsonObj.labels == null)
+            this.labels = [];
+        else
+            this.labels = jsonObj.labels;
         this.nodeType = jsonObj.nodeType;
         this.kernel = jsonObj.kernel;
         this.kernelVersion = jsonObj.kernelVersion;

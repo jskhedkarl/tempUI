@@ -176,23 +176,23 @@ class InventoryComponent extends Component {
         this.setState({ childVisible: !this.state.childVisible });
     }
     
-    calculateSelectedGroups(host) {
-        if (host === undefined ||
-            host === "")
-            return {};
-
-        let selectedGroups = {};
-        let hostName = host.hName;
-        if (hostName !== undefined) {
-            for (let groupName in this.state.groups) {
-                let group = this.state.groups[groupName];
-                if (hostName in group.hosts) {
-                    selectedGroups[groupName] = groupName;
-                }
-            }
-        }
-        return selectedGroups;
-    }
+    //calculateSelectedGroups(host) {
+    //    if (host === undefined ||
+    //        host === "")
+    //        return {};
+    //
+    //    let selectedGroups = {};
+    //    let hostName = host.hName;
+    //    if (hostName !== undefined) {
+    //        for (let groupName in this.state.groups) {
+    //            let group = this.state.groups[groupName];
+    //            if (hostName in group.hosts) {
+    //                selectedGroups[groupName] = groupName;
+    //            }
+    //        }
+    //    }
+    //    return selectedGroups;
+    //}
 
     //showDetails(event, hostName) {
     //    let host = this.state.hosts[hostName];
