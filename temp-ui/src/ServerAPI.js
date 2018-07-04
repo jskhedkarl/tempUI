@@ -535,10 +535,11 @@ export class ServerKernelTypes {
 }
 
 export class ServerLabels {
-    constructor(labelName) {
-        this.label = labelName;
-        this.value = labelName;
-        this.description = "";
+    constructor(jsonObj) {
+        this.label = jsonObj.Name;
+        this.parent = jsonObj.Parent;
+        this.description = jsonObj.Description;
+        this.children = jsonObj.Childern;
     }
 }
 
@@ -621,13 +622,13 @@ export class ServerAPI {
                             mainCtr++;
                         }
                         
-                        // generate all Labels
+                        // generate all Labels/Roles/Groups different names same thing
                         mainCtr = 0;
-                        let labels = jsonSetup.labels;
+                        let labels = jsonSetup.role;
                         serverInstance.allLabels = [];
                         for (let ctr in labels) {
-                            let i = labels[ctr];
-                            let label = new ServerLabels(i);
+                            let jLabel = labels[ctr];
+                            let label = new ServerLabels(jLabel);
                             serverInstance.allLabels[mainCtr] = label;
                             mainCtr++;
                         }

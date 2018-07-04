@@ -48,7 +48,9 @@ export default class GroupComponent extends Component {
         });
     }
 
-    groupSelected(event, labelObj, gIndex) {
+    groupSelected(event, labelObj, indexStr) {
+        console.log("Selected : " + labelObj.label + " :: " + indexStr);
+        let gIndex = parseInt(indexStr);
         let currentTarget=event.target.parentNode.parentNode;
         let selectedGroups = this.state.selectedGroups;
         let bgColor = 'rgb(189,189,189)';
@@ -61,7 +63,7 @@ export default class GroupComponent extends Component {
             selectedGroups[labelObj.label] = labelObj.label;
         }
         currentTarget.style.background=bgColor;
-        this.props.setSelectedGroups(selectedGroups);
+        //this.props.setSelectedGroups(selectedGroups);
     }
 
     renderGroups() {
@@ -70,27 +72,29 @@ export default class GroupComponent extends Component {
         if (this.props.groups === undefined) {
             return [];
         }
-        let index = 0;
+        let iCounter = 0;
         for (let labelCtr in this.props.groups) {
             let labelObj = this.props.groups[labelCtr];
             //if (grp.gType == Host.OTHER || grp.gType == Host.UNGROUPED) {
             //    continue;
             //}
+            console.log(labelObj.label + "::" + iCounter);
             let selected = labelObj.label in this.state.selectedGroups;
             let bgColor = 'rgb(189,189,189)';
             if (!selected) {
-                bgColor = index % 2 ? 'rgb(255,255,255)': 'rgb(227,227,227)'; 
+                bgColor = iCounter % 2 ? 'rgb(255,255,255)': 'rgb(227,227,227)'; 
             }
             let styleDict = {height: '50px', background: bgColor};
             let keyId = this.props.parentId + "_" + labelObj.label;
+            let ctrStr = "" + iCounter + "";
             retHTML.push(
-                <CardBody id={keyId} key={keyId} style={styleDict} onClick={(event) => this.groupSelected(event,labelObj,index)}>
+                <CardBody id={keyId} key={keyId} style={styleDict} onClick={(event) => this.groupSelected(event, labelObj, ctrStr)}>
                     <Row>
                         <Col>{labelObj.label}</Col>
                     </Row>
                 </CardBody>
             );
-            index++;
+            iCounter++;
         }
         return retHTML;
     }
