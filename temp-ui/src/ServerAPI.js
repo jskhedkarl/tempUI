@@ -1,87 +1,84 @@
 export class StatsEginx {
-    constructor(activeConnection, totalConnection, totalHandledConnection, totalRequests, requestsPerConnection, reading, writing, waiting) {
-        this.activeConnection = activeConnection;
-        this.totalConnection = totalConnection;
-        this.totalHandledConnection = totalHandledConnection;
-        this.totalRequests = totalRequests;
-        this.requestsPerConnection = requestsPerConnection;
-        this.reading = reading;
-        this.writing = writing;
-        this.waiting = waiting;
-    }
-    
-    addStats(addStats) {
-        this.activeConnection += addStats.activeConnection;
-        this.totalConnection += addStats.totalConnection;
-        this.totalHandledConnection += addStats.totalHandledConnection;
-        this.totalRequests += addStats.totalRequests;
-        this.requestsPerConnection += addStats.requestsPerConnection;
-        this.reading += addStats.reading;
-        this.writing += addStats.writing;
-        this.waiting += addStats.waiting;
-    }
+  constructor (activeConnection, totalConnection, totalHandledConnection, totalRequests, requestsPerConnection, reading, writing, waiting) {
+    this.activeConnection = activeConnection
+    this.totalConnection = totalConnection
+    this.totalHandledConnection = totalHandledConnection
+    this.totalRequests = totalRequests
+    this.requestsPerConnection = requestsPerConnection
+    this.reading = reading
+    this.writing = writing
+    this.waiting = waiting
+  }
+  addStats (addStats) {
+    this.activeConnection += addStats.activeConnection
+    this.totalConnection += addStats.totalConnection
+    this.totalHandledConnection += addStats.totalHandledConnection
+    this.totalRequests += addStats.totalRequests
+    this.requestsPerConnection += addStats.requestsPerConnection
+    this.reading += addStats.reading
+    this.writing += addStats.writing
+    this.waiting += addStats.waiting
+  }
 
-    static EginxStatsFromJson(jsonArray) {
-        let retStat = StatsEginx.EmptyObj();
-        for (let jsonId in jsonArray) {
-            let jsonObj = jsonArray[jsonId];
-            retStat.activeConnection += jsonObj['ActiveConnections'];
-            retStat.totalConnection += jsonObj['TotalConnections'];
-            retStat.totalHandledConnection += jsonObj['TotalHandledConnections'];
-            retStat.totalRequests += jsonObj['TotalRequests'];
-            retStat.requestsPerConnection += jsonObj['RequestsPerConnection'];
-            retStat.reading += jsonObj['Reading'];
-            retStat.writing += jsonObj['Writing'];
-            retStat.waiting += jsonObj['Waiting'];
-        }
-        return retStat;
+  static EginxStatsFromJson (jsonArray) {
+    let retStat = StatsEginx.EmptyObj();
+    for (let jsonId in jsonArray) {
+      let jsonObj = jsonArray[jsonId];
+      retStat.activeConnection += jsonObj['ActiveConnections'];
+      retStat.totalConnection += jsonObj['TotalConnections'];
+      retStat.totalHandledConnection += jsonObj['TotalHandledConnections'];
+      retStat.totalRequests += jsonObj['TotalRequests'];
+      retStat.requestsPerConnection += jsonObj['RequestsPerConnection'];
+      retStat.reading += jsonObj['Reading'];
+      retStat.writing += jsonObj['Writing'];
+      retStat.waiting += jsonObj['Waiting'];
     }
+    return retStat
+  }
 
-    static SimulateObj() {
-        let activeConnection = Math.floor((Math.random() * 100) + 1);
-        let totalConnection = Math.floor((Math.random() * 100000) + 1);
-        let totalHandledConnection = Math.floor((Math.random() * 100000) + 1);
-        let totalRequests = totalConnection + totalHandledConnection;
-        return new StatsEginx(activeConnection, totalConnection, totalHandledConnection, totalRequests, 0, 0, 0, 0);
-    }
-    
-    static EmptyObj() {
-        return new StatsEginx(0, 0, 0, 0, 0, 0, 0, 0);
-    }
+  static SimulateObj () {
+    let activeConnection = Math.floor((Math.random() * 100) + 1)
+    let totalConnection = Math.floor((Math.random() * 100000) + 1)
+    let totalHandledConnection = Math.floor((Math.random() * 100000) + 1)
+    let totalRequests = totalConnection + totalHandledConnection
+    return new StatsEginx(activeConnection, totalConnection, totalHandledConnection, totalRequests, 0, 0, 0, 0)
+  }
+  static EmptyObj () {
+    return new StatsEginx(0, 0, 0, 0, 0, 0, 0, 0);
+  }
 }
 
-
 class StatsVarnish {
-    constructor(clientRequests, cacheHits, cacheMisses) {
-        this.clientRequests = clientRequests;
-        this.cacheHits = cacheHits;
-        this.cacheMisses = cacheMisses;
-    }
+  constructor (clientRequests, cacheHits, cacheMisses) {
+    this.clientRequests = clientRequests
+    this.cacheHits = cacheHits
+    this.cacheMisses = cacheMisses
+  }
 
-    addStats(addStats) {
-        this.clientRequests += addStats.clientRequests;
-        this.cacheHits += addStats.cacheHits;
-        this.cacheMisses += addStats.cacheMisses;
-    }
+  addStats (addStats) {
+    this.clientRequests += addStats.clientRequests
+    this.cacheHits += addStats.cacheHits
+    this.cacheMisses += addStats.cacheMisses
+  }
 
-    static VarnishStatsFromJson(jsonArray) {
-        let retStat = StatsVarnish.EmptyObj();
-        for (let jsonId in jsonArray) {
-            let jsonObj = jsonArray[jsonId];
-            let statArr = jsonObj['stats'];
-            for (let stat in statArr) {
-                let statObj = statArr[stat];
-                if (statObj['id'] === 'clientRequests') {
-                    retStat.clientRequests += statObj['value'];
-                } else if (statObj['id'] === 'cacheHits') {
-                    retStat.cacheHits += statObj['value'];
-                } else if (statObj['id'] === 'cacheMisses') {
-                    retStat.cacheMisses += statObj['value'];
-                }
-            }
+  static VarnishStatsFromJson (jsonArray) {
+    let retStat = StatsVarnish.EmptyObj()
+    for (let jsonId in jsonArray) {
+      let jsonObj = jsonArray[jsonId]
+      let statArr = jsonObj['stats']
+      for (let stat in statArr) {
+        let statObj = statArr[stat]
+        if (statObj['id'] === 'clientRequests') {
+          retStat.clientRequests += statObj['value']
+        } else if (statObj['id'] === 'cacheHits') {
+          retStat.cacheHits += statObj['value']
+        } else if (statObj['id'] === 'cacheMisses') {
+          retStat.cacheMisses += statObj['value']
         }
-        return retStat;
+      }
     }
+    return retStat
+  }
     
     static SimulateObj() {
         let cacheHits = Math.floor((Math.random() * 100000) + 1);
@@ -569,8 +566,9 @@ export class ServerAPI {
         this.allSystemTypes = [];
         
         //this.invaderServerAddress = "http://192.168.101.122:8080";
-        //this.invaderServerAddress = "http://192.168.53.130:8080";
-        this.invaderServerAddress = "http://172.17.2.37:8080"
+       // client api address
+       // this.invaderServerAddress = "http://192.168.53.130:8080";
+       this.invaderServerAddress = "http://172.17.2.37:8080";
         this.fetchAllNodeSetupInfo();
     }
     
@@ -588,7 +586,7 @@ export class ServerAPI {
         return defaultAPIServer;
     }
     
-    fetchAllNodeSetupInfo() {
+    fetchAllNodeSetupInfo(callback, instance) {
         let serverInstance = this;
         let xhr = new XMLHttpRequest();
         let sourceURL = this.DefaultInvader() + "/node/setup_info";
@@ -644,6 +642,7 @@ export class ServerAPI {
                             mainCtr++
                         }
                     }
+                    callback(instance, serverInstance);
                 } catch (err) {
                     console.log("POST :: ERROR :: " + err);
                 }

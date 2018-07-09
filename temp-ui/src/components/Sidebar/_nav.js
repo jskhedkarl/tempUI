@@ -11,12 +11,62 @@ export default {
     },
     {
       title: true,
-      name: 'Node',
+      name: 'Infrastructure',
     },
     {
-      name: 'Summary',
-      url: '/node/Summary',
-      icon: 'icon-layers',
+      name: 'Node',
+      url : '/node',
+      icon: 'icon-puzzle',
+      
+      children: [
+        {
+          name: 'Summary',
+          url: '/node/Summary',
+          icon: 'icon-cursor',
+        },
+        {
+          name: 'Roles',
+          url: '/node/Roles',
+          icon: 'icon-pie-chart',
+        },
+        {
+          name: 'Types',
+          url: '/node/Types',
+          icon: 'icon-note',
+        },
+        {
+          name: 'Linux Kernel',
+          url: '/node/Linuxkernel',
+          icon: 'icon-map',
+        },
+        {
+          name: 'Base Linux ISO',
+          url: '/node/BaseLinuxIso',
+          icon: 'icon-bell',
+        },
+        {
+          name: 'BMC Monitor',
+          url: '/node/BmcMonitor',
+          icon: 'icon-calculator',
+        },
+      ],
+    },
+    {
+      name: 'Connectivity',
+      url : '/connectivity',
+      icon: 'icon-pencil',
+      children: [
+       {
+         name: 'Summary',
+         url: '/connectivity/Summary',
+         icon: 'icon-star',
+       },
+       {
+          name: 'Tiles-App',
+          url: '/connectivity/TilesApp',
+          icon: 'icon-layers',
+        },
+      ],
     },
     {
       title: true,
