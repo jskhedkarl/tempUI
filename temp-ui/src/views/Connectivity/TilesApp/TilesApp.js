@@ -8,7 +8,7 @@ class TileApp extends React.Component {
 
         return(
         <div>
-            <iframe height="600" width="90%" src="http://localhost:3000/" ></iframe>
+            <iframe height="600" width="90%" src="http://172.17.146.74:3000/" ></iframe>
         </div>
         )
 

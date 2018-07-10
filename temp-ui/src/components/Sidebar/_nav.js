@@ -43,12 +43,7 @@ export default {
           name: 'Base Linux ISO',
           url: '/node/BaseLinuxIso',
           icon: 'icon-bell',
-        },
-        {
-          name: 'BMC Monitor',
-          url: '/node/BmcMonitor',
-          icon: 'icon-calculator',
-        },
+        }
       ],
     },
     {
@@ -60,14 +55,30 @@ export default {
          name: 'Summary',
          url: '/connectivity/Summary',
          icon: 'icon-star',
-       },
-       {
-          name: 'Tiles-App',
-          url: '/connectivity/TilesApp',
-          icon: 'icon-layers',
-        },
+       }
       ],
     },
+    {
+      name: 'Monitoring',
+      url: '/monitoring',
+      icon: 'icon-calculator',
+      children: [{
+        name: 'BMC Monitor',
+        url: '/monitoring/BmcMonitor',
+        icon: 'icon-calculator',
+      },
+      {
+         name: 'Tiles-App',
+         url: '/monitoring/TilesApp',
+         icon: 'icon-layers',
+       },
+      {
+        name: 'IPVS',
+        url: '/monitoring/ipvs',
+        icon: 'icon-graph',
+      },]
+    },
+    
     {
       title: true,
       name: 'Operations',

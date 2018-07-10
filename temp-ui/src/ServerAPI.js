@@ -568,7 +568,8 @@ export class ServerAPI {
         //this.invaderServerAddress = "http://192.168.101.122:8080";
        // client api address
        // this.invaderServerAddress = "http://192.168.53.130:8080";
-       this.invaderServerAddress = "http://172.17.2.37:8080";
+    //    this.invaderServerAddress = "http://172.17.2.37:8080";
+       this.invaderServerAddress = "http://172.17.146.60:8080";
         this.fetchAllNodeSetupInfo();
     }
     
@@ -718,6 +719,278 @@ export class ServerAPI {
         }
         xhr.send();
     }
+
+    fetchAllRoles(callback, instance) {
+        let xhr = new XMLHttpRequest();
+        let sourceURL = this.DefaultInvader() + "/role/";
+        xhr.open("GET", sourceURL, true);
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                try {
+                    let jsonObj = JSON.parse(xhr.responseText);
+                    let jsonRoles = jsonObj.nodes;
+                    let retRoles = [];
+                    let roleCtr = 0;
+                    for (roleCtr in jsonRoles) {
+                        let jRole = jsonRoles[roleCtr];
+                        let role = new ServerLabels(jRole);
+                        retRoles[roleCtr] = role;
+                    }
+                    callback(instance, retRoles);
+                    
+                } catch (err) {
+                    console.log("POST :: ERROR :: " + err);
+                }
+            }
+        };
+        xhr.onerror = function () {
+            console.log("POST :: Error :: ");
+            callback(instance, null);
+        }
+        xhr.send();
+    }
+
+    fetchAllIso(callback, instance) {
+        let xhr = new XMLHttpRequest();
+        let sourceURL = this.DefaultInvader() + "/iso/";
+        xhr.open("GET", sourceURL, true);
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                try {
+                    let jsonObj = JSON.parse(xhr.responseText);
+                    let jsonIsoTypes = jsonObj.isoTypes;
+                    let retIsoTypes = [];
+                    let isoCtr = 0;
+                    for (isoCtr in jsonIsoTypes) {
+                        let jIsoType = jsonIsoTypes[isoCtr];
+                        let isoType = new ServerISO(jIsoType);
+                        retIsoTypes[isoCtr] = isoType;
+                    }
+                    callback(instance, retIsoTypes);
+                    
+                } catch (err) {
+                    console.log("POST :: ERROR :: " + err);
+                }
+            }
+        };
+        xhr.onerror = function () {
+            console.log("POST :: Error :: ");
+            callback(instance, null);
+        }
+        xhr.send();
+    }
+
+    fetchAllKernels(callback, instance) {
+        let xhr = new XMLHttpRequest();
+        let sourceURL = this.DefaultInvader() + "/kernel/";
+        xhr.open("GET", sourceURL, true);
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                try {
+                    let jsonObj = JSON.parse(xhr.responseText);
+                    let jsonKernelTypes = jsonObj.kernelTypes;
+                    let retKernelTypes = [];
+                    let kernelCtr = 0;
+                    for (kernelCtr in jsonKernelTypes) {
+                        let jKernelTypes = jsonKernelTypes[kernelCtr];
+                        let kernelType = new ServerKernelTypes(jKernelTypes);
+                        retKernelTypes[kernelCtr] = kernelType;
+                    }
+                    callback(instance, retKernelTypes);
+                    
+                } catch (err) {
+                    console.log("POST :: ERROR :: " + err);
+                }
+            }
+        };
+        xhr.onerror = function () {
+            console.log("POST :: Error :: ");
+            callback(instance, null);
+        }
+        xhr.send();
+    }
+
+    fetchAllSystemTypes(callback, instance) {
+        let xhr = new XMLHttpRequest();
+        let sourceURL = this.DefaultInvader() + "/systemtype/";
+        xhr.open("GET", sourceURL, true);
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                try {
+                    let jsonObj = JSON.parse(xhr.responseText);
+                    let jsonSystemTypes = jsonObj.systemTypes;
+                    let retSystemTypes = [];
+                    let typeCtr = 0;
+                    for (typeCtr in jsonSystemTypes) {
+                        let jSystemTypes = jsonSystemTypes[typeCtr];
+                        let systemType = new ServerSystemType(jSystemTypes);
+                        retSystemTypes[typeCtr] = systemType;
+                    }
+                    callback(instance, retSystemTypes);
+                    
+                } catch (err) {
+                    console.log("POST :: ERROR :: " + err);
+                }
+            }
+        };
+        xhr.onerror = function () {
+            console.log("POST :: Error :: ");
+            callback(instance, null);
+        }
+        xhr.send();
+    }
+
+    addRole(callback,instance,data) {
+        let xhr = new XMLHttpRequest();
+        let sourceURL = this.DefaultInvader() + "/role/add";
+        xhr.open("POST", sourceURL, {data});
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.send(JSON.stringify(data));
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                try {
+                    let jsonObj = JSON.parse(xhr.responseText);
+                    if(jsonObj.success) {
+                        let a = {
+                            'label' : jsonObj.role.Name,
+                            'description': jsonObj.role.Description
+                        }
+                        callback(instance, a);
+                    }
+                    else {
+                        alert("Faliure");
+                    }
+                } catch (err) {
+                    console.log("Error" + err);
+                }
+            }
+        };
+
+    }
+
+    addRole(callback,instance,data) {
+        let xhr = new XMLHttpRequest();
+        let sourceURL = this.DefaultInvader() + "/role/add";
+        xhr.open("POST", sourceURL, {data});
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.send(JSON.stringify(data));
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                try {
+                    let jsonObj = JSON.parse(xhr.responseText);
+                    if(jsonObj.success) {
+                        let a = {
+                            'label' : jsonObj.role.Name,
+                            'description': jsonObj.role.Description
+                        }
+                        callback(instance, a);
+                    }
+                    else {
+                        alert("Faliure");
+                    }
+                } catch (err) {
+                    console.log("Error" + err);
+                }
+            }
+        };
+
+    }
+
+    addIso(callback,instance,data) {
+        let xhr = new XMLHttpRequest();
+        let sourceURL = this.DefaultInvader() + "/iso/add";
+        xhr.open("POST", sourceURL, {data});
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.send(JSON.stringify(data));
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                try {
+                    let jsonObj = JSON.parse(xhr.responseText);
+                    if(jsonObj.success) {
+                        let a = {
+                            'label' : jsonObj.isoTypes.Name,
+                            'description': jsonObj.isoTypes.Description
+                        }
+                        callback(instance, a);
+                    }
+                    else {
+                        alert("Faliure");
+                    }
+                } catch (err) {
+                    console.log("Error" + err);
+                }
+            }
+        };
+
+    }
+
+    addKernel(callback,instance,data) {
+        let xhr = new XMLHttpRequest();
+        let sourceURL = this.DefaultInvader() + "/kernel/add";
+        xhr.open("POST", sourceURL, {data});
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.send(JSON.stringify(data));
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                try {
+                    let jsonObj = JSON.parse(xhr.responseText);
+                    if(jsonObj.success) {
+                        let a = {
+                            'label' : jsonObj.kernelTypes.Name,
+                            'description': jsonObj.kernelTypes.Description
+                        }
+                        callback(instance, a);
+                    }
+                    else {
+                        alert("Faliure");
+                    }
+                } catch (err) {
+                    console.log("Error" + err);
+                }
+            }
+        };
+
+    }
+
+    addSystemTypes(callback,instance,data) {
+        let xhr = new XMLHttpRequest();
+        let sourceURL = this.DefaultInvader() + "/systemtype/add";
+        xhr.open("POST", sourceURL, {data});
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.send(JSON.stringify(data));
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                try {
+                    let jsonObj = JSON.parse(xhr.responseText);
+                    if(jsonObj.success) {
+                        let a = {
+                            'label' : jsonObj.systemTypes.Id,
+                            'vendor' : jsonObj.systemTypes.Vendor,
+                            'rackUnit' : jsonObj.systemTypes.RackUnit,
+                            'airflow' : jsonObj.systemTypes.Airflow,
+                            'numFrontPanelInterface' : jsonObj.systemTypes.NumFrontPanelInterface,
+                            'speedFrontPanelInterface' : jsonObj.systemTypes.SpeedFrontPanelInterface,
+                            'numMgmtInterface' : jsonObj.systemTypes.NumMgmtInterface,
+                            'speedMgmtInterafce': jsonObj.systemTypes.SpeedMgmtInterafce
+                        }
+                        callback(instance, a);
+                    }
+                    else {
+                        alert("Faliure");
+                    }
+                } catch (err) {
+                    console.log("Error" + err);
+                }
+            }
+        };
+
+    }
+
+    
     
     fetchHosts() {
         return '{"hosts":["127.0.0.1","inv7","sr3","sr2"]}';

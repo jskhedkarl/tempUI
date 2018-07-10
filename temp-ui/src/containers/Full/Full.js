@@ -37,9 +37,9 @@ class Full extends Component {
                                 <Route path="/node/Types" name="Types" component={Types}/>
                                 <Route path="/node/Linuxkernel" name="Linux Kernel" component={LinuxKernel}/>
                                 <Route path="/node/BaseLinuxIso" name="Base Linux ISO" component={BaseLinuxIso}/>
-                                <Route path="/node/BmcMonitor" name="Summary" component={BmcMonitor}/>
+                                <Route path="/monitoring/BmcMonitor" name="Summary" component={BmcMonitor}/>
                                 <Route path="/connectivity/Summary" name="Summary" component={ConnectivitySummary}/>
-                                <Route path="/connectivity/TilesApp" name="Tiles-App" component={TileApp}/>
+                                <Route path="/monitoring/TilesApp" name="Tiles-App" component={TileApp}/>
                                 <Route path="/operation/inventory" name="Inventory" component={Inventory}/>
                                 <Route path="/operation/playbook" name="Playbook" component={Playbook}/>
                                 <Route path="/operation/monitor" name="Monitor" component={Monitor}/>

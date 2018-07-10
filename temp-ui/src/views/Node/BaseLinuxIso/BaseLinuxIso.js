@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Container, Row, Col, Button, ListGroup, ListGroupItem } from 'reactstrap';
+import { Container, Row, Col, Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, ListGroup, ListGroupItem } from 'reactstrap';
 import '../Summary/Summary.css';
 import {ServerAPI} from '../../../ServerAPI';
 
@@ -8,17 +8,20 @@ class BaseLinuxIso extends Component {
 	
 	constructor(props){
         super(props)
-        this.state = {data:{}}
+        this.state = {
+            data:[],
+            displayModel: false,
+        }
     }
 
     componentDidMount(){
         // this.init();
-        ServerAPI.DefaultServer().fetchAllNodeSetupInfo(this.retrieveData,this);
+        ServerAPI.DefaultServer().fetchAllIso(this.retrieveData,this);
     }
 
     retrieveData(instance, data) {
         if(Object.keys(data).length) {
-            instance.setState({data: data.allISOs});
+            instance.setState({data: data});
         }
     }
 
@@ -53,13 +56,55 @@ class BaseLinuxIso extends Component {
         return rows 
     }
 
+    renderUpgradeModelDialog() {
+        if (this.state.displayModel) {
+            return (
+                <Modal isOpen={this.state.displayModel} size="sm" centered="true" >
+                    <ModalHeader>Add Base Linux ISO</ModalHeader>
+                    <ModalBody>
+                        Name: <Input id='isoName'/><br />
+                        Description: <Input id='isoDesc' /><br />
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button outline color="primary" onClick={()=>(this.addRole())}>Add</Button>{'  '}
+                        <Button outline color="secondary" onClick={()=>(this.cancel())}>Cancel</Button>
+                    </ModalFooter>
+                </Modal>
+            );
+        }
+    }
+
+    cancel() {
+        this.setState({displayModel : !this.state.displayModel})
+    }
+
+    addRole() {
+        let a = {
+            'Name' : document.getElementById('isoName').value,
+            'Description': document.getElementById('isoDesc').value
+    }
+        ServerAPI.DefaultServer().addIso(this.callback,this,a);
+    }
+
+    callback(instance, data) {
+        let a = instance.state.data
+        if(!a) {
+           a = []
+        }
+        a.push(data)
+        instance.setState({data: a})
+        instance.cancel();
+    }
+
+
     render() {
         let table = this.drawtable()
         return (
            <div>
                 { table}
                 <br />
-                <Button>New</Button>
+                <Button onClick={() => (this.cancel())}>New</Button>
+                {this.renderUpgradeModelDialog()}
             </div> 
         );
     }

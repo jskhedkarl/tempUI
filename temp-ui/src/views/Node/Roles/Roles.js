@@ -1,50 +1,45 @@
 import React, { Component } from 'react';
-import { Container, Row, Col, Button, ListGroup, ListGroupItem } from 'reactstrap';
-import '../Summary/Summary.css';
+import { Container, Row, Col, Button,  Modal, ModalHeader, ModalBody, ModalFooter, Input, ListGroup, ListGroupItem } from 'reactstrap';
+import '../Roles/Roles.css';
 import {ServerAPI} from '../../../ServerAPI';
+
+   
+    
 
 class Roles extends Component {
 
 	
 	constructor(props){
         super(props)
-        this.state = {data:{}}
+        this.state = {
+            data:[],
+            displayModel: false,
+        }
     }
 
- /*    init(){
-        let self = this
-        const dataUrl = "http://172.17.146.60:8080/node/setup_info";
-        fetch(dataUrl,{
-            method: 'get',
-        }).then(function(response) {
-             if (response.status !== 200)
-            return
-        return response.json()
-        }).then((items)=>{
-            self.setState({data:items})
-        }).catch(function(err) {
-          console.log(err)
-        });
-        
-    } */
-
     componentDidMount(){
-        // this.init();
-        ServerAPI.DefaultServer().fetchAllNodeSetupInfo(this.retrieveData,this);
+        ServerAPI.DefaultServer().fetchAllRoles(this.retrieveData,this);
     }
 
     retrieveData(instance, data) {
-        if(Object.keys(data).length) {
-            instance.setState({data: data.allLabels});
+        if(!data) {
+            alert("No data received");
         }
-        console.log(data);
+        else {
+            if(Object.keys(data).length) {
+                instance.setState({data: data});
+            }
+        }
+        
     }
 
     drawHeader(){
-        return(<Row className="headerRow">
-                    <Col sm="3" className="head-name">Name</Col>
-                    <Col sm="9" className="head-name">Description</Col>
-                </Row>)
+        return(
+        <Row className="headerRow">
+            <Col sm="3" className="head-name">Name</Col>
+            <Col sm="9" className="head-name">Description</Col>
+        </Row>
+        )
     }
 
     drawtable(){
@@ -70,13 +65,56 @@ class Roles extends Component {
         return rows 
     }
 
+    renderUpgradeModelDialog() {
+        if (this.state.displayModel) {
+            return (
+                <Modal isOpen={this.state.displayModel} size="sm" centered="true" >
+                    <ModalHeader>Add Role</ModalHeader>
+                    <ModalBody>
+                        Name: <Input id='roleName'/><br />
+                        Description: <Input id='roleDesc' /><br />
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button outline color="primary" onClick={()=>(this.addRole())}>Add</Button>{'  '}
+                        <Button outline color="secondary" onClick={()=>(this.click())}>Cancel</Button>
+                    </ModalFooter>
+                </Modal>
+            );
+        }
+    }
+
+    click() {
+        this.setState({displayModel : !this.state.displayModel})
+    }
+
+    addRole() {
+        let a = {
+            'Name' : document.getElementById('roleName').value,
+            'Description': document.getElementById('roleDesc').value
+    }
+        ServerAPI.DefaultServer().addRole(this.callback,this,a);
+    }
+
+    callback(instance, data) {
+        let a = instance.state.data
+        if(!a) {
+           a = []
+        }
+        a.push(data)
+        instance.setState({data: a})
+        instance.click();
+    }
+
+
+
     render() { 
         let table = this.drawtable()
         return (
            <div>
-                { table}
+                {table}
                 <br />
-                <Button>New</Button>
+                <Button className="overflow" onClick={() => (this.click())}>New</Button>
+                {this.renderUpgradeModelDialog()}
             </div> 
         );
     }
