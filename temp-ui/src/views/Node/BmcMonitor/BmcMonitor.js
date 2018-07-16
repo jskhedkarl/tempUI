@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { Container, Row, Col, ListGroup, ListGroupItem } from 'reactstrap';
-import '../Summary/Summary.css';
+import { Row, Col} from 'reactstrap';
+import '../../views.css';
 
 class BaseLinuxIso extends Component {
 
@@ -22,7 +22,7 @@ class BaseLinuxIso extends Component {
                 </Row>)
     }
 
-    drawtable(props=this.props){
+    drawtable(){
         return(
                 <div>
                     <Row className="headerRow1">

@@ -25,6 +25,11 @@ export default {
           icon: 'icon-cursor',
         },
         {
+          name: 'Node Config',
+          url: '/node/NodeConfigSummary',
+          icon: 'icon-layers',
+        },
+        {
           name: 'Roles',
           url: '/node/Roles',
           icon: 'icon-pie-chart',
@@ -78,7 +83,11 @@ export default {
         icon: 'icon-graph',
       },]
     },
-    
+    {
+      name: 'Kubernetes',
+      url: '/kubernetes',
+      icon: 'icon-vector',
+    },
     {
       title: true,
       name: 'Operations',

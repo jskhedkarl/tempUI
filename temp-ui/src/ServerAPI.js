@@ -1,3 +1,5 @@
+import {invaderServerAddress} from './config';
+ 
 export class StatsEginx {
   constructor (activeConnection, totalConnection, totalHandledConnection, totalRequests, requestsPerConnection, reading, writing, waiting) {
     this.activeConnection = activeConnection
@@ -569,7 +571,7 @@ export class ServerAPI {
        // client api address
        // this.invaderServerAddress = "http://192.168.53.130:8080";
     //    this.invaderServerAddress = "http://172.17.2.37:8080";
-       this.invaderServerAddress = "http://172.17.146.60:8080";
+       this.invaderServerAddress = invaderServerAddress;
         this.fetchAllNodeSetupInfo();
     }
     
@@ -729,7 +731,7 @@ export class ServerAPI {
             if (xhr.readyState === 4 && xhr.status === 200) {
                 try {
                     let jsonObj = JSON.parse(xhr.responseText);
-                    let jsonRoles = jsonObj.nodes;
+                    let jsonRoles = jsonObj.roles;
                     let retRoles = [];
                     let roleCtr = 0;
                     for (roleCtr in jsonRoles) {

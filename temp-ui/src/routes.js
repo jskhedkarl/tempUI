@@ -7,6 +7,8 @@ const routes = {
   '/operation/monitor': 'Monitor',
   '/node': 'Node',
   '/node/Summary': 'Summary',
+  '/node/NodeConfigSummary': 'Node Config',
+  '/node/config':'Configure',
   '/node/Roles' : 'Roles',
   '/node/Types' : 'Types',
   '/node/Linuxkernel' : 'Linux Kernel',
@@ -16,7 +18,8 @@ const routes = {
   '/monitoring': 'Monitoring',
   '/monitoring/BmcMonitor' : 'BMC Monitor',  
   '/monitoring/TilesApp': 'TileApp',
-  '/monitoring/ipvs' : 'IPVS'
+  '/monitoring/ipvs' : 'IPVS',
+  '/kubernetes' : 'Kubernetes'
 
 };
 export default routes;

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Container, Row, Col, Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, ListGroup, ListGroupItem } from 'reactstrap';
-import '../Summary/Summary.css';
+import '../../views.css';
 import {ServerAPI} from '../../../ServerAPI';
 
 class Types extends Component {
@@ -10,6 +10,8 @@ class Types extends Component {
         super(props)
         this.state = {
             data:[],
+            showDelete : false,
+            selectedRowIndex: [],
             displayModel: false
         }
     }
@@ -26,16 +28,21 @@ class Types extends Component {
 
     drawHeader(){
         return(<Row className="headerRow">
-                    <Col sm="1" className="head-name">Name</Col>
-                    <Col sm="1" className="head-name">Vendor</Col>
-                    <Col sm="1" className="head-name">Rack Unit</Col>
-                    <Col sm="2" className="head-name">AirFlow</Col>
-                    <Col sm="1" className="head-name"># Front panel Interfaces</Col>
-                    <Col sm="2" className="head-name">Speed Front Panel Interface</Col>
-                    <Col sm="1" className="head-name"># Management Interfaces</Col>
-                    <Col sm="1" className="head-name">Speed/Type</Col>
-                    <Col sm="2" className="head-name">Notes</Col>
-                </Row>)
+                <Col sm="1" className="head-name"></Col>
+                <Col sm="11" className="pad" >
+                        <Row>
+                        <Col sm="2" className="head-name">Name</Col>
+                        <Col sm="1" className="head-name">Vendor</Col>
+                        <Col sm="1" className="head-name">Rack Unit</Col>
+                        <Col sm="1" className="head-name">AirFlow</Col>
+                        <Col sm="2" className="head-name">Front panel Interfaces</Col>
+                        <Col sm="2" className="head-name">Speed Front Panel Interface</Col>
+                        <Col sm="1" className="head-name">Management Interfaces</Col>
+                        <Col sm="1" className="head-name">Speed/Type</Col>
+                        <Col sm="1" className="head-name">Notes</Col>
+                        </Row>
+                    </Col>
+                    </Row>)
     }
 
     drawtable(props=this.props){
@@ -44,7 +51,6 @@ class Types extends Component {
         let rows = []
         let header = this.drawHeader()
         rows.push(header)
-        console.log(data);
         if(data && data.length){
             let systypes = data;
             systypes.map( (systype,i) => {
@@ -53,21 +59,45 @@ class Types extends Component {
                if(i%2 === 0){
                    row1 = 'headerRow1'
                }
+               if (i == systypes.length - 1) {
+                row1 =  row1 +' headerRow3 '
+                }
                let row  =  ( <Row className={row1}>
-                    <Col sm="1" className="pad">{systype.label}</Col>
-                    <Col sm="1" className="pad">{systype.vendor}</Col>
-                    <Col sm="1" className="pad">{systype.rackUnit}</Col>
-                    <Col sm="2" className="pad">{systype.airflow}</Col>
-                    <Col sm="1" className="pad">{systype.numFrontPanelInterface}</Col>
-                    <Col sm="2" className="pad">{systype.speedFrontPanelInterface}</Col>
-                    <Col sm="1" className="pad">{systype.numMgmtInterface}</Col>
-                    <Col sm="1" className="pad">{systype.speedMgmtInterafce}</Col>
-                    <Col sm="2" className="pad"></Col>
-                   </Row>)
+                <Col sm="1" className="pad"><Input className="marLeft40" type="checkbox" onChange={() => (this.checkBoxClick(i))}></Input></Col>
+                <Col sm="11" className="pad" style={{ cursor: 'pointer' }} >
+                    <Row>
+                        <Col sm="2" className="pad">{systype.label}</Col>
+                        <Col sm="1" className="pad">{systype.vendor}</Col>
+                        <Col sm="1" className="pad">{systype.rackUnit}</Col>
+                        <Col sm="1" className="pad">{systype.airflow}</Col>
+                        <Col sm="2" className="pad">{systype.numFrontPanelInterface}</Col>
+                        <Col sm="2" className="pad">{systype.speedFrontPanelInterface}</Col>
+                        <Col sm="1" className="pad">{systype.numMgmtInterface}</Col>
+                        <Col sm="1" className="pad">{systype.speedMgmtInterafce}</Col>
+                        <Col sm="1" className="pad"></Col>
+                    </Row>
+                </Col>
+               </Row>)
                rows.push(row)
            } )  
        }
         return rows 
+    }
+
+    checkBoxClick = (rowIndex) =>{
+        let { selectedRowIndex } = this.state
+        let arrayIndex = selectedRowIndex.indexOf(rowIndex)
+        if (arrayIndex > -1) {
+            selectedRowIndex.splice(arrayIndex, 1)
+        } else {
+            selectedRowIndex.push(rowIndex)
+        }
+        if(this.state.selectedRowIndex.length > 0) {
+            this.setState({showDelete : true});
+        }
+        else {
+            this.setState({showDelete : false});
+        }
     }
 
     renderUpgradeModelDialog() {
@@ -123,6 +153,20 @@ class Types extends Component {
         instance.setState({data: a})
         instance.click();
     }
+
+    showDeleteButton() {
+        let a = [];
+        if(this.state.showDelete == true) {
+            a.push(<Button className="custBtn animated fadeIn" outline color="secondary" onClick={() => (this.deleteTypes())}>Delete</Button>);
+            return a;
+        }
+        else   
+            return null;
+    }
+
+    deleteTypes = () => {
+        console.log("Delete")
+    }
     
 
     render() {
@@ -130,10 +174,13 @@ class Types extends Component {
         let table = this.drawtable()
         return (
            <div>
-        
+                <div className='marginLeft10'>
+                    <Button onClick={() => (this.click())} className="custBtn marginLeft13N" outline color="secondary">New</Button>
+                    {this.showDeleteButton()}
+                    <br />
+                    <br />
+                </div>
                 { table}
-                <br />
-                <Button onClick={() => (this.click())}>New</Button>
                 {this.renderUpgradeModelDialog()}
             </div> 
         );

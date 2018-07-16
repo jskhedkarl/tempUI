@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Container, Row, Col, ListGroup, ListGroupItem } from 'reactstrap';
-import './Summary.css';
+import '../../views.css';
 
 class ConnectivitySummary extends React.Component {
 
@@ -25,7 +25,7 @@ class ConnectivitySummary extends React.Component {
                 </Row>)
     }
 
-    drawtable(props=this.props){
+    drawtable(){
         return(
             <div>
                 <Row className="headerRow1">
@@ -126,7 +126,7 @@ class ConnectivitySummary extends React.Component {
                     </Col>
                     
                 </Row>
-                <Row className="headerRow2">
+                <Row className="headerRow2 headerRow3">
                     <Col sm="1" className="pad">sjc01-pd1-sp01</Col>
                     <Col sm="1" className="pad">Active</Col>
                     <Col sm="1" className="pad">Spine, K8Worker, etcD</Col>

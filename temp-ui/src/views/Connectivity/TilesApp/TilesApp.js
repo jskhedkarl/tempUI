@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import {tileAppAddress} from '../../../config.js'
 import { Container, Row, Col, ListGroup, ListGroupItem } from 'reactstrap';
 
 
@@ -8,7 +9,7 @@ class TileApp extends React.Component {
 
         return(
         <div>
-            <iframe height="600" width="90%" src="http://172.17.146.74:3000/" ></iframe>
+            <iframe height="600" width="90%" src={tileAppAddress} ></iframe>
         </div>
         )
 
