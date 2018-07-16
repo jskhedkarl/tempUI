@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Col, Row, Input, Card ,CardHeader,CardBody ,InputGroup, InputGroupAddon } from 'reactstrap';
 import { ServerAPI } from '../../../ServerAPI';
-import { Redirect } from 'react-router'
+import { Redirect } from 'react-router-dom'
 import { Button } from 'reactstrap';
 import SummaryDataTable from './SummaryDataTable';
 import '../../views.css';
