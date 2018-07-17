@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { Container, Row, Col, Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, ListGroup, ListGroupItem } from 'reactstrap';
 import '../../views.css';
 import {ServerAPI} from '../../../ServerAPI';
+import SummaryDataTable from '../NodeSummary/SummaryDataTable';
+import {typeHead} from '../../../consts'
 
 class Types extends Component {
 
@@ -10,6 +12,7 @@ class Types extends Component {
         super(props)
         this.state = {
             data:[],
+            typeHead: typeHead,
             showDelete : false,
             selectedRowIndex: [],
             displayModel: false
@@ -177,10 +180,8 @@ class Types extends Component {
                 <div className='marginLeft10'>
                     <Button onClick={() => (this.click())} className="custBtn marginLeft13N" outline color="secondary">New</Button>
                     {this.showDeleteButton()}
-                    <br />
-                    <br />
                 </div>
-                { table}
+                <SummaryDataTable heading={this.state.typeHead} data={this.state.data} checkBoxClick={this.checkBoxClick} />
                 {this.renderUpgradeModelDialog()}
             </div> 
         );

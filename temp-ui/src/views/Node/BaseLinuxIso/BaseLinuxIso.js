@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { Row, Col, Button, Modal, ModalHeader, ModalBody, ModalFooter, Input } from 'reactstrap';
 import '../../views.css';
 import { ServerAPI } from '../../../ServerAPI';
+import SummaryDataTable from '../NodeSummary/SummaryDataTable';
+import {isoHead} from '../../../consts'
 
 class BaseLinuxIso extends Component {
 
@@ -10,6 +12,7 @@ class BaseLinuxIso extends Component {
         super(props)
         this.state = {
             data: [],
+            isoHead: isoHead,
             showDelete : false,
             selectedRowIndex: [],
             displayModel: false,
@@ -138,10 +141,11 @@ class BaseLinuxIso extends Component {
         let table = this.drawtable()
         return (
             <div>
-                <Button onClick={() => (this.cancel())} className="custBtn animated fadeIn marginLeft13N">New</Button>
-                {this.showDeleteButton()}
-                {table}
-
+                <div className='marginLeft10'>
+                    <Button onClick={() => (this.cancel())} className="custBtn animated fadeIn marginLeft13N">New</Button>
+                    {this.showDeleteButton()}
+                </div>
+                <SummaryDataTable heading={this.state.isoHead} data={this.state.data} checkBoxClick={this.checkBoxClick} />
                 {this.renderUpgradeModelDialog()}
             </div>
         );

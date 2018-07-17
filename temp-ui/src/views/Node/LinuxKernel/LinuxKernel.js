@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { Row, Col, Button, Modal, ModalHeader, ModalBody, ModalFooter, Input } from 'reactstrap';
 import '../../views.css';
 import { ServerAPI } from '../../../ServerAPI';
+import SummaryDataTable from '../NodeSummary/SummaryDataTable';
+import {kernelHead} from '../../../consts'
 
 class LinuxKernel extends Component {
 
@@ -10,6 +12,7 @@ class LinuxKernel extends Component {
         super(props)
         this.state = {
             data: [],
+            kernelHead: kernelHead,
             showDelete : false,
             selectedRowIndex: [],
             displayModel: false
@@ -138,16 +141,14 @@ class LinuxKernel extends Component {
 
 
     render() {
-        let table = this.drawtable()
-        return (
-            <div>
-                <Row>
-                <Button onClick={() => (this.cancel())} className="custBtn animated fadeIn marginLeft13N" outline color="secondary">New</Button>
-                {this.showDeleteButton()}
-                </Row>
-                {table}
+        return (<div>
+                <div className='marginLeft10'>
+                    <Button onClick={() => (this.cancel())} className="custBtn animated fadeIn marginLeft13N" outline color="secondary">New</Button>
+                    {this.showDeleteButton()}
+                </div>
+                <SummaryDataTable heading={this.state.kernelHead} data={this.state.data} checkBoxClick={this.checkBoxClick} />
                 {this.renderUpgradeModelDialog()}
-            </div>
+            </div> 
         );
     }
 

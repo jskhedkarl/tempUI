@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { Container, Row, Col, Button,  Modal, ModalHeader, ModalBody, ModalFooter, Input, ListGroup, ListGroupItem } from 'reactstrap';
 import '../../views.css';
 import {ServerAPI} from '../../../ServerAPI';
+import SummaryDataTable from '../NodeSummary/SummaryDataTable';
+import {roleHead} from '../../../consts'
 
 class Roles extends Component {
 
@@ -9,6 +11,7 @@ class Roles extends Component {
         super(props)
         this.state = {
             data:[],
+            roleHead: roleHead,
             displayModel: false,
             selectedRowIndex: [],
             selectedRows: [],
@@ -30,43 +33,6 @@ class Roles extends Component {
             }
         }
         
-    }
-
-    drawHeader(){
-        return(
-        <Row className="headerRow">
-            <Col sm="1" className="head-name">  </Col>
-            <Col sm="3" className="head-name">Name</Col>
-            <Col sm="8" className="head-name">Description</Col>
-        </Row>
-        )
-    }
-
-    drawtable(){
-        let {data} = this.state
-        let rows = []
-        let header = this.drawHeader()
-        rows.push(header)
-        if(data && data.length){
-             let roles = data;
-             roles.map( (role,i) => {
-                let row1 = 'headerRow1'
-
-                if(i%2 === 0){
-                    row1 = 'headerRow2'
-                }
-                if (i == roles.length - 1) {
-                    row1 =  row1 +' headerRow3 '
-                }
-                let row  =  ( <Row className={row1}>
-                     <Col sm="1" className="pad"><Input className="marLeft40" type="checkbox" onChange={() => (this.checkBoxClick(i))}></Input></Col>
-                     <Col sm="3" className="pad">{role.label}</Col>
-                     <Col sm="8" className="pad">{role.description}</Col>
-                    </Row>)
-                rows.push(row)
-            } )  
-        }
-        return rows 
     }
 
     checkBoxClick = (rowIndex) =>{
@@ -145,7 +111,6 @@ class Roles extends Component {
     }
 
     render() { 
-        let table = this.drawtable()
         return (
            <div>
                <Row >
@@ -153,7 +118,7 @@ class Roles extends Component {
                     
                     {this.showDeleteButton()}
                </Row>
-                {table}
+               <SummaryDataTable heading={this.state.roleHead} data={this.state.data} checkBoxClick={this.checkBoxClick} />
                 {this.renderUpgradeModelDialog()}
             </div> 
         );

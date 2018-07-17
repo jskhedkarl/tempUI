@@ -4,6 +4,7 @@ import { ServerAPI } from '../../ServerAPI';
 import SummaryDataTable from './NodeSummary/SummaryDataTable';
 import {customHistory} from '../../index';
 import '../views.css';
+import {nodeHead} from '../../../consts';
 import DropDown from '../../components/dropdown/DropDown';
 
 class NodeConfig extends Component {
@@ -14,6 +15,7 @@ class NodeConfig extends Component {
       isoData: [],
       kernelData: [],
       typedata: [],
+      nodeHead: nodeHead,
       nodes: props.location.state
     }
   }
@@ -189,7 +191,7 @@ class NodeConfig extends Component {
       this.state.nodes.map(function(node,i){
         selectedRowIndexes.push(i)
       })
-      summaryDataTable = <SummaryDataTable nodes={this.state.nodes} selectedRowIndexes={selectedRowIndexes} checkBoxClick={this.checkBoxClick} />
+      summaryDataTable = <SummaryDataTable data={this.state.nodes} heading={this.state.nodeHead} selectedRowIndexes={selectedRowIndexes} checkBoxClick={this.checkBoxClick} />
     }
     return (
       <div className="animated fadeIn">

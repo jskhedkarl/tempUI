@@ -21,8 +21,8 @@
 
 .headerRow3{
     text-align: left;
-	background-color: #e4e5e640;
 	border-bottom:1px solid #0e151d40;
+	margin-bottom: 50px;
 }
 
 .head-name{
@@ -145,7 +145,7 @@ marRight10{
 /* Padding classes start */
 
 .pad{
-	padding: 10px 15px;
+	padding: 5px 15px;
 }
 
 .padTop30{

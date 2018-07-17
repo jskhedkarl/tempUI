@@ -4,6 +4,7 @@ import { ServerAPI } from '../../../ServerAPI';
 import { Redirect } from 'react-router-dom'
 import { Button } from 'reactstrap';
 import SummaryDataTable from './SummaryDataTable';
+import {nodeHead} from '../../../consts'
 import '../../views.css';
 
 class NodeSummary extends React.Component {
@@ -11,6 +12,7 @@ class NodeSummary extends React.Component {
         super(props);
         this.state = {
             nodes: [],
+            nodeHead: nodeHead,
             selectedRowIndex: [],
             selectedRows: [],
             redirect: false
@@ -179,7 +181,7 @@ class NodeSummary extends React.Component {
                         <div className='marginLeft10 '>
                             <Button onClick={() => (this.onConfigureClick())} className="custBtn marginLeft13N" outline color="secondary">Configure</Button>
                             <Button className="custBtn" outline color="secondary">New</Button>
-                            <SummaryDataTable nodes={this.state.nodes} checkBoxClick={this.checkBoxClick} />
+                            <SummaryDataTable heading={this.state.nodeHead} data={this.state.nodes} checkBoxClick={this.checkBoxClick} />
                         </div>
                     </Col>
                     <Col sm="3">                        
