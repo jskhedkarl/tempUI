@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import { Row, Col, Button, Label, Media } from 'reactstrap';
+import { Row, Col, Button, Label, Media, Modal, ModalHeader, ModalBody, ModalFooter, Input } from 'reactstrap';
 import { ServerAPI } from '../../ServerAPI';
 import SummaryDataTable from './NodeSummary/SummaryDataTable';
-import {customHistory} from '../../index';
+import { customHistory } from '../../index';
 import '../views.css';
-import {nodeHead} from '../../../consts';
+import { nodeHead } from '../../consts';
 import DropDown from '../../components/dropdown/DropDown';
 
 class NodeConfig extends Component {
@@ -15,7 +15,12 @@ class NodeConfig extends Component {
       isoData: [],
       kernelData: [],
       typedata: [],
+
       nodeHead: nodeHead,
+
+      displayModel: false,
+      interfaceData: {},
+
       nodes: props.location.state
     }
   }
@@ -80,12 +85,13 @@ class NodeConfig extends Component {
     return (
       <div className="padTop30">
         <h3>Interfaces</h3>
-        <Row className="headerRow" style={{marginLeft : '0px'}}>
-          <Col sm="3" className="head-name">Interface Name</Col>
+        <Row className="headerRow" style={{ marginLeft: '0px' }}>
+          <Col sm="2" className="head-name">Interface Name</Col>
           <Col sm="2" className="head-name">Admin state</Col>
           <Col sm="3" className="head-name">IP Address</Col>
           <Col sm="2" className="head-name">Remote Node Name</Col>
           <Col sm="2" className="head-name">Remote Interface</Col>
+          <Col sm="1" className="head-name"></Col>
         </Row>
       </div>
     )
@@ -93,31 +99,33 @@ class NodeConfig extends Component {
 
   interfaceTableContent() {
     let rows = []
+    let self = this;
     if (this.state.nodes && this.state.nodes.length) {
       this.state.nodes.map((node) => {
         let interfaces = node.allInterfaces
         if (!interfaces || !interfaces.length) {
           let row = (<Row className='headerRow1'>
             <Col sm="12" className="pad"><h5 className="text-center">Interface data not available</h5></Col>
-           
           </Row>)
           rows.push(row)
         }
-        interfaces.map((item, i) => {
+        interfaces.map((item, rowIndex) => {
           let row1 = 'headerRow1'
-
-          if (i % 2 === 0) {
+          if (rowIndex % 2 === 0) {
             row1 = 'headerRow2'
           }
-          if (i == interfaces.length - 1) {
-            row1 =  row1 +' headerRow3 '
+          if (rowIndex == interfaces.length - 1) {
+            row1 = row1 + ' headerRow3 '
           }
-          let row = (<Row className={row1} style={{marginLeft : '0px'}}>
-            <Col sm="3" className="pad">{item.port ? item.port : '-' }</Col>
-            <Col sm="2" className="pad">-</Col>
+          let row = (<Row className={row1} style={{ marginLeft: '0px' }}>
+
+            <Col sm="2" className="pad">{item.port ? item.port : '-'}</Col>
+            <Col sm="2" className="pad">{item.adminState ? item.adminState : '-'}</Col>
             <Col sm="3" className="pad">{item.IPAddress ? item.IPAddress : '-'}</Col>
-            <Col sm="2" className="pad">-</Col>
-            <Col sm="2" className="pad">-</Col>
+            <Col sm="2" className="pad">{item.remoteNodename ? item.remoteNodename : '-'}</Col>
+            <Col sm="2" className="pad">{item.remoteInterface ? item.remoteInterface : '-'}</Col>
+            <Col sm="1" className="pad"><i className="fa fa-pencil" aria-hidden="true" onClick={() => (self.toggleModel(rowIndex))}></i></Col>
+
           </Row>)
           rows.push(row)
         })
@@ -128,149 +136,183 @@ class NodeConfig extends Component {
   }
 
   checkBoxClick = (e) => {
-    console.log('have fun',e)
+    console.log('have fun', e)
   }
 
-  editName(){
+  editName() {
     document.getElementById('edit').style.display = 'none';
     document.getElementById('show').style.display = 'block';
   }
 
-  showName(){
+  showName() {
     document.getElementById('edit').style.display = 'block';
     document.getElementById('show').style.display = 'none';
   }
 
+  confDropdown() {
+    return (
+      <Row className="pad">
+        <Col xs='2' ><Label>/etc/frr/*.conf</Label><br />
+          <select className="form-control">
+            <option value="frr">/etc/frr/*.conf</option>
+            <option value="etc">/etc/frr/*.conf</option>
+            <option selected value="conf">/etc/frr/*.conf</option>
+            <option value="fre">/etc/frr/*.conf</option>
+          </select>
+        </Col>
+        <Col xs='2' ><Label>/etc/network/interface.d/*.conf</Label><br />
+          <select className="form-control">
+            <option value="frr">/etc/frr/*.conf</option>
+            <option value="etc">/etc/frr/*.conf</option>
+            <option selected value="conf">/etc/frr/*.conf</option>
+            <option value="fre">/etc/frr/*.conf</option>
+          </select>
+        </Col>
+        <Col xs='2' ><Label>/etc/goes/*.conf</Label><br />
+          <select className="form-control">
+            <option value="frr">/etc/frr/*.conf</option>
+            <option value="etc">/etc/frr/*.conf</option>
+            <option selected value="conf">/etc/frr/*.conf</option>
+            <option value="fre">/etc/frr/*.conf</option>
+          </select>
+        </Col>
+        <Col xs='2' ><Label>/etc/modprobe.d/*.conf</Label><br />
+          <select className="form-control">
+            <option value="frr">/etc/frr/*.conf</option>
+            <option value="etc">/etc/frr/*.conf</option>
+            <option selected value="conf">/etc/frr/*.conf</option>
+            <option value="fre">/etc/frr/*.conf</option>
+          </select>
+        </Col>
+        <Col xs='2' ><Label>/etc/ntp.conf</Label><br />
+          <select className="form-control">
+            <option value="frr">/etc/frr/*.conf</option>
+            <option value="etc">/etc/frr/*.conf</option>
+            <option selected value="conf">/etc/frr/*.conf</option>
+            <option value="fre">/etc/frr/*.conf</option>
+          </select>
+        </Col>
+      </Row>)
+  }
+
+  renderUpgradeModelDialog() {
+    if (this.state.displayModel) {
+      let data = this.state.interfaceData
+      return (
+        <Modal isOpen={this.state.displayModel} size="sm" centered="true" >
+          <ModalHeader>Edit Interface</ModalHeader>
+          <ModalBody>
+            Name: <Input type="text" defaultValue={data.port} />
+            Admin state:<Input type="text" defaultValue={data.adminState} />
+            IP Address:<Input type="text" defaultValue={data.IPAddress} />
+            Remote Node Name:<Input type="text" defaultValue={data.remoteNodename} />
+            Remote Node Interface:<Input type="text" defaultValue={data.remoteNodeInterface} />
+          </ModalBody>
+          <ModalFooter>
+            <Button outline color="primary" >Update</Button>
+            <Button outline color="secondary" onClick={() => (this.toggleModel())}>Cancel</Button>
+          </ModalFooter>
+        </Modal>
+      );
+    }
+  }
+
+  toggleModel(id) {
+    let data = this.state.nodes
+    let itemData = {}
+    data.map((datum) => {
+      datum.allInterfaces.map((interfaceItem, i) => {
+        if (id === i) {
+          itemData = interfaceItem
+        }
+      })
+    })
+    this.setState({ displayModel: !this.state.displayModel, interfaceData: itemData })
+  }
+
+
   render() {
-    let {nodes} = this.state
-    if(!nodes || !nodes.length){
+    let { nodes } = this.state
+    if (!nodes || !nodes.length) {
       return <div></div>
     }
-    let showN = 'showNode'
     let isSingleNode = this.state.nodes.length === 1 ? true : false
     let nodeNameDiv = null
     let interfaceTableHeader = null
     let interfaceTableContent = null
-    let summaryDataTable =  null
-    let serialNumber = null
-    let defaultTypevalue = null
-    let defaultKernelvalue = null
-    let defaultIsovalue = null  
+    let summaryDataTable = null
+   
     if (isSingleNode) {
-      nodeNameDiv = 
-          <div>
-              <Media className="edit" id="edit">
-                <Media left>
-                  {this.state.nodes.map((nodeItem) => nodeItem.name)} 
-                  </Media>   
-                  <Media right onClick={this.editName} className="marLeft10">
-                  <i className="fa fa-pencil" aria-hidden="true" ></i>
-                  </Media> 
-              </Media>
-              <Media className="show" id="show">
-                <Row>    
-                  <Col onClick={this.showName} className="sm-1">
-                    <i className="fa fa-arrow-left" aria-hidden="true" ></i>
-                  </Col> 
-                  <Col className="sm-11">
-                    <input type="text" className="form-control wid" name="name" value={this.state.nodes.map((nodeItem) => nodeItem.name)} />
-                  </Col> 
-                </Row>  
-              </Media>
-               <h6 className="srNo"><small>Sr. No.  </small> {this.state.nodes.map((nodeItem) => nodeItem.serialNumber)}</h6>
-          </div>
+      nodeNameDiv =
+        <div>
+          <Media className="edit" id="edit">
+            <Media left>
+              {this.state.nodes.map((nodeItem) => nodeItem.name)}
+            </Media>
+            <Media right onClick={this.editName} className="marLeft10">
+              <i className="fa fa-pencil" aria-hidden="true" ></i>
+            </Media>
+          </Media>
+          <Media className="show" id="show">
+            <Row>
+              <Col onClick={this.showName} className="sm-1">
+                <i className="fa fa-arrow-left" aria-hidden="true" ></i>
+              </Col>
+              <Col className="sm-11">
+                <input type="text" className="form-control wid" name="name" value={this.state.nodes.map((nodeItem) => nodeItem.name)} />
+              </Col>
+            </Row>
+          </Media>
+          <h6 className="srNo"><small>Sr. No.  </small> {this.state.nodes.map((nodeItem) => nodeItem.serialNumber)}</h6>
+        </div>
       interfaceTableHeader = this.interfaceTableHeader()
       interfaceTableContent = this.interfaceTableContent()
-   
-      
-      defaultIsovalue = nodes[0].linuxISO ? nodes[0].linuxISO : ' -- select an option --'
-      defaultKernelvalue = nodes[0].kernel ? nodes[0].kernel : ' -- select an option --'
-      defaultTypevalue = nodes[0].nodeType ? nodes[0].nodeType : ' -- select an option --'
-    }else{
+
+
+    } else {
       let selectedRowIndexes = []
-      this.state.nodes.map(function(node,i){
+      this.state.nodes.map(function (node, i) {
         selectedRowIndexes.push(i)
       })
       summaryDataTable = <SummaryDataTable data={this.state.nodes} heading={this.state.nodeHead} selectedRowIndexes={selectedRowIndexes} checkBoxClick={this.checkBoxClick} />
     }
     return (
       <div className="animated fadeIn">
-      <Media>
-        <Media left >
-        {nodeNameDiv}
+        <Media>
+          <Media left >
+            {nodeNameDiv}
+          </Media>
+          <Media body></Media>
+          <Media right>
+            <Button className="custBtn" outline color="secondary" onClick={() => { customHistory.goBack() }}> Cancel </Button>
+            <Button className="custBtn" outline color="secondary" > Provision </Button>
+            <Button className="custBtn" outline color="secondary" > Save </Button>
+          </Media>
         </Media>
-        <Media body></Media>
-        <Media right>
-        <Button className="custBtn" outline color="secondary" onClick={()=>{customHistory.goBack()}}> Cancel </Button>
-        <Button className="custBtn" outline color="secondary" > Provision </Button>
-        <Button className="custBtn" outline color="secondary" > Save </Button>
-        </Media>
-      </Media>
-      <div className="boxBorder">
-        <Row className="pad">
-         
-          <Col xs='2' ><Label>Roles</Label><br />
-            <select multiple className="form-control">{this.getRoles()}</select>
-          </Col>
-          <Col xs='2' ><Label>Type</Label><br />
-            <DropDown options={this.state.typedata} />
-          </Col>
-          <Col xs='2' ><Label>Linux</Label><br />
-            <DropDown options={this.state.kernelData} />
-          </Col>
-          <Col xs='2' ><Label>Base Linux ISO</Label><br />
-            <DropDown options={this.state.isoData} />
-          </Col>
-        </Row>
-        <Row className="pad">
-         
-          <Col xs='2' ><Label>/etc/frr/*.conf</Label><br />
-              <select className="form-control">
-                <option value="frr">/etc/frr/*.conf</option>
-                <option value="etc">/etc/frr/*.conf</option>
-                <option selected value="conf">/etc/frr/*.conf</option>
-                <option value="fre">/etc/frr/*.conf</option>
-              </select>
-          </Col>
-          <Col xs='2' ><Label>/etc/network/interface.d/*.conf</Label><br />
-              <select className="form-control">
-                <option value="frr">/etc/frr/*.conf</option>
-                <option value="etc">/etc/frr/*.conf</option>
-                <option selected value="conf">/etc/frr/*.conf</option>
-                <option value="fre">/etc/frr/*.conf</option>
-              </select>
-          </Col>
-          <Col xs='2' ><Label>/etc/goes/*.conf</Label><br />
-              <select className="form-control">
-                <option value="frr">/etc/frr/*.conf</option>
-                <option value="etc">/etc/frr/*.conf</option>
-                <option selected value="conf">/etc/frr/*.conf</option>
-                <option value="fre">/etc/frr/*.conf</option>
-              </select>
-          </Col>
-          <Col xs='2' ><Label>/etc/modprobe.d/*.conf</Label><br />
-              <select className="form-control">
-                <option value="frr">/etc/frr/*.conf</option>
-                <option value="etc">/etc/frr/*.conf</option>
-                <option selected value="conf">/etc/frr/*.conf</option>
-                <option value="fre">/etc/frr/*.conf</option>
-              </select>
-          </Col>
-          <Col xs='2' ><Label>/etc/ntp.conf</Label><br />
-          <select className="form-control">
-                <option value="frr">/etc/frr/*.conf</option>
-                <option value="etc">/etc/frr/*.conf</option>
-                <option selected value="conf">/etc/frr/*.conf</option>
-                <option value="fre">/etc/frr/*.conf</option>
-              </select>
-          </Col>
-        </Row>
+        <div className="boxBorder">
+          <Row className="pad">
+
+            <Col xs='2' ><Label>Roles</Label><br />
+              <select multiple className="form-control">{this.getRoles()}</select>
+            </Col>
+            <Col xs='2' ><Label>Type</Label><br />
+              <DropDown options={this.state.typedata} />
+            </Col>
+            <Col xs='2' ><Label>Linux</Label><br />
+              <DropDown options={this.state.kernelData} />
+            </Col>
+            <Col xs='2' ><Label>Base Linux ISO</Label><br />
+              <DropDown options={this.state.isoData} />
+            </Col>
+          </Row>
+          {this.confDropdown()}
         </div>
-          {interfaceTableHeader}
-          {interfaceTableContent}
-          <div className="padTop20">
+        {interfaceTableHeader}
+        {interfaceTableContent}
+        <div className="padTop20">
           {summaryDataTable}
-          </div>
+        </div>
+        {this.renderUpgradeModelDialog()}
 
       </div>
 

@@ -1,12 +1,26 @@
 import React, { Component } from 'react';
-import { Container, Row, Col, ListGroup, ListGroupItem } from 'reactstrap';
+import { Row, Col, ListGroup, ListGroupItem } from 'reactstrap';
+import { ServerAPI } from '../../../ServerAPI';
 import '../../views.css';
 
 class ConnectivitySummary extends React.Component {
 
     constructor(props){
         super(props)
-        this.state = {data:{}}
+        this.state = {
+            data:{},
+            nodes: []
+        }
+    }
+
+    componentDidMount() {
+        ServerAPI.DefaultServer().fetchAllServerNodes(this.updateNodeSummary, this);
+    }
+
+    updateNodeSummary = (instance, nodes) => {
+        instance.setState({
+            nodes: nodes,
+        });
     }
 
     drawHeader(){

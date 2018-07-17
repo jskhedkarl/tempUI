@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Label, Row, Col, Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, ListGroup, ListGroupItem, Media,Card ,CardHeader,CardBody,InputGroup,InputGroupAddon } from 'reactstrap';
+import { Label, Row, Col, Button, Input, Media,Card ,CardHeader,CardBody,InputGroup,InputGroupAddon } from 'reactstrap';
 import '../views.css';
 import { data } from './KubernetesData.js';
 
