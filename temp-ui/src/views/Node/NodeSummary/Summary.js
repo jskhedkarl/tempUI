@@ -181,7 +181,7 @@ class NodeSummary extends React.Component {
                         <div className='marginLeft10 '>
                             <Button onClick={() => (this.onConfigureClick())} className="custBtn marginLeft13N" outline color="secondary">Configure</Button>
                             <Button className="custBtn" outline color="secondary">New</Button>
-                            <SummaryDataTable heading={this.state.nodeHead} data={this.state.nodes} checkBoxClick={this.checkBoxClick} />
+                            <SummaryDataTable heading={this.state.nodeHead} data={this.state.nodes} checkBoxClick={this.checkBoxClick} selectEntireRow={true}/>
                         </div>
                     </Col>
                     <Col sm="3">                        

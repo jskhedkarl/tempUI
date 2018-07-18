@@ -545,7 +545,7 @@ export class ServerLabels {
 export class ServerSystemType {
     constructor(jsonObj) {
         this.value = jsonObj.Id;
-        this.label = jsonObj.Vendor + ":" + jsonObj.Id;
+        this.label = /* jsonObj.Vendor + ":" + */ jsonObj.Id;
         this.vendor = jsonObj.Vendor;
         //this.description = jsonObj.Description;
         this.rackUnit = jsonObj.RackUnit;
@@ -753,6 +753,37 @@ export class ServerAPI {
         xhr.send();
     }
 
+    deleteRole(callback, instance, name) {
+        let xhr = new XMLHttpRequest();
+        let sourceURL = this.DefaultInvader() + "/role/id/"+ name;
+        xhr.open("DELETE", sourceURL, true);
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                try {
+                    let jsonObj = JSON.parse(xhr.responseText);
+                    let jsonRoles = jsonObj.roles;
+                    let retRoles = [];
+                    let roleCtr = 0;
+                    for (roleCtr in jsonRoles) {
+                        let jRole = jsonRoles[roleCtr];
+                        let role = new ServerLabels(jRole);
+                        retRoles[roleCtr] = role;
+                    }
+                    callback(instance, retRoles);
+                    
+                } catch (err) {
+                    console.log("POST :: ERROR :: " + err);
+                }
+            }
+        };
+        xhr.onerror = function () {
+            console.log("POST :: Error :: ");
+            callback(instance, null);
+        }
+        xhr.send();
+    }
+
     fetchAllIso(callback, instance) {
         let xhr = new XMLHttpRequest();
         let sourceURL = this.DefaultInvader() + "/iso/";
@@ -771,6 +802,37 @@ export class ServerAPI {
                         retIsoTypes[isoCtr] = isoType;
                     }
                     callback(instance, retIsoTypes);
+                    
+                } catch (err) {
+                    console.log("POST :: ERROR :: " + err);
+                }
+            }
+        };
+        xhr.onerror = function () {
+            console.log("POST :: Error :: ");
+            callback(instance, null);
+        }
+        xhr.send();
+    }
+
+    deleteIso(callback, instance, name) {
+        let xhr = new XMLHttpRequest();
+        let sourceURL = this.DefaultInvader() + "/iso/id/"+ name;
+        xhr.open("DELETE", sourceURL, true);
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                try {
+                    let jsonObj = JSON.parse(xhr.responseText);
+                    let jsonRoles = jsonObj.isoTypes;
+                    let retRoles = [];
+                    let roleCtr = 0;
+                    for (roleCtr in jsonRoles) {
+                        let jRole = jsonRoles[roleCtr];
+                        let role = new ServerLabels(jRole);
+                        retRoles[roleCtr] = role;
+                    }
+                    callback(instance, retRoles);
                     
                 } catch (err) {
                     console.log("POST :: ERROR :: " + err);
@@ -815,6 +877,37 @@ export class ServerAPI {
         xhr.send();
     }
 
+    deleteKernel(callback, instance, name) {
+        let xhr = new XMLHttpRequest();
+        let sourceURL = this.DefaultInvader() + "/kernel/id/"+ name;
+        xhr.open("DELETE", sourceURL, true);
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                try {
+                    let jsonObj = JSON.parse(xhr.responseText);
+                    let jsonRoles = jsonObj.kernelTypes;
+                    let retRoles = [];
+                    let roleCtr = 0;
+                    for (roleCtr in jsonRoles) {
+                        let jRole = jsonRoles[roleCtr];
+                        let role = new ServerLabels(jRole);
+                        retRoles[roleCtr] = role;
+                    }
+                    callback(instance, retRoles);
+                    
+                } catch (err) {
+                    console.log("POST :: ERROR :: " + err);
+                }
+            }
+        };
+        xhr.onerror = function () {
+            console.log("POST :: Error :: ");
+            callback(instance, null);
+        }
+        xhr.send();
+    }
+
     fetchAllSystemTypes(callback, instance) {
         let xhr = new XMLHttpRequest();
         let sourceURL = this.DefaultInvader() + "/systemtype/";
@@ -846,33 +939,38 @@ export class ServerAPI {
         xhr.send();
     }
 
-    addRole(callback,instance,data) {
+    deleteSystemType(callback, instance, name) {
         let xhr = new XMLHttpRequest();
-        let sourceURL = this.DefaultInvader() + "/role/add";
-        xhr.open("POST", sourceURL, {data});
+        let sourceURL = this.DefaultInvader() + "/systemtype/id/"+ name;
+        xhr.open("DELETE", sourceURL, true);
         xhr.setRequestHeader("Content-type", "application/json");
-        xhr.send(JSON.stringify(data));
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4 && xhr.status === 200) {
                 try {
                     let jsonObj = JSON.parse(xhr.responseText);
-                    if(jsonObj.success) {
-                        let a = {
-                            'label' : jsonObj.role.Name,
-                            'description': jsonObj.role.Description
-                        }
-                        callback(instance, a);
+                    let jsonRoles = jsonObj.systemTypes;
+                    let retRoles = [];
+                    let roleCtr = 0;
+                    for (roleCtr in jsonRoles) {
+                        let jRole = jsonRoles[roleCtr];
+                        let role = new ServerLabels(jRole);
+                        retRoles[roleCtr] = role;
                     }
-                    else {
-                        alert("Faliure");
-                    }
+                    callback(instance, retRoles);
+                    
                 } catch (err) {
-                    console.log("Error" + err);
+                    console.log("POST :: ERROR :: " + err);
                 }
             }
         };
-
+        xhr.onerror = function () {
+            console.log("POST :: Error :: ");
+            callback(instance, null);
+        }
+        xhr.send();
     }
+
+    
 
     addRole(callback,instance,data) {
         let xhr = new XMLHttpRequest();
@@ -914,8 +1012,8 @@ export class ServerAPI {
                     let jsonObj = JSON.parse(xhr.responseText);
                     if(jsonObj.success) {
                         let a = {
-                            'label' : jsonObj.isoTypes.Name,
-                            'description': jsonObj.isoTypes.Description
+                            'label' : jsonObj.iso.Name,
+                            'description': jsonObj.iso.Description
                         }
                         callback(instance, a);
                     }
@@ -942,8 +1040,8 @@ export class ServerAPI {
                     let jsonObj = JSON.parse(xhr.responseText);
                     if(jsonObj.success) {
                         let a = {
-                            'label' : jsonObj.kernelTypes.Name,
-                            'description': jsonObj.kernelTypes.Description
+                            'label' : jsonObj.kernel.Name,
+                            'description': jsonObj.kernel.Description
                         }
                         callback(instance, a);
                     }
@@ -970,14 +1068,14 @@ export class ServerAPI {
                     let jsonObj = JSON.parse(xhr.responseText);
                     if(jsonObj.success) {
                         let a = {
-                            'label' : jsonObj.systemTypes.Id,
-                            'vendor' : jsonObj.systemTypes.Vendor,
-                            'rackUnit' : jsonObj.systemTypes.RackUnit,
-                            'airflow' : jsonObj.systemTypes.Airflow,
-                            'numFrontPanelInterface' : jsonObj.systemTypes.NumFrontPanelInterface,
-                            'speedFrontPanelInterface' : jsonObj.systemTypes.SpeedFrontPanelInterface,
-                            'numMgmtInterface' : jsonObj.systemTypes.NumMgmtInterface,
-                            'speedMgmtInterafce': jsonObj.systemTypes.SpeedMgmtInterafce
+                            'label' : jsonObj.system.Id,
+                            'vendor' : jsonObj.system.Vendor,
+                            'rackUnit' : jsonObj.system.RackUnit,
+                            'airflow' : jsonObj.system.Airflow,
+                            'numFrontPanelInterface' : jsonObj.system.NumFrontPanelInterface,
+                            'speedFrontPanelInterface' : jsonObj.system.SpeedFrontPanelInterface,
+                            'numMgmtInterface' : jsonObj.system.NumMgmtInterface,
+                            'speedMgmtInterafce': jsonObj.system.SpeedMgmtInterafce
                         }
                         callback(instance, a);
                     }

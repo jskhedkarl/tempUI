@@ -107,7 +107,19 @@ class Roles extends Component {
     }
 
     deleteRole() {
-       
+        for( let i = 0; i < this.state.selectedRowIndex.length; i++) {
+            ServerAPI.DefaultServer().deleteRole(this.callbackDelete,this,this.state.data[this.state.selectedRowIndex[i]].label);
+        }
+        ServerAPI.DefaultServer().fetchAllRoles(this.retrieveData,this);
+    }
+
+    callbackDelete(instance, data) {
+        let a = instance.state.data
+        if(!a) {
+           a = []
+        }
+        a.push(data)
+        instance.setState({data: a,selectedRowIndex: []})
     }
 
     render() { 

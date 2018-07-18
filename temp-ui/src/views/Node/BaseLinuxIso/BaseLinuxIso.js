@@ -56,8 +56,21 @@ class BaseLinuxIso extends Component {
             return null;
     }
 
-    deleteISO = () => {
-        
+
+    deleteISO() {
+        for( let i = 0; i < this.state.selectedRowIndex.length; i++) {
+            ServerAPI.DefaultServer().deleteIso(this.callbackDelete,this,this.state.data[this.state.selectedRowIndex[i]].label);
+        }
+        ServerAPI.DefaultServer().fetchAllIso(this.retrieveData,this);
+    }
+
+    callbackDelete(instance, data) {
+        let a = instance.state.data
+        if(!a) {
+           a = []
+        }
+        a.push(data)
+        instance.setState({data: a,selectedRowIndex: []})
     }
 
 
@@ -106,7 +119,7 @@ class BaseLinuxIso extends Component {
                         Description: <Input id='isoDesc' /><br />
                     </ModalBody>
                     <ModalFooter>
-                        <Button outline color="primary" onClick={() => (this.addRole())}>Add</Button>{'  '}
+                        <Button outline color="primary" onClick={() => (this.addIso())}>Add</Button>{'  '}
                         <Button outline color="secondary" onClick={() => (this.cancel())}>Cancel</Button>
                     </ModalFooter>
                 </Modal>
@@ -118,7 +131,7 @@ class BaseLinuxIso extends Component {
         this.setState({ displayModel: !this.state.displayModel })
     }
 
-    addRole() {
+    addIso() {
         let a = {
             'Name': document.getElementById('isoName').value,
             'Description': document.getElementById('isoDesc').value

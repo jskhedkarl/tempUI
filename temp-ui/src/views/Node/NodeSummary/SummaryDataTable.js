@@ -8,7 +8,8 @@ export default class SummaryDataTable extends React.Component {
         this.state = {
             data: [],
             heading: [],
-            selectedRowIndexes: []
+            selectedRowIndexes: [],
+            selectEntireRow: false
         };
     }
 
@@ -20,7 +21,8 @@ export default class SummaryDataTable extends React.Component {
         return {
             data: props.data,
             heading: props.heading,
-            selectedRowIndexes: props.selectedRowIndexes
+            selectedRowIndexes: props.selectedRowIndexes,
+            selectEntireRow: props.selectEntireRow
         }
     }
 
@@ -78,20 +80,33 @@ export default class SummaryDataTable extends React.Component {
                         if (props.showCheckBox) {
                             checkBoxColumn = (
                                 <Col sm="1" className="pad" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                    <Input style={{ cursor: 'pointer' }} 
+                                    <Input key={value} style={{ cursor: 'pointer' }} 
                                         type="checkbox" onChange={() => (self.checkBoxClick(rowIndex))} defaultChecked={selectedRowIndexes && selectedRowIndexes.length && selectedRowIndexes.indexOf(rowIndex) > -1 ? true : false} />
                                 </Col>)
                         }
                         columns.push(<Col sm={header.colSize ? header.colSize : 1} className="pad">{value}</Col>)
                     })
-                    let row = (<Row className={rowClassName} >
-                        {checkBoxColumn}
-                        <Col sm="10" className="pad" style={{ cursor: 'pointer' }} onClick={() => self.checkBoxClick(rowIndex, true)} >
-                            <Row>
-                                {columns}
-                            </Row>
-                        </Col>
-                    </Row>)
+                    var row;
+                    if(props.selectEntireRow) {
+                        row = (<Row className={rowClassName} >
+                            {checkBoxColumn}
+                            <Col sm="10" className="pad" style={{ cursor: 'pointer' }} onClick={() => self.checkBoxClick(rowIndex, true)} >
+                                <Row>
+                                    {columns}
+                                </Row>
+                            </Col>
+                        </Row>)
+                    }
+                    else {
+                        row = (<Row className={rowClassName} >
+                            {checkBoxColumn}
+                            <Col sm="10" className="pad">
+                                <Row>
+                                    {columns}
+                                </Row>
+                            </Col>
+                        </Row>)
+                    }
                     rows.push(row)
                 }
             })

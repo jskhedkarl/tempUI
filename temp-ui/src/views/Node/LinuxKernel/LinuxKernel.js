@@ -66,8 +66,20 @@ class LinuxKernel extends Component {
             return null;
     }
 
-    deleteKernel = () => {
-        
+    deleteKernel() {
+        for( let i = 0; i < this.state.selectedRowIndex.length; i++) {
+            ServerAPI.DefaultServer().deleteKernel(this.callbackDelete,this,this.state.data[this.state.selectedRowIndex[i]].label);
+        }
+        ServerAPI.DefaultServer().fetchAllKernels(this.retrieveData,this);
+    }
+
+    callbackDelete(instance, data) {
+        let a = instance.state.data
+        if(!a) {
+           a = []
+        }
+        a.push(data)
+        instance.setState({data: a,selectedRowIndex: []})
     }
 
 

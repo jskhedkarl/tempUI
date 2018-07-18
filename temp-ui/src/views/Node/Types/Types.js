@@ -114,9 +114,9 @@ class Types extends Component {
                         Vendor: <Input id='vendor'/><br />
                         Rack Unit: <Input id='rackUnit'/><br />
                         AirFlow: <Input id='airFlow'/><br /></Col><Col>
-                        Front Panel Interface: <Input id='noFPI'/><br />
+                        Front Panel Interface: <Input type="number" id='noFPI'/><br />
                         Speed Front Panel Interface: <Input id='SpeedFPI'/><br />
-                        Management Interfaces: <Input id='noMI'/><br />
+                        Management Interfaces: <Input type="number" id='noMI'/><br />
                         Speed/Type: <Input id='speedType' /><br /></Col>
                         </Row>
                     </ModalBody>
@@ -139,9 +139,9 @@ class Types extends Component {
             'Vendor' : document.getElementById('vendor').value,
             'RackUnit' : document.getElementById('rackUnit').value,
             'Airflow' : document.getElementById('airFlow').value,
-            'NumFrontPanelInterface' : document.getElementById('noFPI').value,
+            'NumFrontPanelInterface' : parseInt(document.getElementById('noFPI').value),
             'SpeedFrontPanelInterface' : document.getElementById('SpeedFPI').value,
-            'NumMgmtInterface': document.getElementById('noMI').value,
+            'NumMgmtInterface': parseInt(document.getElementById('noMI').value),
             'SpeedMgmtInterafce': document.getElementById('speedType').value
     }
         ServerAPI.DefaultServer().addSystemTypes(this.callback,this,a);
@@ -167,8 +167,20 @@ class Types extends Component {
             return null;
     }
 
-    deleteTypes = () => {
-        console.log("Delete")
+    deleteTypes() {
+        for( let i = 0; i < this.state.selectedRowIndex.length; i++) {
+            ServerAPI.DefaultServer().deleteSystemType(this.callbackDelete,this,this.state.data[this.state.selectedRowIndex[i]].label);
+        }
+        ServerAPI.DefaultServer().fetchAllSystemTypes(this.retrieveData,this);
+    }
+
+    callbackDelete(instance, data) {
+        let a = instance.state.data
+        if(!a) {
+           a = []
+        }
+        a.push(data)
+        instance.setState({data: a,selectedRowIndex: []})
     }
     
 
