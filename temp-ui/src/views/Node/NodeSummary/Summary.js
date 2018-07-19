@@ -12,6 +12,10 @@ class NodeSummary extends React.Component {
         super(props);
         this.state = {
             nodes: [],
+            roleData: [],
+            isoData: [],
+            kernelData: [],
+            typedata: [],
             nodeHead: nodeHead,
             selectedRowIndex: [],
             selectedRows: [],
@@ -22,7 +26,80 @@ class NodeSummary extends React.Component {
 
     componentDidMount() {
         ServerAPI.DefaultServer().fetchAllServerNodes(this.updateNodeSummary, this);
+        ServerAPI.DefaultServer().fetchAllRoles(this.retrieveRoleData, this);
+        ServerAPI.DefaultServer().fetchAllIso(this.retrieveIsoData, this);
+        ServerAPI.DefaultServer().fetchAllKernels(this.retrieveKernelsData, this);
+        ServerAPI.DefaultServer().fetchAllSystemTypes(this.retrieveTypesData, this);
     }
+
+    
+  retrieveRoleData(instance, data) {
+    if (!data) {
+      alert("No data received");
+    }
+    else {
+      if (Object.keys(data).length) {
+        instance.setState({ roleData: data });
+      }
+    }
+  }
+
+  retrieveIsoData(instance, data) {
+    if (!data) {
+      alert("No data received");
+    }
+    else {
+      if (Object.keys(data).length) {
+        instance.setState({ isoData: data });
+      }
+    }
+  }
+
+  retrieveKernelsData(instance, data) {
+    if (!data) {
+      alert("No data received");
+    }
+    else {
+      if (Object.keys(data).length) {
+        instance.setState({ kernelData: data });
+      }
+    }
+  }
+
+  retrieveTypesData(instance, data) {
+    if (!data) {
+      alert("No data received");
+    }
+    else {
+      if (Object.keys(data).length) {
+        instance.setState({ typedata: data });
+      }
+    }
+  }
+
+  getRoles() {
+    let rolesHtml = [];
+    this.state.roleData.map((item) => (rolesHtml.push(<option>{item.label}</option>)));
+    return rolesHtml;
+  }
+
+  getTypes() {
+    let typesHtml = [];
+    this.state.typedata.map((item) => (typesHtml.push(<option>{item.label}</option>)));
+    return typesHtml;
+  }
+
+  getKernel() {
+    let kernelHtml = [];
+    this.state.kernelData.map((item) => (kernelHtml.push(<option>{item.label}</option>)));
+    return kernelHtml;
+  }
+
+  getIso() {
+    let isoHtml = [];
+    this.state.isoData.map((item) => (isoHtml.push(<option>{item.label}</option>)));
+    return isoHtml;
+  }
 
     updateNodeSummary = (instance, nodes) => {
         instance.setState({
@@ -174,24 +251,23 @@ class NodeSummary extends React.Component {
         if (this.state.displayModel) {
             return (
                 <Modal isOpen={this.state.displayModel} size="lg" centered="true" >
-                    <ModalHeader>Add Role</ModalHeader>
+                    <ModalHeader>Add Node</ModalHeader>
                     <ModalBody>
                         <Row>
                             <Col sm="6">Name: <Input id='name'/></Col>
                             <Col sm="6">Site: <Input id='site' /></Col>
-                            </Row>
-                            <Row>    
+                        </Row>
+                        <Row>    
                             <Col sm="6">Status: <Input id='status'/></Col>
-                            <Col sm="6">Roles: <Input id='roles' /></Col>
-                        
+                            <Col sm="6">Roles: <select multiple className="form-control" id="roles">{this.getRoles()}</select></Col>
                         </Row>
                         <Row>
-                            <Col sm="6">Type: <Input id='type'/></Col>
+                            <Col sm="6">Type: <select className="form-control" id="types">{this.getTypes()}</select></Col>
                             <Col sm="6">Serial Number: <Input id='serialNumber' /></Col>
-                           </Row>
-                           <Row> 
-                            <Col sm="6">Linux Kernel: <Input id='linuxKernel'/></Col>
-                            <Col sm="6">Base Linux ISO: <Input id='linuxIso' /></Col>
+                        </Row>
+                        <Row> 
+                            <Col sm="6">Linux Kernel: <select className="form-control" id="linuxkernel">{this.getKernel()}</select></Col>
+                            <Col sm="6">Base Linux ISO: <select className="form-control" id="linuxIso">{this.getIso()}</select></Col>
                         </Row>    
                     </ModalBody>
                     <ModalFooter>
@@ -204,17 +280,33 @@ class NodeSummary extends React.Component {
     }
 
     addNode() {
+        let roles = this.getSelectRoleValues(document.getElementById('roles'))
         let a = {
             'Name' : document.getElementById('name').value,
-            'Site': document.getElementById('site').value,
-            'Status': document.getElementById('status').value,
-            'Roles': document.getElementById('roles').value,
-            'Serial Number': document.getElementById('type').value,
-            'Linux Kernel': document.getElementById('serialNumber').value,
-            'Linux Kernel': document.getElementById('linuxKernel').value,
-            'Base Linux ISO': document.getElementById('linuxIso').value
-    }
+            'site': document.getElementById('site').value,
+            'status': document.getElementById('status').value,
+            'roles': roles,
+            'type': document.getElementById('types').value,
+            'serialNumber': document.getElementById('serialNumber').value,
+            'kernel': document.getElementById('linuxkernel').value,
+            'linuxISO': document.getElementById('linuxIso').value
+        }
         ServerAPI.DefaultServer().addNode(this.callback,this,a);
+    }
+
+    getSelectRoleValues(select) {
+        var result = [];
+        var options = select && select.options;
+        var opt;
+      
+        for (var i=0, iLen=options.length; i<iLen; i++) {
+          opt = options[i];
+      
+          if (opt.selected) {
+            result.push(opt.value || opt.text);
+          }
+        }
+        return result;
     }
 
     callback(instance, data) {
@@ -242,7 +334,7 @@ class NodeSummary extends React.Component {
                         <div className='marginLeft10 '>
                             <Button onClick={() => (this.onConfigureClick())} className="custBtn marginLeft13N" outline color="secondary">Configure</Button>
                             <Button className="custBtn" outline color="secondary" onClick={() => (this.click())}>New</Button>
-                            <SummaryDataTable heading={this.state.nodeHead} data={this.state.nodes} checkBoxClick={this.checkBoxClick} />
+                            <SummaryDataTable heading={this.state.nodeHead} data={this.state.nodes} checkBoxClick={this.checkBoxClick} selectEntireRow={true}/>
                         </div>
                     </Col>
                     <Col sm="3">                        

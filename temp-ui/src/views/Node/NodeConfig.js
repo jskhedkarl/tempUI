@@ -17,9 +17,13 @@ class NodeConfig extends Component {
       typedata: [],
       nodeHead: nodeHead,
       displayModel: false,
+      displayNewInterfaceModel: false,
       interfaceData: {},
       interfaceIndex:null,
-      nodes: props.location.state
+      nodes: props.location.state,
+      selectedType : props.location.state.length == 1 ? props.location.state[0].nodeType : '',
+      selectedLinux :  props.location.state.length == 1 ? props.location.state[0].kernel : '',
+      selectedIso :  props.location.state.length == 1 ? props.location.state[0].linuxISO : ''
     }
   }
 
@@ -82,7 +86,7 @@ class NodeConfig extends Component {
   interfaceTableHeader() {
     return (
       <div className="padTop30">
-        <h3>Interfaces</h3>
+        <h3>Interfaces  <Button className="custBtn" outline color="secondary" onClick={() => (this.toggleNewModel())}> New </Button></h3>
         <Row className="headerRow" style={{ marginLeft: '0px' }}>
           <Col sm="2" className="head-name">Interface Name</Col>
           <Col sm="2" className="head-name">Admin state</Col>
@@ -147,6 +151,19 @@ class NodeConfig extends Component {
     document.getElementById('show').style.display = 'none';
   }
 
+  toggleModel(rowIndex) {
+    let data = this.state.nodes
+    let itemData = {}
+    data.map((datum) => {
+      datum.allInterfaces.map((interfaceItem, datumIndex) => {
+        if (rowIndex === datumIndex) {
+          itemData = interfaceItem
+        }
+      })
+    })
+    this.setState({ displayModel: !this.state.displayModel, interfaceData: itemData , interfaceIndex : rowIndex })
+  }
+
 
   renderUpgradeModelDialog() {
     if (this.state.displayModel) {
@@ -204,17 +221,126 @@ callback(instance, data) {
     instance.click();
 }
 
-  toggleModel(rowIndex) {
+toggleNewModel() {
+    console.log('toggleNewModel inside')
+    this.setState({ displayNewInterfaceModel: !this.state.displayNewInterfaceModel})
+  }
+
+  renderUpgradeNewModelDialog() {
+    if (this.state.displayNewInterfaceModel) {
+      return (
+        <Modal isOpen={this.state.displayNewInterfaceModel} size="sm" centered="true" >
+          <ModalHeader>Add Interface </ModalHeader>
+          <ModalBody>
+            <div className="marTop10">Name: <Input type="text" id="interfacePort"/></div>
+            <div className="marTop10">Admin state:<Input type="text"  id="interfaceAdminState"/></div>
+            <div className="marTop10">IP Address:<Input type="text"  id="interfaceIp"/></div>
+            <div className="marTop10">Remote Node Name:<Input type="text" id="interfaceRemoteNode"/></div>
+            <div className="marTop10">Remote Node Interface:<Input type="text" id="interfaceRemoteInterface"/></div>
+          </ModalBody>
+          <ModalFooter>
+            <Button outline color="primary" onClick={()=>(this.updateNewInterfaceCall())}>Add</Button>
+            <Button outline color="secondary" onClick={() => (this.toggleModel())}>Cancel</Button>
+          </ModalFooter>
+        </Modal>
+      );
+    }
+  }
+
+  updateNewInterfaceCall = () => {
+    let newInterface = {
+      'connectedTo' : {
+        'name':document.getElementById('interfaceRemoteNode').value,
+        'port':document.getElementById('interfaceRemoteInterface').value
+      },
+      'ip': document.getElementById('interfaceIp').value,
+      'port': document.getElementById('interfacePort').value
+    }
     let data = this.state.nodes
-    let itemData = {}
     data.map((datum) => {
-      datum.allInterfaces.map((interfaceItem, datumIndex) => {
-        if (rowIndex === datumIndex) {
-          itemData = interfaceItem
+      let allInterfaces = datum.allInterfaces
+      if(!datum.allInterfaces || !datum.allInterfaces.length){
+        datum.allInterfaces = []
+      }
+      datum.allInterfaces.push(newInterface)
+    }) 
+    
+    this.setState({ displayNewInterfaceModel: !this.state.displayNewInterfaceModel })
+
+    let a = { 
+      nodes : data
+    }
+   
+    ServerAPI.DefaultServer().updateNode(this.callback1,this,a);
+    
+  }
+
+  callback1(instance, data) {
+    let a = instance.state.data
+    if(!a) {
+       a = []
+    }
+    a.push(data)
+    instance.setState({data: a})
+    instance.click();
+  }
+
+  updateSaveNode = () => {
+
+    let roles = this.getSelectRoleValues(document.getElementById('multiRole'))
+
+    let data = this.state.nodes
+    data.map((datum) => {
+        datum.roles = roles,
+        datum.nodeType = this.state.selectedType,
+        datum.linuxIso = this.state.selectedIso,
+        datum.kernel = this.state.selectedLinux
+        let a = { 
+          nodes : [datum]
         }
-      })
+        ServerAPI.DefaultServer().updateNode(this.callback2,this,a);
     })
-    this.setState({ displayModel: !this.state.displayModel, interfaceData: itemData , interfaceIndex : rowIndex })
+
+  }
+
+  getSelectRoleValues(select) {
+    var result = [];
+    var options = select && select.options;
+    var opt;
+  
+    for (var i=0, iLen=options.length; i<iLen; i++) {
+      opt = options[i];
+  
+      if (opt.selected) {
+        result.push(opt.value || opt.text);
+      }
+    }
+    return result;
+}
+
+  callback2(instance, data) {
+    let a = instance.state.data
+    if(!a) {
+       a = []
+    }
+    a.push(data)
+    instance.setState({data: a})
+    instance.click();
+  }
+
+  getSelectedData= (data,identity) => {
+    if(identity == 'Type') {
+      this.setState({ selectedType : data })
+    
+    }
+    if(identity == 'Linux') {
+      this.setState({ selectedLinux : data })
+    
+    }
+    if(identity == 'ISO') {
+      this.setState({ selectedIso : data })
+      
+    }
   }
 
 
@@ -273,23 +399,23 @@ callback(instance, data) {
           <Media right>
             <Button className="custBtn" outline color="secondary" onClick={() => { customHistory.goBack() }}> Cancel </Button>
             <Button className="custBtn" outline color="secondary" > Provision </Button>
-            <Button className="custBtn" outline color="secondary" > Save </Button>
+            <Button className="custBtn" outline color="secondary" onClick={()=>(this.updateSaveNode())}> Save </Button>
           </Media>
         </Media>
         <div className="boxBorder">
           <Row className="pad">
 
             <Col xs='3' ><Label>Roles</Label><br />
-              <select multiple className="form-control">{this.getRoles()}</select>
+              <select multiple className="form-control" id="multiRole" defaultValue={this.state.nodes[0].roles}>{this.getRoles()}</select>
             </Col>
             <Col xs='3' ><Label>Type</Label><br />
-              <DropDown options={this.state.typedata} />
+              <DropDown options={this.state.typedata} getSelectedData={this.getSelectedData} identity={"Type"} default={this.state.selectedType}/>
             </Col>
             <Col xs='3' ><Label>Linux</Label><br />
-              <DropDown options={this.state.kernelData} />
+              <DropDown options={this.state.kernelData} getSelectedData={this.getSelectedData} identity={"Linux"} default={ this.state.selectedLinux }/>
             </Col>
             <Col xs='3' ><Label>Base Linux ISO</Label><br />
-              <DropDown options={this.state.isoData}/>
+              <DropDown options={this.state.isoData} getSelectedData={this.getSelectedData} identity={"ISO"} default={ this.state.selectedIso }/>
             </Col>
           </Row>
           {/* {this.confDropdown()} */}
@@ -300,6 +426,7 @@ callback(instance, data) {
           {summaryDataTable}
         </div>
         {this.renderUpgradeModelDialog()}
+        {this.renderUpgradeNewModelDialog()}
 
       </div>
 

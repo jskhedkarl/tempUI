@@ -17,6 +17,7 @@ export let nodeHead = [
     {
         id: 'roles',
         displayName: 'Roles',
+        type: 'array',
         colSize: 1
     },
     {
