@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Col, Row, Input, Card ,CardHeader,CardBody ,InputGroup, InputGroupAddon, Modal, ModalHeader, ModalBody, ModalFooter, } from 'reactstrap';
+import { Col, Row, Input, Card ,CardHeader,CardBody ,InputGroup, InputGroupAddon, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { ServerAPI } from '../../../ServerAPI';
 import { Redirect } from 'react-router-dom'
 import { Button } from 'reactstrap';
@@ -89,14 +89,35 @@ class NodeSummary extends React.Component {
     return typesHtml;
   }
 
+  getTypesForAddnew() {
+    let typesHtml = [];
+    typesHtml.push(<option>---Select an Option---</option>)
+    this.state.typedata.map((item) => (typesHtml.push(<option>{item.label}</option>)));
+    return typesHtml;
+  }
+
   getKernel() {
     let kernelHtml = [];
     this.state.kernelData.map((item) => (kernelHtml.push(<option>{item.label}</option>)));
     return kernelHtml;
   }
 
+  getKernelForAddnew() {
+    let kernelHtml = [];
+    kernelHtml.push(<option>---Select an Option---</option>)
+    this.state.kernelData.map((item) => (kernelHtml.push(<option>{item.label}</option>)));
+    return kernelHtml;
+  }
+
   getIso() {
     let isoHtml = [];
+    this.state.isoData.map((item) => (isoHtml.push(<option>{item.label}</option>)));
+    return isoHtml;
+  }
+
+  getIsoForAddnew() {
+    let isoHtml = [];
+    isoHtml.push(<option>---Select an Option---</option>)
     this.state.isoData.map((item) => (isoHtml.push(<option>{item.label}</option>)));
     return isoHtml;
   }
@@ -254,25 +275,26 @@ class NodeSummary extends React.Component {
                     <ModalHeader>Add Node</ModalHeader>
                     <ModalBody>
                         <Row>
-                            <Col sm="6">Name: <Input id='name'/></Col>
-                            <Col sm="6">Site: <Input id='site' /></Col>
+                            <Col sm="6" className="marTop10">Name: <Input id='name' className="marTop10"/></Col>
+                            <Col sm="6" className="marTop10">Site: <Input id='site' className="marTop10"/></Col>
                         </Row>
                         <Row>    
-                            <Col sm="6">Status: <Input id='status'/></Col>
-                            <Col sm="6">Roles: <select multiple className="form-control" id="roles">{this.getRoles()}</select></Col>
-                        </Row>
-                        <Row>
-                            <Col sm="6">Type: <select className="form-control" id="types">{this.getTypes()}</select></Col>
-                            <Col sm="6">Serial Number: <Input id='serialNumber' /></Col>
+                            <Col sm="6" className="marTop10">Roles: <select multiple className="form-control marTop10" id="roles">{this.getRoles()}</select></Col>
+                            <Col sm="6" className="marTop10">
+                                Serial Number: <Input id='serialNumber' className="marTop10"/>
+                                <br />Type: <select className="form-control marTop10" id="types">
+                                                {this.getTypesForAddnew()}
+                                            </select>
+                            </Col>
                         </Row>
                         <Row> 
-                            <Col sm="6">Linux Kernel: <select className="form-control" id="linuxkernel">{this.getKernel()}</select></Col>
-                            <Col sm="6">Base Linux ISO: <select className="form-control" id="linuxIso">{this.getIso()}</select></Col>
+                            <Col sm="6" className="marTop10">Linux Kernel: <select className="form-control marTop10" id="linuxkernel">{this.getKernelForAddnew()}</select></Col>
+                            <Col sm="6" className="marTop10">Base Linux ISO: <select className="form-control marTop10" id="linuxIso">{this.getIsoForAddnew()}</select></Col>
                         </Row>    
                     </ModalBody>
                     <ModalFooter>
                         <Button outline color="primary" onClick={()=>(this.addNode())}>Add</Button>{'  '}
-                        <Button outline color="secondary" onClick={()=>(this.click())}>Cancel</Button>
+                        <Button outline color="primary" onClick={()=>(this.click())}>Cancel</Button>
                     </ModalFooter>
                 </Modal>
             );
@@ -284,7 +306,6 @@ class NodeSummary extends React.Component {
         let a = {
             'Name' : document.getElementById('name').value,
             'site': document.getElementById('site').value,
-            'status': document.getElementById('status').value,
             'roles': roles,
             'type': document.getElementById('types').value,
             'serialNumber': document.getElementById('serialNumber').value,

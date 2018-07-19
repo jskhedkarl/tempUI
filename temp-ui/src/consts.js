@@ -2,7 +2,7 @@ export let nodeHead = [
     {
         id: 'name',
         displayName: 'Name',
-        colSize: 2
+        colSize: 1
     },
     {
         id: 'site',
@@ -18,12 +18,12 @@ export let nodeHead = [
         id: 'roles',
         displayName: 'Roles',
         type: 'array',
-        colSize: 1
+        colSize: 2
     },
     {
         id: 'nodeType',
         displayName: 'Type',
-        colSize: 1
+        colSize: 2
     },
     {
         id: 'serialNumber',
@@ -33,7 +33,7 @@ export let nodeHead = [
     {
         id: 'kernel',
         displayName: 'Linux Kernel',
-        colSize: 2
+        colSize: 1
     },
     {
         id: 'linuxISO',
