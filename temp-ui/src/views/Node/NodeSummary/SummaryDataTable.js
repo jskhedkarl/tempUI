@@ -84,7 +84,7 @@ export default class SummaryDataTable extends React.Component {
                                         type="checkbox" onChange={() => (self.checkBoxClick(rowIndex))} defaultChecked={selectedRowIndexes && selectedRowIndexes.length && selectedRowIndexes.indexOf(rowIndex) > -1 ? true : false} />
                                 </Col>)
                         }
-                        columns.push(<Col sm={header.colSize ? header.colSize : 1} className="pad">{value}</Col>)
+                        columns.push(<Col sm={header.colSize ? header.colSize : 1} className="pad">{value ? value : '-'}</Col>)
                     })
                     var row;
                     if(props.selectEntireRow) {

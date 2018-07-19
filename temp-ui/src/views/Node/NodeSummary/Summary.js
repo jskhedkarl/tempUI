@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Col, Row, Input, Card ,CardHeader,CardBody ,InputGroup, InputGroupAddon } from 'reactstrap';
+import { Col, Row, Input, Card ,CardHeader,CardBody ,InputGroup, InputGroupAddon, Modal, ModalHeader, ModalBody, ModalFooter, } from 'reactstrap';
 import { ServerAPI } from '../../../ServerAPI';
 import { Redirect } from 'react-router-dom'
 import { Button } from 'reactstrap';
@@ -15,6 +15,7 @@ class NodeSummary extends React.Component {
             nodeHead: nodeHead,
             selectedRowIndex: [],
             selectedRows: [],
+            displayModel: false,
             redirect: false
         }
     }
@@ -169,6 +170,66 @@ class NodeSummary extends React.Component {
         )
     }
 
+    renderUpgradeModelDialog() {
+        if (this.state.displayModel) {
+            return (
+                <Modal isOpen={this.state.displayModel} size="lg" centered="true" >
+                    <ModalHeader>Add Role</ModalHeader>
+                    <ModalBody>
+                        <Row>
+                            <Col sm="6">Name: <Input id='name'/></Col>
+                            <Col sm="6">Site: <Input id='site' /></Col>
+                            </Row>
+                            <Row>    
+                            <Col sm="6">Status: <Input id='status'/></Col>
+                            <Col sm="6">Roles: <Input id='roles' /></Col>
+                        
+                        </Row>
+                        <Row>
+                            <Col sm="6">Type: <Input id='type'/></Col>
+                            <Col sm="6">Serial Number: <Input id='serialNumber' /></Col>
+                           </Row>
+                           <Row> 
+                            <Col sm="6">Linux Kernel: <Input id='linuxKernel'/></Col>
+                            <Col sm="6">Base Linux ISO: <Input id='linuxIso' /></Col>
+                        </Row>    
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button outline color="primary" onClick={()=>(this.addNode())}>Add</Button>{'  '}
+                        <Button outline color="secondary" onClick={()=>(this.click())}>Cancel</Button>
+                    </ModalFooter>
+                </Modal>
+            );
+        }
+    }
+
+    addNode() {
+        let a = {
+            'Name' : document.getElementById('name').value,
+            'Site': document.getElementById('site').value,
+            'Status': document.getElementById('status').value,
+            'Roles': document.getElementById('roles').value,
+            'Serial Number': document.getElementById('type').value,
+            'Linux Kernel': document.getElementById('serialNumber').value,
+            'Linux Kernel': document.getElementById('linuxKernel').value,
+            'Base Linux ISO': document.getElementById('linuxIso').value
+    }
+        ServerAPI.DefaultServer().addNode(this.callback,this,a);
+    }
+
+    callback(instance, data) {
+        let a = instance.state.nodes
+        if(!a) {
+           a = []
+        }
+        a.push(data)
+        instance.setState({data: a,displayModel : !instance.state.displayModel})
+    }
+
+    click() {
+        this.setState({displayModel : !this.state.displayModel})
+    }
+
 
     render() {
         if (this.state.redirect) {
@@ -180,8 +241,8 @@ class NodeSummary extends React.Component {
                     <Col sm="9">
                         <div className='marginLeft10 '>
                             <Button onClick={() => (this.onConfigureClick())} className="custBtn marginLeft13N" outline color="secondary">Configure</Button>
-                            <Button className="custBtn" outline color="secondary">New</Button>
-                            <SummaryDataTable heading={this.state.nodeHead} data={this.state.nodes} checkBoxClick={this.checkBoxClick} selectEntireRow={true}/>
+                            <Button className="custBtn" outline color="secondary" onClick={() => (this.click())}>New</Button>
+                            <SummaryDataTable heading={this.state.nodeHead} data={this.state.nodes} checkBoxClick={this.checkBoxClick} />
                         </div>
                     </Col>
                     <Col sm="3">                        
@@ -189,6 +250,7 @@ class NodeSummary extends React.Component {
                         {this.renderFilterComponent()}                        
                     </Col>
                 </Row>
+                {this.renderUpgradeModelDialog()}
             </Container-fluid>
         );
     }

@@ -505,6 +505,8 @@ export class ServerInterface {
         this.port = jsonObj.port;
         this.type = jsonObj.type;
         this.IPAddress = jsonObj.ip;
+        this.admin = jsonObj.admin;
+        this.alarms = jsonObj.alarms;
         this.macAddress = jsonObj.macAddress;
         this.connectedTo = new ServerConnectedTo(jsonObj.connectedTo);
     }
@@ -514,6 +516,8 @@ export class ServerConnectedTo {
     constructor(jsonObj) {
         this.serverPort = jsonObj.port;
         this.serverName = jsonObj.name;
+        this.lldpMatched = jsonObj.lldpMatched;
+        this.link = jsonObj.link;
     }
 }
 
@@ -938,8 +942,8 @@ export class ServerAPI {
         }
         xhr.send();
     }
-
-    deleteSystemType(callback, instance, name) {
+    
+        deleteSystemType(callback, instance, name) {
         let xhr = new XMLHttpRequest();
         let sourceURL = this.DefaultInvader() + "/systemtype/id/"+ name;
         xhr.open("DELETE", sourceURL, true);
@@ -968,6 +972,73 @@ export class ServerAPI {
             callback(instance, null);
         }
         xhr.send();
+    }
+
+addNode(callback,instance,data) {
+        let xhr = new XMLHttpRequest();
+        let sourceURL = this.DefaultInvader() + "/node/add";
+        xhr.open("POST", sourceURL, {data});
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.send(JSON.stringify(data));
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                try {
+                    let jsonObj = JSON.parse(xhr.responseText);
+                    if(jsonObj.success) {
+                        let a = {
+                            'name': jsonObj.name,
+                            'site': jsonObj.site,
+                            'status': jsonObj.name,
+                            'type': jsonObj.type,
+                            'serialNumber': jsonObj.serialNumber,
+                            'kernel':jsonObj.kernel,
+                            'linuxISO':jsonObj.linuxISO
+                        }
+                        callback(instance, a);
+                    }
+                    else {
+                        alert("Faliure");
+                    }
+                } catch (err) {
+                    console.log("Error" + err);
+                }
+            }
+        };
+    }
+
+    updateNode(callback,instance,data) {
+        let xhr = new XMLHttpRequest();
+        let sourceURL = this.DefaultInvader() + "/node/modify/";
+        xhr.open("POST", sourceURL, {data});
+        xhr.setRequestHeader("Content-type", "application/json");
+        data.nodes[0].interfaces = data.nodes[0].allInterfaces
+        data.nodes[0].interfaces.map((intrfc) => {
+            intrfc.ip = intrfc.IPAddress
+            intrfc.connectedTo.port = intrfc.connectedTo.serverPort
+            intrfc.connectedTo.name = intrfc.connectedTo.serverName
+        })
+        data.nodes[0].type = data.nodes[0].nodeType
+        xhr.send(JSON.stringify(data.nodes[0]));
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                try {
+                    let jsonObj = JSON.parse(xhr.responseText);
+                    if(jsonObj.success) {
+                        let a = {
+                            'name' : jsonObj.name
+                            
+                        }
+                        callback(instance, a);
+                    }
+                    else {
+                        alert("Faliure");
+                    }
+                } catch (err) {
+                    console.log("Error" + err);
+                }
+            }
+        };
+
     }
 
     
@@ -1012,8 +1083,8 @@ export class ServerAPI {
                     let jsonObj = JSON.parse(xhr.responseText);
                     if(jsonObj.success) {
                         let a = {
-                            'label' : jsonObj.iso.Name,
-                            'description': jsonObj.iso.Description
+                            'label' : jsonObj.isoTypes.Name,
+                            'description': jsonObj.isoTypes.Description
                         }
                         callback(instance, a);
                     }
@@ -1040,8 +1111,8 @@ export class ServerAPI {
                     let jsonObj = JSON.parse(xhr.responseText);
                     if(jsonObj.success) {
                         let a = {
-                            'label' : jsonObj.kernel.Name,
-                            'description': jsonObj.kernel.Description
+                            'label' : jsonObj.kernelTypes.Name,
+                            'description': jsonObj.kernelTypes.Description
                         }
                         callback(instance, a);
                     }
@@ -1068,14 +1139,14 @@ export class ServerAPI {
                     let jsonObj = JSON.parse(xhr.responseText);
                     if(jsonObj.success) {
                         let a = {
-                            'label' : jsonObj.system.Id,
-                            'vendor' : jsonObj.system.Vendor,
-                            'rackUnit' : jsonObj.system.RackUnit,
-                            'airflow' : jsonObj.system.Airflow,
-                            'numFrontPanelInterface' : jsonObj.system.NumFrontPanelInterface,
-                            'speedFrontPanelInterface' : jsonObj.system.SpeedFrontPanelInterface,
-                            'numMgmtInterface' : jsonObj.system.NumMgmtInterface,
-                            'speedMgmtInterafce': jsonObj.system.SpeedMgmtInterafce
+                            'label' : jsonObj.systemTypes.Id,
+                            'vendor' : jsonObj.systemTypes.Vendor,
+                            'rackUnit' : jsonObj.systemTypes.RackUnit,
+                            'airflow' : jsonObj.systemTypes.Airflow,
+                            'numFrontPanelInterface' : jsonObj.systemTypes.NumFrontPanelInterface,
+                            'speedFrontPanelInterface' : jsonObj.systemTypes.SpeedFrontPanelInterface,
+                            'numMgmtInterface' : jsonObj.systemTypes.NumMgmtInterface,
+                            'speedMgmtInterafce': jsonObj.systemTypes.SpeedMgmtInterafce
                         }
                         callback(instance, a);
                     }

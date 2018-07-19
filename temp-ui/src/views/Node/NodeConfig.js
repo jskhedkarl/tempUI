@@ -15,12 +15,10 @@ class NodeConfig extends Component {
       isoData: [],
       kernelData: [],
       typedata: [],
-
       nodeHead: nodeHead,
-
       displayModel: false,
       interfaceData: {},
-
+      interfaceIndex:null,
       nodes: props.location.state
     }
   }
@@ -122,8 +120,8 @@ class NodeConfig extends Component {
             <Col sm="2" className="pad">{item.port ? item.port : '-'}</Col>
             <Col sm="2" className="pad">{item.adminState ? item.adminState : '-'}</Col>
             <Col sm="3" className="pad">{item.IPAddress ? item.IPAddress : '-'}</Col>
-            <Col sm="2" className="pad">{item.remoteNodename ? item.remoteNodename : '-'}</Col>
-            <Col sm="2" className="pad">{item.remoteInterface ? item.remoteInterface : '-'}</Col>
+            <Col sm="2" className="pad">{item.connectedTo.serverName ? item.connectedTo.serverName : '-'}</Col>
+            <Col sm="2" className="pad">{item.connectedTo.serverPort ? item.connectedTo.serverPort : '-'}</Col>
             <Col sm="1" className="pad"><i className="fa fa-pencil" aria-hidden="true" onClick={() => (self.toggleModel(rowIndex))}></i></Col>
 
           </Row>)
@@ -149,67 +147,23 @@ class NodeConfig extends Component {
     document.getElementById('show').style.display = 'none';
   }
 
-  confDropdown() {
-    return (
-      <Row className="pad">
-        <Col xs='2' ><Label>/etc/frr/*.conf</Label><br />
-          <select className="form-control">
-            <option value="frr">/etc/frr/*.conf</option>
-            <option value="etc">/etc/frr/*.conf</option>
-            <option selected value="conf">/etc/frr/*.conf</option>
-            <option value="fre">/etc/frr/*.conf</option>
-          </select>
-        </Col>
-        <Col xs='2' ><Label>/etc/network/interface.d/*.conf</Label><br />
-          <select className="form-control">
-            <option value="frr">/etc/frr/*.conf</option>
-            <option value="etc">/etc/frr/*.conf</option>
-            <option selected value="conf">/etc/frr/*.conf</option>
-            <option value="fre">/etc/frr/*.conf</option>
-          </select>
-        </Col>
-        <Col xs='2' ><Label>/etc/goes/*.conf</Label><br />
-          <select className="form-control">
-            <option value="frr">/etc/frr/*.conf</option>
-            <option value="etc">/etc/frr/*.conf</option>
-            <option selected value="conf">/etc/frr/*.conf</option>
-            <option value="fre">/etc/frr/*.conf</option>
-          </select>
-        </Col>
-        <Col xs='2' ><Label>/etc/modprobe.d/*.conf</Label><br />
-          <select className="form-control">
-            <option value="frr">/etc/frr/*.conf</option>
-            <option value="etc">/etc/frr/*.conf</option>
-            <option selected value="conf">/etc/frr/*.conf</option>
-            <option value="fre">/etc/frr/*.conf</option>
-          </select>
-        </Col>
-        <Col xs='2' ><Label>/etc/ntp.conf</Label><br />
-          <select className="form-control">
-            <option value="frr">/etc/frr/*.conf</option>
-            <option value="etc">/etc/frr/*.conf</option>
-            <option selected value="conf">/etc/frr/*.conf</option>
-            <option value="fre">/etc/frr/*.conf</option>
-          </select>
-        </Col>
-      </Row>)
-  }
 
   renderUpgradeModelDialog() {
     if (this.state.displayModel) {
       let data = this.state.interfaceData
+      let index = this.state.interfaceIndex
       return (
         <Modal isOpen={this.state.displayModel} size="sm" centered="true" >
-          <ModalHeader>Edit Interface</ModalHeader>
+          <ModalHeader>Edit Interface {data.port}</ModalHeader>
           <ModalBody>
-            Name: <Input type="text" defaultValue={data.port} />
-            Admin state:<Input type="text" defaultValue={data.adminState} />
-            IP Address:<Input type="text" defaultValue={data.IPAddress} />
-            Remote Node Name:<Input type="text" defaultValue={data.remoteNodename} />
-            Remote Node Interface:<Input type="text" defaultValue={data.remoteNodeInterface} />
+            <div className="marTop10">Name: <Input type="text" defaultValue={data.port} id="interfacePort"/></div>
+            <div className="marTop10">Admin state:<Input type="text" defaultValue={data.adminState} disabled id="interfaceAdminState"/></div>
+            <div className="marTop10">IP Address:<Input type="text" defaultValue={data.IPAddress} id="interfaceIpAddress"/></div>
+            <div className="marTop10">Remote Node Name:<Input type="text" defaultValue={data.connectedTo.serverName} id="interfaceRemoteNodename"/></div>
+            <div className="marTop10">Remote Node Interface:<Input type="text" defaultValue={data.connectedTo.serverPort} id="interfaceRemoteNodeInterface"/></div>
           </ModalBody>
           <ModalFooter>
-            <Button outline color="primary" >Update</Button>
+            <Button outline color="primary" onClick={()=>(this.updateNodeCall(index))}>Update</Button>
             <Button outline color="secondary" onClick={() => (this.toggleModel())}>Cancel</Button>
           </ModalFooter>
         </Modal>
@@ -217,17 +171,50 @@ class NodeConfig extends Component {
     }
   }
 
-  toggleModel(id) {
+  updateNodeCall = (interfaceIndex) => {
+    let data = this.state.nodes
+    data.map((datum) => {
+      datum.allInterfaces.map((interfaceItem,rowIndex) => {
+        if(rowIndex === interfaceIndex){
+          interfaceItem.port = document.getElementById('interfacePort').value
+          interfaceItem.IPAddress = document.getElementById('interfaceIpAddress').value,
+          interfaceItem.connectedTo.serverName = document.getElementById('interfaceRemoteNodename').value,
+          interfaceItem.connectedTo.serverPort = document.getElementById('interfaceRemoteNodeInterface').value
+        }
+      })
+    })
+
+    let a = { 
+      nodes : data
+    }
+
+    this.setState({ displayModel: !this.state.displayModel })
+   
+    ServerAPI.DefaultServer().updateNode(this.callback,this,a);
+    
+}
+
+callback(instance, data) {
+    let a = instance.state.data
+    if(!a) {
+       a = []
+    }
+    a.push(data)
+    instance.setState({data: a})
+    instance.click();
+}
+
+  toggleModel(rowIndex) {
     let data = this.state.nodes
     let itemData = {}
     data.map((datum) => {
-      datum.allInterfaces.map((interfaceItem, i) => {
-        if (id === i) {
+      datum.allInterfaces.map((interfaceItem, datumIndex) => {
+        if (rowIndex === datumIndex) {
           itemData = interfaceItem
         }
       })
     })
-    this.setState({ displayModel: !this.state.displayModel, interfaceData: itemData })
+    this.setState({ displayModel: !this.state.displayModel, interfaceData: itemData , interfaceIndex : rowIndex })
   }
 
 
@@ -292,20 +279,20 @@ class NodeConfig extends Component {
         <div className="boxBorder">
           <Row className="pad">
 
-            <Col xs='2' ><Label>Roles</Label><br />
+            <Col xs='3' ><Label>Roles</Label><br />
               <select multiple className="form-control">{this.getRoles()}</select>
             </Col>
-            <Col xs='2' ><Label>Type</Label><br />
+            <Col xs='3' ><Label>Type</Label><br />
               <DropDown options={this.state.typedata} />
             </Col>
-            <Col xs='2' ><Label>Linux</Label><br />
+            <Col xs='3' ><Label>Linux</Label><br />
               <DropDown options={this.state.kernelData} />
             </Col>
-            <Col xs='2' ><Label>Base Linux ISO</Label><br />
-              <DropDown options={this.state.isoData} />
+            <Col xs='3' ><Label>Base Linux ISO</Label><br />
+              <DropDown options={this.state.isoData}/>
             </Col>
           </Row>
-          {this.confDropdown()}
+          {/* {this.confDropdown()} */}
         </div>
         {interfaceTableHeader}
         {interfaceTableContent}
