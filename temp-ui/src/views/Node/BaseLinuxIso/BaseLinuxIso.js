@@ -24,8 +24,11 @@ class BaseLinuxIso extends Component {
     }
 
     retrieveData(instance, data) {
-        if (Object.keys(data).length) {
-            instance.setState({ data: data });
+        if(!data) {
+            alert("No data received");
+        }
+        else {
+            instance.setState({data: data,selectedRowIndex:[]});
         }
     }
 
@@ -61,16 +64,11 @@ class BaseLinuxIso extends Component {
         for( let i = 0; i < this.state.selectedRowIndex.length; i++) {
             ServerAPI.DefaultServer().deleteIso(this.callbackDelete,this,this.state.data[this.state.selectedRowIndex[i]].label);
         }
-        ServerAPI.DefaultServer().fetchAllIso(this.retrieveData,this);
+        this.setState({showDelete: !this.state.showDelete});
     }
 
     callbackDelete(instance, data) {
-        let a = instance.state.data
-        if(!a) {
-           a = []
-        }
-        a.push(data)
-        instance.setState({data: a,selectedRowIndex: []})
+        ServerAPI.DefaultServer().fetchAllIso(instance.retrieveData,instance);
     }
 
 
@@ -115,12 +113,12 @@ class BaseLinuxIso extends Component {
                 <Modal isOpen={this.state.displayModel} size="sm" centered="true" >
                     <ModalHeader>Add Base Linux ISO</ModalHeader>
                     <ModalBody>
-                        Name: <Input id='isoName' /><br />
-                        Description: <Input id='isoDesc' /><br />
+                        Name: <Input className="marTop10" id='isoName' /><br />
+                        Description: <Input className="marTop10" id='isoDesc' /><br />
                     </ModalBody>
                     <ModalFooter>
                         <Button outline color="primary" onClick={() => (this.addIso())}>Add</Button>{'  '}
-                        <Button outline color="secondary" onClick={() => (this.cancel())}>Cancel</Button>
+                        <Button outline color="primary" onClick={() => (this.cancel())}>Cancel</Button>
                     </ModalFooter>
                 </Modal>
             );
@@ -132,6 +130,10 @@ class BaseLinuxIso extends Component {
     }
 
     addIso() {
+        if(!document.getElementById('isoName').value) {
+            alert("ISO Name cannot be empty");
+            return;
+        }  
         let a = {
             'Name': document.getElementById('isoName').value,
             'Description': document.getElementById('isoDesc').value
@@ -145,8 +147,7 @@ class BaseLinuxIso extends Component {
             a = []
         }
         a.push(data)
-        instance.setState({ data: a })
-        instance.cancel();
+        instance.setState({ data: a, displayModel: !instance.state.displayModel })
     }
 
 
@@ -158,7 +159,7 @@ class BaseLinuxIso extends Component {
                     <Button onClick={() => (this.cancel())} className="custBtn animated fadeIn marginLeft13N">New</Button>
                     {this.showDeleteButton()}
                 </div>
-                <SummaryDataTable heading={this.state.isoHead} data={this.state.data} checkBoxClick={this.checkBoxClick} />
+                <SummaryDataTable heading={this.state.isoHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndex}/>
                 {this.renderUpgradeModelDialog()}
             </div>
         );

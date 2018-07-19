@@ -24,8 +24,11 @@ class Types extends Component {
     }
 
     retrieveData(instance, data) {
-        if(Object.keys(data).length) {
-            instance.setState({data: data});
+        if(!data) {
+            alert("No data received");
+        }
+        else {
+            instance.setState({data: data,selectedRowIndex:[]});
         }
     }
 
@@ -110,19 +113,19 @@ class Types extends Component {
                     <ModalHeader>Add System Type</ModalHeader>
                     <ModalBody>
                         <Row>
-                        <Col>Name: <Input id='label'/><br />
-                        Vendor: <Input id='vendor'/><br />
-                        Rack Unit: <Input id='rackUnit'/><br />
-                        AirFlow: <Input id='airFlow'/><br /></Col><Col>
-                        Front Panel Interface: <Input type="number" id='noFPI'/><br />
-                        Speed Front Panel Interface: <Input id='SpeedFPI'/><br />
-                        Management Interfaces: <Input type="number" id='noMI'/><br />
-                        Speed/Type: <Input id='speedType' /><br /></Col>
+                        <Col>Name: <Input className="marTop10" id='label' required={true}/><br />
+                        Vendor: <Input className="marTop10" id='vendor'/><br />
+                        Rack Unit: <Input className="marTop10" id='rackUnit'/><br />
+                        AirFlow: <Input className="marTop10" id='airFlow'/><br /></Col><Col>
+                        Front Panel Interface: <Input className="marTop10" type="number" min={1} max={32} id='noFPI'/><br />
+                        Speed Front Panel Interface: <Input className="marTop10" id='SpeedFPI'/><br />
+                        Management Interfaces: <Input className="marTop10" type="number" id='noMI'/><br />
+                        Speed/Type: <Input className="marTop10" id='speedType' /><br /></Col>
                         </Row>
                     </ModalBody>
                     <ModalFooter>
                         <Button outline color="primary" onClick={()=>(this.addType())}>Add</Button>{'  '}
-                        <Button outline color="secondary" onClick={()=>(this.click())}>Cancel</Button>
+                        <Button outline color="primary" onClick={()=>(this.click())}>Cancel</Button>
                     </ModalFooter>
                 </Modal>
             );
@@ -143,6 +146,19 @@ class Types extends Component {
             'SpeedFrontPanelInterface' : document.getElementById('SpeedFPI').value,
             'NumMgmtInterface': parseInt(document.getElementById('noMI').value),
             'SpeedMgmtInterafce': document.getElementById('speedType').value
+    }
+    if(!a.Id) {
+        alert("Please enter a valid System Name");
+        return;
+    }
+
+    if(a.NumFrontPanelInterface > 32 || a.NumFrontPanelInterface < 1) {
+        alert("Please enter a valid Front Panel Interface (between 1 and 32)");
+        return;
+    }
+    if(a.NumMgmtInterface > 32 || a.NumMgmtInterface < 1) {
+        alert("Please enter a valid Management Interface");
+        return;
     }
         ServerAPI.DefaultServer().addSystemTypes(this.callback,this,a);
     }
@@ -171,16 +187,11 @@ class Types extends Component {
         for( let i = 0; i < this.state.selectedRowIndex.length; i++) {
             ServerAPI.DefaultServer().deleteSystemType(this.callbackDelete,this,this.state.data[this.state.selectedRowIndex[i]].label);
         }
-        ServerAPI.DefaultServer().fetchAllSystemTypes(this.retrieveData,this);
+        this.setState({showDelete: !this.state.showDelete});
     }
 
-    callbackDelete(instance, data) {
-        let a = instance.state.data
-        if(!a) {
-           a = []
-        }
-        a.push(data)
-        instance.setState({data: a,selectedRowIndex: []})
+    callbackDelete= (instance) => {
+        ServerAPI.DefaultServer().fetchAllSystemTypes(this.retrieveData,this);
     }
     
 
@@ -193,7 +204,7 @@ class Types extends Component {
                     <Button onClick={() => (this.click())} className="custBtn marginLeft13N" outline color="secondary">New</Button>
                     {this.showDeleteButton()}
                 </div>
-                <SummaryDataTable heading={this.state.typeHead} data={this.state.data} checkBoxClick={this.checkBoxClick} />
+                <SummaryDataTable heading={this.state.typeHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndex}/>
                 {this.renderUpgradeModelDialog()}
             </div> 
         );

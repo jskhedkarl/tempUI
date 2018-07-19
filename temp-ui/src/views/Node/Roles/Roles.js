@@ -24,15 +24,12 @@ class Roles extends Component {
     }
 
     retrieveData(instance, data) {
-        if(!data) {
+        if(data === undefined) {
             alert("No data received");
         }
         else {
-            if(Object.keys(data).length) {
-                instance.setState({data: data});
-            }
+                instance.setState({data: data,selectedRowIndex:[]});
         }
-        
     }
 
     checkBoxClick = (rowIndex) =>{
@@ -68,12 +65,12 @@ class Roles extends Component {
                 <Modal isOpen={this.state.displayModel} size="sm" centered="true" >
                     <ModalHeader>Add Role</ModalHeader>
                     <ModalBody>
-                        Name: <Input id='roleName'/><br />
-                        Description: <Input id='roleDesc' /><br />
+                        Name: <Input className="marTop10" id='roleName'/><br />
+                        Description: <Input className="marTop10" id='roleDesc' /><br />
                     </ModalBody>
                     <ModalFooter>
                         <Button outline color="primary" onClick={()=>(this.addRole())}>Add</Button>{'  '}
-                        <Button outline color="secondary" onClick={()=>(this.click())}>Cancel</Button>
+                        <Button outline color="primary" onClick={()=>(this.click())}>Cancel</Button>
                     </ModalFooter>
                 </Modal>
             );
@@ -102,27 +99,23 @@ class Roles extends Component {
            a = []
         }
         a.push(data)
-        instance.setState({data: a})
-        instance.click();
+        instance.setState({data: a, displayModel: !instance.state.displayModel})
+       
     }
 
     deleteRole() {
         for( let i = 0; i < this.state.selectedRowIndex.length; i++) {
             ServerAPI.DefaultServer().deleteRole(this.callbackDelete,this,this.state.data[this.state.selectedRowIndex[i]].label);
         }
+        this.setState({showDelete: !this.state.showDelete});
+    }
+
+    callbackDelete = (instance) => {
         ServerAPI.DefaultServer().fetchAllRoles(this.retrieveData,this);
     }
 
-    callbackDelete(instance, data) {
-        let a = instance.state.data
-        if(!a) {
-           a = []
-        }
-        a.push(data)
-        instance.setState({data: a,selectedRowIndex: []})
-    }
-
     render() { 
+        console.log(this.state.selectedRowIndex);
         return (
            <div>
                <Row >
@@ -130,7 +123,7 @@ class Roles extends Component {
                     
                     {this.showDeleteButton()}
                </Row>
-               <SummaryDataTable heading={this.state.roleHead} data={this.state.data} checkBoxClick={this.checkBoxClick} />
+               <SummaryDataTable heading={this.state.roleHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndex}/>
                 {this.renderUpgradeModelDialog()}
             </div> 
         );

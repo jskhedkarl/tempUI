@@ -11,6 +11,7 @@ export default class SummaryDataTable extends React.Component {
             selectedRowIndexes: [],
             selectEntireRow: false
         };
+        this.counter = 0;
     }
 
     static defaultProps = {
@@ -92,7 +93,7 @@ export default class SummaryDataTable extends React.Component {
                         if (props.showCheckBox) {
                             checkBoxColumn = (
                                 <Col sm="1" className="pad" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                    <Input key={value} style={{ cursor: 'pointer' }}
+                                    <Input key={self.counter++} style={{ cursor: 'pointer' }} 
                                         type="checkbox" onChange={() => (self.checkBoxClick(rowIndex))} defaultChecked={selectedRowIndexes && selectedRowIndexes.length && selectedRowIndexes.indexOf(rowIndex) > -1 ? true : false} />
                                 </Col>)
                         }

@@ -24,8 +24,11 @@ class LinuxKernel extends Component {
     }
 
     retrieveData(instance, data) {
-        if (Object.keys(data).length) {
-            instance.setState({ data: data });
+        if(!data) {
+            alert("No data received");
+        }
+        else {
+            instance.setState({data: data,selectedRowIndex:[]});
         }
     }
 
@@ -70,16 +73,11 @@ class LinuxKernel extends Component {
         for( let i = 0; i < this.state.selectedRowIndex.length; i++) {
             ServerAPI.DefaultServer().deleteKernel(this.callbackDelete,this,this.state.data[this.state.selectedRowIndex[i]].label);
         }
-        ServerAPI.DefaultServer().fetchAllKernels(this.retrieveData,this);
+        this.setState({showDelete: !this.state.showDelete});
     }
 
     callbackDelete(instance, data) {
-        let a = instance.state.data
-        if(!a) {
-           a = []
-        }
-        a.push(data)
-        instance.setState({data: a,selectedRowIndex: []})
+        ServerAPI.DefaultServer().fetchAllKernels(instance.retrieveData,instance);
     }
 
 
@@ -117,12 +115,12 @@ class LinuxKernel extends Component {
                 <Modal isOpen={this.state.displayModel} size="sm" centered="true" >
                     <ModalHeader>Add Linux Kernel</ModalHeader>
                     <ModalBody>
-                        Name: <Input id='kernelName' /><br />
-                        Description: <Input id='kernelDesc' /><br />
+                        Name: <Input className="marTop10" id='kernelName' /><br />
+                        Description: <Input className="marTop10" id='kernelDesc' /><br />
                     </ModalBody>
                     <ModalFooter>
                         <Button outline color="primary" onClick={() => (this.addKernel())}>Add</Button>{'  '}
-                        <Button outline color="secondary" onClick={() => (this.cancel())}>Cancel</Button>
+                        <Button outline color="primary" onClick={() => (this.cancel())}>Cancel</Button>
                     </ModalFooter>
                 </Modal>
             );
@@ -134,6 +132,10 @@ class LinuxKernel extends Component {
     }
 
     addKernel() {
+        if(!document.getElementById('kernelName').value) {
+            alert("Kernel Name cannot be empty");
+            return;
+        } 
         let a = {
             'Name': document.getElementById('kernelName').value,
             'Description': document.getElementById('kernelDesc').value
@@ -147,8 +149,7 @@ class LinuxKernel extends Component {
             a = []
         }
         a.push(data)
-        instance.setState({ data: a })
-        instance.cancel();
+        instance.setState({ data: a, displayModel: !instance.state.displayModel })
     }
 
 
@@ -158,7 +159,7 @@ class LinuxKernel extends Component {
                     <Button onClick={() => (this.cancel())} className="custBtn animated fadeIn marginLeft13N" outline color="secondary">New</Button>
                     {this.showDeleteButton()}
                 </div>
-                <SummaryDataTable heading={this.state.kernelHead} data={this.state.data} checkBoxClick={this.checkBoxClick} />
+                <SummaryDataTable heading={this.state.kernelHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndex}/>
                 {this.renderUpgradeModelDialog()}
             </div> 
         );
