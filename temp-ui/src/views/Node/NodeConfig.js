@@ -110,6 +110,7 @@ class NodeConfig extends Component {
             <Col sm="12" className="pad"><h5 className="text-center">Interface data not available</h5></Col>
           </Row>)
           rows.push(row)
+          return rows
         }
         interfaces.map((item, rowIndex) => {
           let row1 = 'headerRow1'

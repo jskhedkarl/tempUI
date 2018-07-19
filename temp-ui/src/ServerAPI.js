@@ -818,6 +818,37 @@ export class ServerAPI {
         xhr.send();
     }
 
+    fetchAllKubernetes(callback, instance) {
+        let xhr = new XMLHttpRequest();
+        let sourceURL = this.DefaultInvader() + "/kubernetes/";
+        xhr.open("GET", sourceURL, true);
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                try {
+                    let jsonObj = JSON.parse(xhr.responseText);
+                    let jsonIsoTypes = jsonObj.kubernetes;
+                    /* let retIsoTypes = [];
+                    let isoCtr = 0;
+                    for (isoCtr in jsonIsoTypes) {
+                        let jIsoType = jsonIsoTypes[isoCtr];
+                        let isoType = new ServerISO(jIsoType);
+                        retIsoTypes[isoCtr] = isoType;
+                    } */
+                    callback(instance, jsonIsoTypes);
+
+                } catch (err) {
+                    console.log("POST :: ERROR :: " + err);
+                }
+            }
+        };
+        xhr.onerror = function () {
+            console.log("POST :: Error :: ");
+            callback(instance, null);
+        }
+        xhr.send();
+    }
+
     deleteIso(callback, instance, name) {
         let xhr = new XMLHttpRequest();
         let sourceURL = this.DefaultInvader() + "/iso/id/" + name;
@@ -977,7 +1008,7 @@ export class ServerAPI {
                             'site': node.site,
                             'status': node.status,
                             'roles': node.roles,
-                            'type': node.type,
+                            'nodeType': node.type,
                             'serialNumber':node.serialNumber,
                             'kernel': node.kernel,
                             'linuxISO': node.linuxISO
