@@ -6,6 +6,8 @@ import { customHistory } from '../../index';
 import '../views.css';
 import { nodeHead } from '../../consts';
 import DropDown from '../../components/dropdown/DropDown';
+import {NotificationContainer, NotificationManager} from 'react-notifications';
+import 'react-notifications/lib/notifications.css';
 
 class NodeConfig extends Component {
   constructor(props) {
@@ -25,7 +27,8 @@ class NodeConfig extends Component {
       selectedLinux :  props.location.state.length == 1 ? props.location.state[0].kernel : '',
       selectedIso :  props.location.state.length == 1 ? props.location.state[0].linuxISO : '',
       selectedRoles : props.location.state.length == 1 ? props.location.state[0].roles : '',
-      showAlert:''
+      showAlert:'',
+      visible: false
     }
     this.couter = 0
   }
@@ -297,8 +300,12 @@ toggleNewModel() {
         ServerAPI.DefaultServer().updateNode(this.callback2,this,a);
     })
 
-    let showALERT = <Alert color="success">Node is updated Successfully </Alert>
-    this.setState({showAlert: showALERT })
+    NotificationManager.success('Saved Successfully', 'Node Configuration');
+    // this.setState({visible: true })
+  }
+
+  onDismiss() {
+    this.setState({visible: false});
   }
 
   getSelectRoleValues(select) {
@@ -394,7 +401,7 @@ toggleNewModel() {
           <Media left >
             {nodeNameDiv}
           </Media>
-          <Media body> <div style={{width:'300',textAlign:'center'}}>{this.state.showAlert}</div></Media>
+          <Media body><NotificationContainer/><Alert color="success" className="marLeft40 marRight40" isOpen={this.state.visible} toggle={() => this.onDismiss()} >Node is updated Successfully </Alert></Media>
           <Media right>
             <Button className="custBtn" outline color="secondary" onClick={() => { customHistory.goBack() }}> Cancel </Button>
             <Button className="custBtn" outline color="secondary" > Provision </Button>
@@ -421,6 +428,7 @@ toggleNewModel() {
         </div>
         {interfaceTableHeader}
         {interfaceTableContent}
+        
         <div className="padTop20">
           {summaryDataTable}
         </div>

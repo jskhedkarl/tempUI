@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Row, Col, Button, Modal, ModalHeader, ModalBody, ModalFooter, Input } from 'reactstrap';
+import { Row, Col, Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
 import '../../views.css';
 import { ServerAPI } from '../../../ServerAPI';
 import SummaryDataTable from '../NodeSummary/SummaryDataTable';
@@ -16,6 +16,7 @@ class BaseLinuxIso extends Component {
             showDelete : false,
             selectedRowIndex: [],
             displayModel: false,
+            visible: false
         }
     }
 
@@ -107,12 +108,17 @@ class BaseLinuxIso extends Component {
         return rows
     }
 
+    onDismiss() {
+        this.setState({visible : false});
+    }
+
     renderUpgradeModelDialog() {
         if (this.state.displayModel) {
             return (
                 <Modal isOpen={this.state.displayModel} size="sm" centered="true" >
                     <ModalHeader>Add Base Linux ISO</ModalHeader>
                     <ModalBody>
+                    <Alert color="danger" isOpen={this.state.visible} toggle={() => this.onDismiss()} >Name cannot be empty</Alert>
                         Name: <Input className="marTop10" id='isoName' /><br />
                         Description: <Input className="marTop10" id='isoDesc' /><br />
                     </ModalBody>
@@ -131,7 +137,7 @@ class BaseLinuxIso extends Component {
 
     addIso() {
         if(!document.getElementById('isoName').value) {
-            alert("ISO Name cannot be empty");
+            this.setState({visible : true});
             return;
         }  
         let a = {

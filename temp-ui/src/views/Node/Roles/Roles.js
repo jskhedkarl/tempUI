@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {  Row, Col, Button,  Modal, ModalHeader, ModalBody, ModalFooter, Input} from 'reactstrap';
+import {  Row, Col, Button,  Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert} from 'reactstrap';
 import '../../views.css';
 import {ServerAPI} from '../../../ServerAPI';
 import SummaryDataTable from '../NodeSummary/SummaryDataTable';
@@ -15,7 +15,8 @@ class Roles extends Component {
             displayModel: false,
             selectedRowIndex: [],
             selectedRows: [],
-            showDelete: false
+            showDelete: false,
+            visible: false
         }
     }
 
@@ -65,6 +66,7 @@ class Roles extends Component {
                 <Modal isOpen={this.state.displayModel} size="sm" centered="true" >
                     <ModalHeader>Add Role</ModalHeader>
                     <ModalBody>
+                    <Alert color="danger" isOpen={this.state.visible} toggle={() => this.onDismiss()} >Role Name cannot be empty</Alert>
                         Name: <Input className="marTop10" id='roleName'/><br />
                         Description: <Input className="marTop10" id='roleDesc' /><br />
                     </ModalBody>
@@ -80,11 +82,15 @@ class Roles extends Component {
     click() {
         this.setState({displayModel : !this.state.displayModel})
     }
+    onDismiss() {
+        this.setState({visible : false});
+    }
+    
 
     addRole() {
         if(!document.getElementById('roleName').value) {
-            alert("Role Name cannot be empty");
-            return;
+            this.setState({visible : true});
+                return;
         }            
         let a = {
             'Name' : document.getElementById('roleName').value,
@@ -100,7 +106,6 @@ class Roles extends Component {
         }
         a.push(data)
         instance.setState({data: a, displayModel: !instance.state.displayModel})
-       
     }
 
     deleteRole() {
@@ -115,12 +120,11 @@ class Roles extends Component {
     }
 
     render() { 
-        console.log(this.state.selectedRowIndex);
+        let self = this;
         return (
            <div>
                <Row >
                     <Button className="custBtn animated fadeIn" id="add" outline color="secondary" onClick={() => (this.click())}>New</Button>
-                    
                     {this.showDeleteButton()}
                </Row>
                <SummaryDataTable heading={this.state.roleHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndex}/>

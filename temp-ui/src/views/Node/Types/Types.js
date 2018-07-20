@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Row, Col, Button, Modal, ModalHeader, ModalBody, ModalFooter, Input} from 'reactstrap';
+import { Row, Col, Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert} from 'reactstrap';
 import '../../views.css';
 import {ServerAPI} from '../../../ServerAPI';
 import SummaryDataTable from '../NodeSummary/SummaryDataTable';
@@ -15,7 +15,9 @@ class Types extends Component {
             typeHead: typeHead,
             showDelete : false,
             selectedRowIndex: [],
-            displayModel: false
+            displayModel: false,
+            visible: false,
+            errorMsg: ''
         }
     }
 
@@ -106,12 +108,17 @@ class Types extends Component {
         }
     }
 
+    onDismiss() {
+        this.setState({visible: false})
+    }
+
     renderUpgradeModelDialog() {
         if (this.state.displayModel) {
             return (
                 <Modal isOpen={this.state.displayModel} size="lg" centered="true" >
                     <ModalHeader>Add System Type</ModalHeader>
                     <ModalBody>
+                    <Alert color="danger" isOpen={this.state.visible} toggle={() => this.onDismiss()}>{this.state.errorMsg}</Alert>
                         <Row>
                         <Col>Name: <Input className="marTop10" id='label' required={true}/><br />
                         Vendor: <Input className="marTop10" id='vendor'/><br />
@@ -148,18 +155,19 @@ class Types extends Component {
             'SpeedMgmtInterafce': document.getElementById('speedType').value
     }
     if(!a.Id) {
-        alert("Please enter a valid System Name");
+        this.setState({visible: true, errorMsg: 'Please enter the System Name'});
         return;
     }
 
-    if(a.NumFrontPanelInterface > 32 || a.NumFrontPanelInterface < 1) {
-        alert("Please enter a valid Front Panel Interface (between 1 and 32)");
+    if(a.NumFrontPanelInterface > 32 || a.NumFrontPanelInterface < 1 || isNaN(a.NumFrontPanelInterface)) {
+        this.setState({visible: true, errorMsg: 'Please enter a valid Front Panel Interface (between 1 and 32)'});
         return;
     }
-    if(a.NumMgmtInterface > 32 || a.NumMgmtInterface < 1) {
-        alert("Please enter a valid Management Interface");
+    if(a.NumMgmtInterface > 32 || a.NumMgmtInterface < 1 || isNaN(a.NumMgmtInterface)) {
+        this.setState({visible: true, errorMsg: 'Please enter a valid Management Interface'});
         return;
     }
+        this.setState({visible: false})
         ServerAPI.DefaultServer().addSystemTypes(this.callback,this,a);
     }
 
@@ -169,8 +177,7 @@ class Types extends Component {
            a = []
         }
         a.push(data)
-        instance.setState({data: a})
-        instance.click();
+        instance.setState({data: a, displayModel : !instance.state.displayModel})
     }
 
     showDeleteButton() {
