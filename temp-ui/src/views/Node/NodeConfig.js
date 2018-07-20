@@ -27,8 +27,9 @@ class NodeConfig extends Component {
       selectedLinux :  props.location.state.length == 1 ? props.location.state[0].kernel : '',
       selectedIso :  props.location.state.length == 1 ? props.location.state[0].linuxISO : '',
       selectedRoles : props.location.state.length == 1 ? props.location.state[0].roles : '',
-      showAlert:'',
-      visible: false
+      visible: false,
+      showAlert:''
+
     }
     this.couter = 0
   }
@@ -92,7 +93,7 @@ class NodeConfig extends Component {
   interfaceTableHeader() {
     return (
       <div className="padTop30">
-        <h3>Interfaces  <Button className="custBtn" outline color="secondary" onClick={() => (this.toggleNewModel())}> New </Button></h3>
+       <h3>Interfaces  <Button className="custBtn" outline color="secondary" onClick={() => (this.toggleNewModel())}> New </Button></h3>
         <Row className="headerRow" style={{ marginLeft: '0px' }}>
           <Col sm="2" className="head-name">Interface Name</Col>
           <Col sm="2" className="head-name">Admin state</Col>
@@ -209,7 +210,7 @@ class NodeConfig extends Component {
     this.setState({ displayModel: !this.state.displayModel })
    
     ServerAPI.DefaultServer().updateNode(this.callback,this,a);
-    
+    NotificationManager.success('Updated Successfully', 'Interface');
 }
 
 callback(instance, data) {
@@ -231,6 +232,10 @@ toggleNewModel() {
       return (
         <Modal isOpen={this.state.displayNewInterfaceModel} size="sm" centered="true" >
           <ModalHeader>Add Interface </ModalHeader>
+          <Alert color="info" isOpen={this.state.visible} toggle={this.onDismiss}>
+            Name field is mandatory
+          </Alert>
+         
           <ModalBody>
             <div className="marTop10">Name: <Input type="text" id="interName"/></div>
             <div className="marTop10">IP Address:<Input type="text"  id="interIp"/></div>
@@ -246,7 +251,15 @@ toggleNewModel() {
     }
   }
 
+  onDismiss = () => {
+    this.setState({ visible: false });
+  }
+
   updateNewInterfaceCall = () => {
+    if(!document.getElementById('interName').value) {
+      this.setState({ visible: true });
+      return;
+    }
     let newInterface = {
       'connectedTo' : {
         'serverName':document.getElementById('interRemoteName').value,
@@ -269,9 +282,8 @@ toggleNewModel() {
     let a = { 
       nodes : data
     }
-   
     ServerAPI.DefaultServer().updateNode(this.callback1,this,a);
-    
+    NotificationManager.success('Saved Successfully', 'Interface');
   }
 
   callback1(instance, data) {
@@ -300,14 +312,16 @@ toggleNewModel() {
         ServerAPI.DefaultServer().updateNode(this.callback2,this,a);
     })
 
+
     NotificationManager.success('Saved Successfully', 'Node Configuration');
     // this.setState({visible: true })
   }
 
   onDismiss() {
     this.setState({visible: false});
-  }
 
+  }
+  
   getSelectRoleValues(select) {
     var result = [];
     var options = select && select.options;
@@ -401,7 +415,9 @@ toggleNewModel() {
           <Media left >
             {nodeNameDiv}
           </Media>
-          <Media body><NotificationContainer/><Alert color="success" className="marLeft40 marRight40" isOpen={this.state.visible} toggle={() => this.onDismiss()} >Node is updated Successfully </Alert></Media>
+
+          <Media body><NotificationContainer/></Media>
+
           <Media right>
             <Button className="custBtn" outline color="secondary" onClick={() => { customHistory.goBack() }}> Cancel </Button>
             <Button className="custBtn" outline color="secondary" > Provision </Button>
@@ -424,7 +440,7 @@ toggleNewModel() {
               <DropDown options={this.state.isoData} getSelectedData={this.getSelectedData} identity={"ISO"} default={ this.state.selectedIso }/>
             </Col>
           </Row>
-          {/* {this.confDropdown()} */}
+          {/* {this.confDropdown()} */} 
         </div>
         {interfaceTableHeader}
         {interfaceTableContent}

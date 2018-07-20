@@ -165,6 +165,24 @@ marRight10{
 	cursor: not-allowed !important;
 }	
 
+.disappear{
+	-webkit-animation: mymove 1; /* Safari 4.0 - 8.0 */
+	-webkit-animation-duration: 3s; /* Safari 4.0 - 8.0 */
+	animation: mymove 1;
+	animation-duration: 3s;
+	animation-fill-mode: forwards
+}
+
+/* Safari 4.0 - 8.0 */
+@-webkit-keyframes mymove {
+from {opacity: 1;}
+to {opacity: 0;}
+}
+
+@keyframes mymove {
+from {opacity: 1;}
+to {opacity: 0;}
+}
 
 
 

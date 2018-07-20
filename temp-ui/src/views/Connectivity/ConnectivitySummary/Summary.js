@@ -102,10 +102,10 @@ class ConnectivitySummary extends React.Component {
                     <Col sm="2" className="pad" style={{textAlign:"center"}}>
                         {allIntConnDiv}
                     </Col>
-                    <Col sm="1" className="pad">{allAlarmDiv}</Col>
+                    <Col sm="1" className="pad">{allAdminDiv}</Col>
                     <Col sm="1" className="pad">{allLinkDiv}</Col>
                     <Col sm="1" className="pad">{allLldpMatchDiv}</Col>
-                    <Col sm="1" className="pad">{allAdminDiv}</Col>
+                    <Col sm="1" className="pad">{allAlarmDiv}</Col>
                    </Row>)
                rows.push(row)
             

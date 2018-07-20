@@ -6,7 +6,7 @@ export let nodeHead = [
     },
     {
         id: 'site',
-        displayName: 'Site',
+        displayName: 'site',
         colSize: 1
     },
     {

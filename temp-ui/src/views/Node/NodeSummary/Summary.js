@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import { Col, Row, Input, Card ,CardHeader,CardBody ,InputGroup, InputGroupAddon, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Col, Row, Input, Card ,CardHeader,CardBody ,InputGroup, InputGroupAddon, Modal, ModalHeader, ModalBody, ModalFooter, Alert } from 'reactstrap';
 import { ServerAPI } from '../../../ServerAPI';
 import { Redirect } from 'react-router-dom'
 import { Button } from 'reactstrap';
 import SummaryDataTable from './SummaryDataTable';
-import {nodeHead} from '../../../consts'
+import {nodeHead} from '../../../consts';
+import {NotificationContainer, NotificationManager} from 'react-notifications';
 import '../../views.css';
 
 class NodeSummary extends React.Component {
@@ -20,6 +21,7 @@ class NodeSummary extends React.Component {
             selectedRowIndex: [],
             selectedRows: [],
             displayModel: false,
+            visible:false,
             redirect: false
         }
     }
@@ -268,11 +270,18 @@ class NodeSummary extends React.Component {
         )
     }
 
+    onDismiss() {
+        this.setState({visible : false});
+    }
+
     renderUpgradeModelDialog() {
         if (this.state.displayModel) {
             return (
                 <Modal isOpen={this.state.displayModel} size="lg" centered="true" >
                     <ModalHeader>Add Node</ModalHeader>
+                    <Alert color="danger" isOpen={this.state.visible} toggle={() => this.onDismiss()} >
+                    Name field is mandatory
+                    </Alert>
                     <ModalBody>
                         <Row>
                             <Col sm="6" className="marTop10">Name: <Input id='name' className="marTop10"/></Col>
@@ -302,6 +311,10 @@ class NodeSummary extends React.Component {
     }
 
     addNode() {
+        if(!document.getElementById('name').value) {
+            this.setState({ visible: true });
+            return;
+        } 
         let roles = this.getSelectRoleValues(document.getElementById('roles'))
         let a = {
             'Name' : document.getElementById('name').value,
@@ -313,6 +326,7 @@ class NodeSummary extends React.Component {
             'linuxISO': document.getElementById('linuxIso').value
         }
         ServerAPI.DefaultServer().addNode(this.callback,this,a);
+        NotificationManager.success('Updated Successfully', 'Node');
     }
 
     getSelectRoleValues(select) {
@@ -351,6 +365,7 @@ class NodeSummary extends React.Component {
         return (
             <Container-fluid >
                 <Row>
+                <NotificationContainer/>
                     <Col sm="9">
                         <div className='marginLeft10 '>
                             <Button onClick={() => (this.onConfigureClick())} className="custBtn marginLeft13N" outline color="secondary">Configure</Button>

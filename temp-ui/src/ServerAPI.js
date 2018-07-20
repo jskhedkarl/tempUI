@@ -471,6 +471,7 @@ export class ServerNode {
     constructor(jsonObj) {
         this.serialNumber = jsonObj.serialNumber;
         this.name = jsonObj.name;
+        this.site = jsonObj.site;
         if (jsonObj.labels == null)
             this.labels = [];
         else

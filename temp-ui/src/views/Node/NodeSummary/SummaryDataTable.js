@@ -74,7 +74,6 @@ export default class SummaryDataTable extends React.Component {
                     colHeader.map(function (header) {
                         let key = header.id
                         let value = '-'
-
                         if (datum.hasOwnProperty(key)) {
                             value = datum[key]
                             if (value && value.length && header.type == 'array') {
@@ -86,6 +85,9 @@ export default class SummaryDataTable extends React.Component {
 
                                 })
                                 value = str
+                            }
+                            if(value == "---Select an Option---" ){
+                                value = '-'
                             }
                         }
 
