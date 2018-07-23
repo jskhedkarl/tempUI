@@ -1,7 +1,7 @@
 import React from 'react';
-import { Col, Row, Input } from 'reactstrap';
-import { Button } from 'reactstrap';
+import { Col, Row, Input, Button, Popover, PopoverBody,ListGroupItem ,ListGroup} from 'reactstrap';
 
+const POPOVER_PLACEMENT = "auto"
 export default class SummaryDataTable extends React.Component {
     constructor(props) {
         super(props);
@@ -9,9 +9,11 @@ export default class SummaryDataTable extends React.Component {
             data: [],
             heading: [],
             selectedRowIndexes: [],
-            selectEntireRow: false
+            selectEntireRow: false,
+            popoverOpen: false
         };
         this.counter = 0;
+        this.constHeading = Object.assign([],props.heading)
     }
 
     static defaultProps = {
@@ -33,20 +35,95 @@ export default class SummaryDataTable extends React.Component {
         let tableSize = 12
 
         if (props.showCheckBox) {
-            tableSize = 10
+            tableSize = 11
         }
         return (
-            <Row className="headerRow">
+            <Row className="headerRow" id={'Popover-' + POPOVER_PLACEMENT} onContextMenu={this.contextMenu}>
                 <Col sm="1" className="head-name"></Col>
                 <Col sm={tableSize} className="head-name" >
                     <Row>
                         {headNames}
                     </Row>
                 </Col>
-                <Col sm="1" className="head-name"><Button color="link"><i className="fa fa-plus fa-lg" aria-hidden="true"></i></Button></Col>
+               
             </Row>
         )
     }
+    contextMenu = (e) => {
+        if(!e){
+            return
+        }
+        e.preventDefault();
+        this.setState({
+            popoverOpen: !this.state.popoverOpen
+        })
+    }
+
+    drawColumnSelection = () => {
+        let { constHeading } = this
+        let {heading} = this.state
+        if (!constHeading || !constHeading.length)
+            return null
+        let self = this
+       
+        return (
+            <div style={{display:'flex',justifyContent:'center',flexDirection:'column'}}>
+                {
+                    constHeading.map(function (item) {
+                        let showTick = false
+                        for(let i in heading){
+                            if(heading[i] && heading[i].id === item.id){
+                                showTick = true
+                                break
+                            }
+                        }
+                        return ( <div style={{display:'flex',cursor:'pointer'}} onClick={() =>self.columnSelectionClick(item)}> 
+                        <div style={{padding:'5px',width:'20px'}}>{showTick &&  <i style={{color:'#a4b7c1'}} className="fa fa-check" aria-hidden="true"></i>}</div>
+                    <div style={{padding:'5px',color:'black'}}>{item.displayName}</div></div>)
+                    })
+                }
+            </div>
+        )
+
+    }
+
+    columnSelectionClick = (col) => {
+        let {heading} = this.state
+        let selectedIndex = -1
+        if(!heading){
+            heading = []
+        }
+        for(let i in heading){
+            if(heading[i] && heading[i].id === col.id){
+                selectedIndex = i
+                break
+            }
+        }
+        if(selectedIndex > -1){
+            heading.splice(selectedIndex,1)
+        }else{
+            let {constHeading} = this
+            for(let j in constHeading){
+                if(constHeading[j] && constHeading[j].id ===col.id){
+                    heading.splice(j,0,col)
+                    break
+                }
+            }  
+        }
+        this.setState({
+            heading : heading
+        })
+    }
+
+    drawPopOver = () => {
+        return (
+            <Popover placement={POPOVER_PLACEMENT} isOpen={this.state.popoverOpen} target={'Popover-' + POPOVER_PLACEMENT} toggle={this.contextMenu}>
+                <PopoverBody>
+                    {this.drawColumnSelection()}
+                </PopoverBody>
+            </Popover>)
+    }
+    
 
 
 
@@ -105,7 +182,7 @@ export default class SummaryDataTable extends React.Component {
                     if (props.selectEntireRow) {
                         row = (<Row className={rowClassName} >
                             {checkBoxColumn}
-                            <Col sm="10" className="pad" style={{ cursor: 'pointer' }} onClick={() => self.checkBoxClick(rowIndex, true)} >
+                            <Col sm="11" className="pad" style={{ cursor: 'pointer' }} onClick={() => self.checkBoxClick(rowIndex, true)} >
                                 <Row>
                                     {columns}
                                 </Row>
@@ -115,7 +192,7 @@ export default class SummaryDataTable extends React.Component {
                     else {
                         row = (<Row className={rowClassName} >
                             {checkBoxColumn}
-                            <Col sm="10" className="pad">
+                            <Col sm="11" className="pad">
                                 <Row>
                                     {columns}
                                 </Row>
@@ -137,6 +214,7 @@ export default class SummaryDataTable extends React.Component {
         return (
             <div >
                 {this.drawtable()}
+                {this.drawPopOver()}
             </div>
         );
     }
