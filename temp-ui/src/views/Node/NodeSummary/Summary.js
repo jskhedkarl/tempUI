@@ -22,6 +22,7 @@ class NodeSummary extends React.Component {
             selectedRows: [],
             displayModel: false,
             visible:false,
+            showDelete: false,
             redirect: false
         }
     }
@@ -32,6 +33,15 @@ class NodeSummary extends React.Component {
         ServerAPI.DefaultServer().fetchAllIso(this.retrieveIsoData, this);
         ServerAPI.DefaultServer().fetchAllKernels(this.retrieveKernelsData, this);
         ServerAPI.DefaultServer().fetchAllSystemTypes(this.retrieveTypesData, this);
+    }
+
+    retrieveData(instance, data) {
+        if(data === undefined) {
+            alert("No data received");
+        }
+        else {
+                instance.setState({nodes: data,selectedRowIndex:[]});
+        }
     }
 
     
@@ -124,11 +134,12 @@ class NodeSummary extends React.Component {
     return isoHtml;
   }
 
-    updateNodeSummary = (instance, nodes) => {
-        instance.setState({
-            nodes: nodes,
-        });
-    }
+  updateNodeSummary = (instance, nodes) => {
+      instance.setState({
+          nodes: nodes,
+      });
+  }
+  
 
     checkBoxClick = (rowIndex, singleRowClick) => {
         if (singleRowClick) {
@@ -146,6 +157,12 @@ class NodeSummary extends React.Component {
         } else {
             selectedRowIndex.push(rowIndex)
         }
+        if(this.state.selectedRowIndex.length > 0) {
+            this.setState({showDelete : true});
+        }
+        else {
+            this.setState({showDelete : false});
+        }
 
     }
 
@@ -160,6 +177,27 @@ class NodeSummary extends React.Component {
                 selectedRows, redirect: true
             })
         }
+    }
+
+    showDeleteButton() {
+        let a = [];
+        if(this.state.showDelete == true) {
+            a.push(<Button className="custBtn animated fadeIn" outline color="secondary" onClick={() => (this.deleteNode())}>Delete</Button>);
+            return a;
+        }
+        else   
+            return null;
+    }
+
+    deleteNode() {
+        for( let i = 0; i < this.state.selectedRowIndex.length; i++) {
+            ServerAPI.DefaultServer().deleteNode(this.callbackDelete,this,this.state.nodes[this.state.selectedRowIndex[i]].name);
+        }
+        this.setState({showDelete: !this.state.showDelete});
+    }
+
+    callbackDelete = (instance) => {
+        ServerAPI.DefaultServer().fetchAllServerNodes(this.retrieveData,this);
     }
 
     renderFilterComponent = () => {
@@ -369,8 +407,10 @@ class NodeSummary extends React.Component {
                     <Col sm="9">
                         <div className='marginLeft10 '>
                             <Button onClick={() => (this.onConfigureClick())} className="custBtn marginLeft13N" outline color="secondary">Configure</Button>
+                            
                             <Button className="custBtn" outline color="secondary" onClick={() => (this.click())}>New</Button>
-                            <SummaryDataTable heading={this.state.nodeHead} data={this.state.nodes} checkBoxClick={this.checkBoxClick} selectEntireRow={true}/>
+                            {this.showDeleteButton()}
+                            <SummaryDataTable heading={this.state.nodeHead} data={this.state.nodes} checkBoxClick={this.checkBoxClick} selectEntireRow={true} selectedRowIndexes={this.state.selectedRowIndex}/>
                         </div>
                     </Col>
                     <Col sm="3">                        

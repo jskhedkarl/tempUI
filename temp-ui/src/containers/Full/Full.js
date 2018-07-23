@@ -11,7 +11,7 @@ import Inventory from '../../views/Operation/Inventory/Inventory';
 import Monitor from '../../views/Operation/Monitor/Monitor';
 import Playbook from '../../views/Operation/Playbook/Playbook';
 import NodeSummary from '../../views/Node/NodeSummary/Summary';
-import Summary from '../../views/Node/Summary/Summary';
+import NodeOpSummary from '../../views/Node/NodeOpSummary/Summary';
 import Roles from '../../views/Node/Roles/Roles';
 import Types from '../../views/Node/Types/Types';
 import LinuxKernel from '../../views/Node/LinuxKernel/LinuxKernel';
@@ -37,7 +37,7 @@ class Full extends Component {
                             <Switch>
                                 <Route path="/dashboard" name="Dashboard" component={Dashboard}/>
                                 <Route path="/node/NodeConfigSummary" name="Node-Config" component={NodeSummary}/>
-                                <Route path="/node/Summary" name="Summary" component={Summary}/>
+                                <Route path="/node/Summary" name="Summary" component={NodeOpSummary}/>
                                 <Route path="/node/Roles" name="Roles" component={Roles}/>
                                 <Route path="/node/Types" name="Types" component={Types}/>
                                 <Route path="/node/Site" name="Site" component={Site}/>

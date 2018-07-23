@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
-import { Row, Col, Button, Label, Media, Modal, ModalHeader, ModalBody, ModalFooter, Input,Alert } from 'reactstrap';
+import { Row, Col, Button, Label, Media, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
 import { ServerAPI } from '../../ServerAPI';
 import SummaryDataTable from './NodeSummary/SummaryDataTable';
 import { customHistory } from '../../index';
 import '../views.css';
 import { nodeHead } from '../../consts';
 import DropDown from '../../components/dropdown/DropDown';
-import {NotificationContainer, NotificationManager} from 'react-notifications';
+import { NotificationContainer, NotificationManager } from 'react-notifications';
 import 'react-notifications/lib/notifications.css';
 
 class NodeConfig extends Component {
@@ -21,14 +21,14 @@ class NodeConfig extends Component {
       displayModel: false,
       displayNewInterfaceModel: false,
       interfaceData: {},
-      interfaceIndex:null,
+      interfaceIndex: null,
       nodes: props.location.state,
-      selectedType : props.location.state.length == 1 ? props.location.state[0].nodeType : '',
-      selectedLinux :  props.location.state.length == 1 ? props.location.state[0].kernel : '',
-      selectedIso :  props.location.state.length == 1 ? props.location.state[0].linuxISO : '',
-      selectedRoles : props.location.state.length == 1 ? props.location.state[0].roles : '',
+      selectedType: props.location.state.length == 1 ? props.location.state[0].nodeType : '',
+      selectedLinux: props.location.state.length == 1 ? props.location.state[0].kernel : '',
+      selectedIso: props.location.state.length == 1 ? props.location.state[0].linuxISO : '',
+      selectedRoles: props.location.state.length == 1 ? props.location.state[0].roles : '',
       visible: false,
-      showAlert:''
+      showAlert: ''
 
     }
     this.couter = 0
@@ -93,7 +93,7 @@ class NodeConfig extends Component {
   interfaceTableHeader() {
     return (
       <div className="padTop30">
-       <h3>Interfaces  <Button className="custBtn" outline color="secondary" onClick={() => (this.toggleNewModel())}> New </Button></h3>
+        <h3>Interfaces  <Button className="custBtn" outline color="secondary" onClick={() => (this.toggleNewModel())}> New </Button></h3>
         <Row className="headerRow" style={{ marginLeft: '0px' }}>
           <Col sm="2" className="head-name">Interface Name</Col>
           <Col sm="2" className="head-name">Admin state</Col>
@@ -159,7 +159,7 @@ class NodeConfig extends Component {
         }
       })
     })
-    this.setState({ displayModel: !this.state.displayModel, interfaceData: itemData , interfaceIndex : rowIndex })
+    this.setState({ displayModel: !this.state.displayModel, interfaceData: itemData, interfaceIndex: rowIndex })
   }
 
 
@@ -171,14 +171,14 @@ class NodeConfig extends Component {
         <Modal isOpen={this.state.displayModel} size="sm" centered="true" >
           <ModalHeader>Edit Interface {data.port}</ModalHeader>
           <ModalBody>
-            <div className="marTop10">Name: <Input type="text" defaultValue={data.port} id="interfacePort"/></div>
-            <div className="marTop10">Admin state:<Input type="text" defaultValue={data.adminState} disabled id="interfaceAdminState"/></div>
-            <div className="marTop10">IP Address:<Input type="text" defaultValue={data.IPAddress} id="interfaceIpAddress"/></div>
-            <div className="marTop10">Remote Node Name:<Input type="text" defaultValue={data.connectedTo.serverName ? data.connectedTo.serverName : '-'} id="interfaceRemoteNodename"/></div>
-            <div className="marTop10">Remote Node Interface:<Input type="text" defaultValue={data.connectedTo.serverPort ? data.connectedTo.serverPort : '-'} id="interfaceRemoteNodeInterface"/></div>
+            <div className="marTop10">Name: <Input type="text" defaultValue={data.port} id="interfacePort" /></div>
+            <div className="marTop10">Admin state:<Input type="text" defaultValue={data.adminState} disabled id="interfaceAdminState" /></div>
+            <div className="marTop10">IP Address:<Input type="text" defaultValue={data.IPAddress} id="interfaceIpAddress" /></div>
+            <div className="marTop10">Remote Node Name:<Input type="text" defaultValue={data.connectedTo.serverName ? data.connectedTo.serverName : '-'} id="interfaceRemoteNodename" /></div>
+            <div className="marTop10">Remote Node Interface:<Input type="text" defaultValue={data.connectedTo.serverPort ? data.connectedTo.serverPort : '-'} id="interfaceRemoteNodeInterface" /></div>
           </ModalBody>
           <ModalFooter>
-            <Button outline color="primary" onClick={()=>(this.updateNodeCall(index))}>Update</Button>
+            <Button outline color="primary" onClick={() => (this.updateNodeCall(index))}>Update</Button>
             <Button outline color="primary" onClick={() => (this.toggleModel0())}>Cancel</Button>
           </ModalFooter>
         </Modal>
@@ -187,44 +187,44 @@ class NodeConfig extends Component {
   }
 
   toggleModel0 = () => {
-    this.setState({ displayModel: !this.state.displayModel})
+    this.setState({ displayModel: !this.state.displayModel })
   }
 
   updateNodeCall = (interfaceIndex) => {
     let data = this.state.nodes
     data.map((datum) => {
-      datum.allInterfaces.map((interfaceItem,rowIndex) => {
-        if(rowIndex === interfaceIndex){
+      datum.allInterfaces.map((interfaceItem, rowIndex) => {
+        if (rowIndex === interfaceIndex) {
           interfaceItem.port = document.getElementById('interfacePort').value
           interfaceItem.IPAddress = document.getElementById('interfaceIpAddress').value,
-          interfaceItem.connectedTo.serverName = document.getElementById('interfaceRemoteNodename').value,
-          interfaceItem.connectedTo.serverPort = document.getElementById('interfaceRemoteNodeInterface').value
+            interfaceItem.connectedTo.serverName = document.getElementById('interfaceRemoteNodename').value,
+            interfaceItem.connectedTo.serverPort = document.getElementById('interfaceRemoteNodeInterface').value
         }
       })
     })
 
-    let a = { 
-      nodes : data
+    let a = {
+      nodes: data
     }
 
     this.setState({ displayModel: !this.state.displayModel })
-   
-    ServerAPI.DefaultServer().updateNode(this.callback,this,a);
-    NotificationManager.success('Updated Successfully', 'Interface');
-}
 
-callback(instance, data) {
+    ServerAPI.DefaultServer().updateNode(this.callback, this, a);
+    NotificationManager.success('Updated Successfully', 'Interface');
+  }
+
+  callback(instance, data) {
     let a = instance.state.data
-    if(!a) {
-       a = []
+    if (!a) {
+      a = []
     }
     a.push(data)
-    instance.setState({data: a})
+    instance.setState({ data: a })
     instance.click();
-}
+  }
 
-toggleNewModel() {
-    this.setState({ displayNewInterfaceModel: !this.state.displayNewInterfaceModel})
+  toggleNewModel() {
+    this.setState({ displayNewInterfaceModel: !this.state.displayNewInterfaceModel })
   }
 
   renderUpgradeNewModelDialog() {
@@ -235,15 +235,15 @@ toggleNewModel() {
           <Alert color="info" isOpen={this.state.visible} toggle={this.onDismiss}>
             Name field is mandatory
           </Alert>
-         
+
           <ModalBody>
-            <div className="marTop10">Name: <Input type="text" id="interName"/></div>
-            <div className="marTop10">IP Address:<Input type="text"  id="interIp"/></div>
-            <div className="marTop10">Remote Node Name:<Input type="text" id="interRemoteName"/></div>
-            <div className="marTop10">Remote Node Interface:<Input type="text" id="interRemoteInterface"/></div>
+            <div className="marTop10">Name: <Input type="text" id="interName" /></div>
+            <div className="marTop10">IP Address:<Input type="text" id="interIp" /></div>
+            <div className="marTop10">Remote Node Name:<Input type="text" id="interRemoteName" /></div>
+            <div className="marTop10">Remote Node Interface:<Input type="text" id="interRemoteInterface" /></div>
           </ModalBody>
           <ModalFooter>
-            <Button outline color="primary" onClick={()=>(this.updateNewInterfaceCall())}>Add</Button>
+            <Button outline color="primary" onClick={() => (this.updateNewInterfaceCall())}>Add</Button>
             <Button outline color="primary" onClick={() => (this.toggleNewModel())}>Cancel</Button>
           </ModalFooter>
         </Modal>
@@ -256,14 +256,14 @@ toggleNewModel() {
   }
 
   updateNewInterfaceCall = () => {
-    if(!document.getElementById('interName').value) {
+    if (!document.getElementById('interName').value) {
       this.setState({ visible: true });
       return;
     }
     let newInterface = {
-      'connectedTo' : {
-        'serverName':document.getElementById('interRemoteName').value,
-        'serverPort':document.getElementById('interRemoteInterface').value
+      'connectedTo': {
+        'serverName': document.getElementById('interRemoteName').value,
+        'serverPort': document.getElementById('interRemoteInterface').value
       },
       'IPAddress': document.getElementById('interIp').value,
       'port': document.getElementById('interName').value
@@ -271,28 +271,28 @@ toggleNewModel() {
     let data = this.state.nodes
     data.map((datum) => {
       let allInterfaces = datum.allInterfaces
-      if(!datum.allInterfaces || !datum.allInterfaces.length){
+      if (!datum.allInterfaces || !datum.allInterfaces.length) {
         datum.allInterfaces = []
       }
       datum.allInterfaces.push(newInterface)
-    }) 
-    
+    })
+
     this.setState({ displayNewInterfaceModel: !this.state.displayNewInterfaceModel })
 
-    let a = { 
-      nodes : data
+    let a = {
+      nodes: data
     }
-    ServerAPI.DefaultServer().updateNode(this.callback1,this,a);
+    ServerAPI.DefaultServer().updateNode(this.callback1, this, a);
     NotificationManager.success('Saved Successfully', 'Interface');
   }
 
   callback1(instance, data) {
     let a = instance.state.data
-    if(!a) {
-       a = []
+    if (!a) {
+      a = []
     }
     a.push(data)
-    instance.setState({data: a})
+    instance.setState({ data: a })
     instance.click();
   }
 
@@ -302,14 +302,14 @@ toggleNewModel() {
 
     let data = this.state.nodes
     data.map((datum) => {
-        datum.roles = roles,
+      datum.roles = roles,
         datum.nodeType = this.state.selectedType,
         datum.linuxIso = this.state.selectedIso,
         datum.kernel = this.state.selectedLinux
-        let a = { 
-          nodes : [datum]
-        }
-        ServerAPI.DefaultServer().updateNode(this.callback2,this,a);
+      let a = {
+        nodes: [datum]
+      }
+      ServerAPI.DefaultServer().updateNode(this.callback2, this, a);
     })
 
 
@@ -318,62 +318,62 @@ toggleNewModel() {
   }
 
   onDismiss() {
-    this.setState({visible: false});
+    this.setState({ visible: false });
 
   }
-  
+
   getSelectRoleValues(select) {
     var result = [];
     var options = select && select.options;
     var opt;
-  
-    for (var i=0, iLen=options.length; i<iLen; i++) {
+
+    for (var i = 0, iLen = options.length; i < iLen; i++) {
       opt = options[i];
-  
+
       if (opt.selected) {
         result.push(opt.value || opt.text);
       }
     }
     return result;
-}
+  }
 
   callback2(instance, data) {
     let a = instance.state.data
-    if(!a) {
-       a = []
+    if (!a) {
+      a = []
     }
     a.push(data)
-    instance.setState({data: a})
+    instance.setState({ data: a })
     instance.click();
   }
 
-  getSelectedData= (data,identity) => {
-    if(identity == 'Type') {
-      this.setState({ selectedType : data })
-    
+  getSelectedData = (data, identity) => {
+    if (identity == 'Type') {
+      this.setState({ selectedType: data })
+
     }
-    if(identity == 'Linux') {
-      this.setState({ selectedLinux : data })
-    
+    if (identity == 'Linux') {
+      this.setState({ selectedLinux: data })
+
     }
-    if(identity == 'ISO') {
-      this.setState({ selectedIso : data })
-      
+    if (identity == 'ISO') {
+      this.setState({ selectedIso: data })
+
     }
   }
 
-  handleChange = (event) =>{
-      let selectedRoles = this.state.selectedRoles
-      let val = event.target.value
-      if(!selectedRoles || !selectedRoles.length){
-        selectedRoles = []
-        selectedRoles.push(val)
-      }else if(selectedRoles.indexOf(val) > -1){
-          selectedRoles.splice(selectedRoles.indexOf(val),1)
-      }else{
-        selectedRoles.push(val)
-      }
-      this.setState({ selectedRoles: selectedRoles})
+  handleChange = (event) => {
+    let selectedRoles = this.state.selectedRoles
+    let val = event.target.value
+    if (!selectedRoles || !selectedRoles.length) {
+      selectedRoles = []
+      selectedRoles.push(val)
+    } else if (selectedRoles.indexOf(val) > -1) {
+      selectedRoles.splice(selectedRoles.indexOf(val), 1)
+    } else {
+      selectedRoles.push(val)
+    }
+    this.setState({ selectedRoles: selectedRoles })
   }
 
 
@@ -387,7 +387,8 @@ toggleNewModel() {
     let interfaceTableHeader = null
     let interfaceTableContent = null
     let summaryDataTable = null
-   
+    let siteField = null
+
     if (isSingleNode) {
       nodeNameDiv =
         <div>
@@ -397,10 +398,12 @@ toggleNewModel() {
             </Media>
           </Media>
           <h6 className="srNo"><small>Sr. No.  </small> {this.state.nodes.map((nodeItem) => nodeItem.serialNumber)}</h6>
+          <h6 className="srNo"><small>Site  </small> {this.state.nodes.map((nodeItem) => nodeItem.site)}</h6>
         </div>
       interfaceTableHeader = this.interfaceTableHeader()
       interfaceTableContent = this.interfaceTableContent()
 
+      siteField = <Input id='site' className="marTop10"/>
 
     } else {
       let selectedRowIndexes = []
@@ -415,36 +418,41 @@ toggleNewModel() {
           <Media left >
             {nodeNameDiv}
           </Media>
-
-          <Media body><NotificationContainer/></Media>
-
-          <Media right>
-            <Button className="custBtn" outline color="secondary" onClick={() => { customHistory.goBack() }}> Cancel </Button>
-            <Button className="custBtn" outline color="secondary" > Provision </Button>
-            <Button className="custBtn" outline color="secondary" onClick={()=>(this.updateSaveNode())}> Save </Button>
-          </Media>
         </Media>
         <div className="boxBorder">
           <Row className="pad">
-
-            <Col xs='3' ><Label>Roles</Label><br />
-              <select key={this.couter++} multiple className="form-control" id="multiRole" value={this.state.selectedRoles}  onChange = { (e) => {this.handleChange(e)}}>{this.getRoles()}</select>
+            <Col xs='4' ><Label>Linux Kernel</Label><br />
+              <DropDown options={this.state.kernelData} getSelectedData={this.getSelectedData} identity={"Linux"} default={this.state.selectedLinux} />
             </Col>
-            <Col xs='3' ><Label>Type</Label><br />
-              <DropDown options={this.state.typedata} getSelectedData={this.getSelectedData} identity={"Type"} default={this.state.selectedType}/>
+            <Col xs="2" ><Button className="disabledBtn marTop20" disabled outline color="secondary" > Reboot </Button></Col>
+            <Col xs='4' ><Label>Base Linux ISO</Label><br />
+              <DropDown options={this.state.isoData} getSelectedData={this.getSelectedData} identity={"ISO"} default={this.state.selectedIso} />
             </Col>
-            <Col xs='3' ><Label>Linux</Label><br />
-              <DropDown options={this.state.kernelData} getSelectedData={this.getSelectedData} identity={"Linux"} default={ this.state.selectedLinux }/>
+            <Col xs="2" ><Button className="disabledBtn marTop20" disabled outline color="secondary" > Wipe </Button></Col>
+          </Row>
+        </div>
+        <Media className="marTop10">
+          <Media body><NotificationContainer /></Media>
+          <Media right>
+            <Button className="custBtn" outline color="secondary" onClick={() => { customHistory.goBack() }}> Cancel </Button>
+            <Button className="custBtn" outline color="secondary" > Provision </Button>
+            <Button className="custBtn" outline color="secondary" onClick={() => (this.updateSaveNode())}> Save </Button>
+          </Media>
+        </Media>
+        <div className="boxBorder marTop10">
+          <Row className="pad">
+            <Col xs='6' ><Label>Roles</Label><br />
+              <select key={this.couter++} multiple className="form-control" id="multiRole" value={this.state.selectedRoles} onChange={(e) => { this.handleChange(e) }}>{this.getRoles()}</select>
             </Col>
-            <Col xs='3' ><Label>Base Linux ISO</Label><br />
-              <DropDown options={this.state.isoData} getSelectedData={this.getSelectedData} identity={"ISO"} default={ this.state.selectedIso }/>
+            <Col xs='6' ><Label>Type</Label><br />
+              <DropDown options={this.state.typedata} getSelectedData={this.getSelectedData} identity={"Type"} default={this.state.selectedType} />
             </Col>
           </Row>
-          {/* {this.confDropdown()} */} 
+        {/* {this.confDropdown()} */}
         </div>
-        {interfaceTableHeader}
-        {interfaceTableContent}
-        
+      {interfaceTableHeader}
+      {interfaceTableContent}
+
         <div className="padTop20">
           {summaryDataTable}
         </div>

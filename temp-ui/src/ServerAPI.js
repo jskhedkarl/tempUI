@@ -731,6 +731,32 @@ export class ServerAPI {
         xhr.send();
     }
 
+    deleteNode(callback, instance, name) {
+        let xhr = new XMLHttpRequest();
+        let sourceURL = this.DefaultInvader() + "/node/id/" + name;
+        xhr.open("DELETE", sourceURL, true);
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                try {
+                    let jsonObj = JSON.parse(xhr.responseText);
+                    if(jsonObj.success) {
+                        callback(instance);
+                    }
+                    else
+                        alert("Something went wrong!")
+                } catch (err) {
+                    console.log("POST :: ERROR :: " + err);
+                }
+            }
+        };
+        xhr.onerror = function () {
+            console.log("POST :: Error :: ");
+            callback(instance, null);
+        }
+        xhr.send();
+    }
+
     fetchAllRoles(callback, instance) {
         let xhr = new XMLHttpRequest();
         let sourceURL = this.DefaultInvader() + "/role/";
