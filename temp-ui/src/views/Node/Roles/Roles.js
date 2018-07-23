@@ -4,6 +4,7 @@ import '../../views.css';
 import {ServerAPI} from '../../../ServerAPI';
 import SummaryDataTable from '../NodeSummary/SummaryDataTable';
 import {roleHead} from '../../../consts'
+import DropDown from '../../../components/dropdown/DropDown';
 
 class Roles extends Component {
 
@@ -13,10 +14,11 @@ class Roles extends Component {
             data:[],
             roleHead: roleHead,
             displayModel: false,
-            selectedRowIndex: [],
+            selectedRowIndexes: [],
             selectedRows: [],
             showDelete: false,
-            visible: false
+            alertVisible: false,
+            selectedRole: ''
         }
     }
 
@@ -29,19 +31,19 @@ class Roles extends Component {
             alert("No data received");
         }
         else {
-                instance.setState({data: data,selectedRowIndex:[]});
+                instance.setState({data: data,selectedRowIndexes:[]});
         }
     }
 
     checkBoxClick = (rowIndex) =>{
-        let { selectedRowIndex } = this.state
-        let arrayIndex = selectedRowIndex.indexOf(rowIndex)
+        let { selectedRowIndexes } = this.state
+        let arrayIndex = selectedRowIndexes.indexOf(rowIndex)
         if (arrayIndex > -1) {
-            selectedRowIndex.splice(arrayIndex, 1)
+            selectedRowIndexes.splice(arrayIndex, 1)
         } else {
-            selectedRowIndex.push(rowIndex)
+            selectedRowIndexes.push(rowIndex)
         }
-        if(this.state.selectedRowIndex.length > 0) {
+        if(this.state.selectedRowIndexes.length > 0) {
             this.setState({showDelete : true});
         }
         else {
@@ -60,39 +62,48 @@ class Roles extends Component {
             return null;
     }
 
+    getSelectedData= (data,identity) => {
+        if(identity == 'Role') {
+          this.setState({ selectedRole : data })
+        
+        }
+      }
+
     renderUpgradeModelDialog() {
         if (this.state.displayModel) {
             return (
-                <Modal isOpen={this.state.displayModel} size="sm" centered="true" >
-                    <ModalHeader>Add Role</ModalHeader>
+                <Modal  isOpen={this.state.displayModel} toggle={() => this.cancel()} size="sm" centered="true" >
+                    <ModalHeader toggle={() => this.cancel()}>Add Role</ModalHeader>
                     <ModalBody>
-                    <Alert color="danger" isOpen={this.state.visible} toggle={() => this.onDismiss()} >Role Name cannot be empty</Alert>
+                    <Alert color="danger" isOpen={this.state.alertVisible} toggle={() => this.onDismiss()} >Role Name cannot be empty</Alert>
+                        Parent Role: <DropDown className="marTop10" options={this.state.data} getSelectedData={this.getSelectedData} identity={"Role"} /><br />
                         Name: <Input className="marTop10" id='roleName'/><br />
                         Description: <Input className="marTop10" id='roleDesc' /><br />
                     </ModalBody>
                     <ModalFooter>
                         <Button outline color="primary" onClick={()=>(this.addRole())}>Add</Button>{'  '}
-                        <Button outline color="primary" onClick={()=>(this.click())}>Cancel</Button>
+                        <Button outline color="primary" onClick={()=>(this.cancel())}>Cancel</Button>
                     </ModalFooter>
                 </Modal>
             );
         }
     }
 
-    click() {
+    cancel() {
         this.setState({displayModel : !this.state.displayModel})
     }
     onDismiss() {
-        this.setState({visible : false});
+        this.setState({alertVisible : false});
     }
     
 
     addRole() {
         if(!document.getElementById('roleName').value) {
-            this.setState({visible : true});
+            this.setState({alertVisible : true});
                 return;
         }            
         let a = {
+            'Parent' : this.state.selectedRole,
             'Name' : document.getElementById('roleName').value,
             'Description': document.getElementById('roleDesc').value
     }
@@ -109,9 +120,8 @@ class Roles extends Component {
     }
 
     deleteRole() {
-        console.log(this.state.data)
-        for( let i = 0; i < this.state.selectedRowIndex.length; i++) {
-            ServerAPI.DefaultServer().deleteRole(this.callbackDelete,this,this.state.data[this.state.selectedRowIndex[i]].label);
+        for( let i = 0; i < this.state.selectedRowIndexes.length; i++) {
+            ServerAPI.DefaultServer().deleteRole(this.callbackDelete,this,this.state.data[this.state.selectedRowIndexes[i]].label);
         }
         this.setState({showDelete: !this.state.showDelete});
     }
@@ -125,10 +135,10 @@ class Roles extends Component {
         return (
            <div>
                <Row >
-                    <Button className="custBtn animated fadeIn" id="add" outline color="secondary" onClick={() => (this.click())}>New</Button>
+                    <Button className="custBtn animated fadeIn" id="add" outline color="secondary" onClick={() => (this.cancel())}>New</Button>
                     {this.showDeleteButton()}
                </Row>
-               <SummaryDataTable heading={this.state.roleHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndex}/>
+               <SummaryDataTable heading={this.state.roleHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes}/>
                 {this.renderUpgradeModelDialog()}
             </div> 
         );

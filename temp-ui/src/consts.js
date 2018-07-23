@@ -49,9 +49,14 @@ export let roleHead = [
         colSize: 3
     },
     {
+        id: 'parent',
+        displayName: 'Parent Role',
+        colSize: 4
+    },
+    {
         id: 'description',
         displayName: 'Description',
-        colSize: 8
+        colSize: 4
     },
 ];
 
@@ -110,6 +115,11 @@ export let kernelHead = [
         colSize: 4
     },
     {
+        id: 'location',
+        displayName: 'Location',
+        colSize: 4
+    },
+    {
         id: 'description',
         displayName: 'Description',
         colSize: 4
@@ -120,6 +130,11 @@ export let isoHead = [
     {
         id: 'label',
         displayName: 'Name',
+        colSize: 4
+    },
+    {
+        id: 'location',
+        displayName: 'Location',
         colSize: 4
     },
     {

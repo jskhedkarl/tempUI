@@ -72,42 +72,6 @@ class BaseLinuxIso extends Component {
         ServerAPI.DefaultServer().fetchAllIso(instance.retrieveData,instance);
     }
 
-
-    drawHeader() {
-        return (<Row className="headerRow">
-          <Col sm="1" className="head-name">  </Col>
-            <Col sm="3" className="head-name">Name</Col>
-            <Col sm="8" className="head-name">Description</Col>
-        </Row>)
-    }
-
-    drawtable() {
-        let { data } = this.state
-        let rows = []
-        let header = this.drawHeader()
-        rows.push(header)
-        if (data && data.length) {
-            let iso = data;
-            iso.map((baseLinuxIso, i) => {
-                let row1 = 'headerRow2'
-
-                if (i % 2 === 0) {
-                    row1 = 'headerRow1'
-                }
-                if (i == iso.length - 1) {
-                    row1 = row1 + ' headerRow3 '
-                }
-                let row = (<Row className={row1}>
-                <Col sm="1" className="pad"><Input className="marLeft40" type="checkbox" onChange={() => (this.checkBoxClick(i))}></Input></Col>
-                    <Col sm="3" className="pad">{baseLinuxIso.label}</Col>
-                    <Col sm="8" className="pad">{baseLinuxIso.description}</Col>
-                </Row>)
-                rows.push(row)
-            })
-        }
-        return rows
-    }
-
     onDismiss() {
         this.setState({visible : false});
     }
@@ -115,11 +79,12 @@ class BaseLinuxIso extends Component {
     renderUpgradeModelDialog() {
         if (this.state.displayModel) {
             return (
-                <Modal isOpen={this.state.displayModel} size="sm" centered="true" >
-                    <ModalHeader>Add Base Linux ISO</ModalHeader>
+                <Modal isOpen={this.state.displayModel} toggle= {() => this.cancel()} size="sm" centered="true" >
+                    <ModalHeader toggle= {() => this.cancel()}>Add Base Linux ISO</ModalHeader>
                     <ModalBody>
                     <Alert color="danger" isOpen={this.state.visible} toggle={() => this.onDismiss()} >Name cannot be empty</Alert>
                         Name: <Input className="marTop10" id='isoName' /><br />
+                        Location: <Input className="marTop10" id='isoLoc' /><br />
                         Description: <Input className="marTop10" id='isoDesc' /><br />
                     </ModalBody>
                     <ModalFooter>
@@ -142,6 +107,7 @@ class BaseLinuxIso extends Component {
         }  
         let a = {
             'Name': document.getElementById('isoName').value,
+            'Location': document.getElementById('isoLoc').value,
             'Description': document.getElementById('isoDesc').value
         }
         ServerAPI.DefaultServer().addIso(this.callback, this, a);
@@ -158,7 +124,6 @@ class BaseLinuxIso extends Component {
 
 
     render() {
-        let table = this.drawtable()
         return (
             <div>
                 <div className='marginLeft10'>

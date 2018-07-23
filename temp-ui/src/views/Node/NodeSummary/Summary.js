@@ -315,8 +315,8 @@ class NodeSummary extends React.Component {
     renderUpgradeModelDialog() {
         if (this.state.displayModel) {
             return (
-                <Modal isOpen={this.state.displayModel} size="lg" centered="true" >
-                    <ModalHeader>Add Node</ModalHeader>
+                <Modal isOpen={this.state.displayModel} toggle={() => this.click()} size="lg" centered="true" >
+                    <ModalHeader toggle={() => this.click()}>Add Node</ModalHeader>
                     <Alert color="danger" isOpen={this.state.visible} toggle={() => this.onDismiss()} >
                     Name field is mandatory
                     </Alert>

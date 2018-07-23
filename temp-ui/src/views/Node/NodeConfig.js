@@ -168,8 +168,8 @@ class NodeConfig extends Component {
       let data = this.state.interfaceData
       let index = this.state.interfaceIndex
       return (
-        <Modal isOpen={this.state.displayModel} size="sm" centered="true" >
-          <ModalHeader>Edit Interface {data.port}</ModalHeader>
+        <Modal isOpen={this.state.displayModel} toggle={() => this.toggleModel0()} size="sm" centered="true" >
+          <ModalHeader toggle={() => this.toggleModel0()}>Edit Interface {data.port}</ModalHeader>
           <ModalBody>
             <div className="marTop10">Name: <Input type="text" defaultValue={data.port} id="interfacePort" /></div>
             <div className="marTop10">Admin state:<Input type="text" defaultValue={data.adminState} disabled id="interfaceAdminState" /></div>
@@ -230,8 +230,8 @@ class NodeConfig extends Component {
   renderUpgradeNewModelDialog() {
     if (this.state.displayNewInterfaceModel) {
       return (
-        <Modal isOpen={this.state.displayNewInterfaceModel} size="sm" centered="true" >
-          <ModalHeader>Add Interface </ModalHeader>
+        <Modal isOpen={this.state.displayNewInterfaceModel} toggle={() => this.toggleNewModel()} size="sm" centered="true" >
+          <ModalHeader toggle={() => this.toggleNewModel()}>Add Interface </ModalHeader>
           <Alert color="info" isOpen={this.state.visible} toggle={this.onDismiss}>
             Name field is mandatory
           </Alert>

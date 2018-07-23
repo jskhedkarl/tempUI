@@ -529,7 +529,7 @@ export class ServerConnectedTo {
 export class ServerISO {
     constructor(jsonObj) {
         this.label = jsonObj.Name;
-        this.value = jsonObj.Name;
+        this.location = jsonObj.Location;
         this.description = jsonObj.Description;
     }
 }
@@ -537,7 +537,7 @@ export class ServerISO {
 export class ServerKernelTypes {
     constructor(jsonObj) {
         this.label = jsonObj.Name;
-        this.value = jsonObj.Name;
+        this.location = jsonObj.Location    ;
         this.description = jsonObj.Description;
     }
 }
@@ -545,6 +545,7 @@ export class ServerKernelTypes {
 export class ServerLabels {
     constructor(jsonObj) {
         this.label = jsonObj.Name;
+        this.value = jsonObj.Name;
         this.parent = jsonObj.Parent;
         this.description = jsonObj.Description;
         this.children = jsonObj.Childern;
@@ -1112,8 +1113,10 @@ export class ServerAPI {
                     let jsonObj = JSON.parse(xhr.responseText);
                     if (jsonObj.success) {
                         let a = {
+                            'parent': jsonObj.role.Parent,
                             'label': jsonObj.role.Name,
-                            'description': jsonObj.role.Description
+                            'value' : jsonObj.role.Name,
+                            'description': jsonObj.role.Description,
                         }
                         callback(instance, a);
                     }
@@ -1141,6 +1144,7 @@ export class ServerAPI {
                     if (jsonObj.success) {
                         let a = {
                             'label' : jsonObj.iso.Name,
+                            'location' : jsonObj.iso.Location,
                             'description': jsonObj.iso.Description
                         }
                         callback(instance, a);
@@ -1169,6 +1173,7 @@ export class ServerAPI {
                     if (jsonObj.success) {
                         let a = {
                             'label' : jsonObj.kernel.Name,
+                            'location' : jsonObj.kernel.Location,
                             'description': jsonObj.kernel.Description
                         }
                         callback(instance, a);

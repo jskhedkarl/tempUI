@@ -117,11 +117,12 @@ class LinuxKernel extends Component {
     renderUpgradeModelDialog() {
         if (this.state.displayModel) {
             return (
-                <Modal isOpen={this.state.displayModel} size="sm" centered="true" >
-                    <ModalHeader>Add Linux Kernel</ModalHeader>
+                <Modal isOpen={this.state.displayModel} toggle={() => this.cancel()} size="sm" centered="true" >
+                    <ModalHeader  toggle={() => this.cancel()}>Add Linux Kernel</ModalHeader>
                     <ModalBody>
                     <Alert color="danger" isOpen={this.state.visible} toggle={() => this.onDismiss()} >Name cannot be empty</Alert>
                         Name: <Input className="marTop10" id='kernelName' /><br />
+                        Location: <Input className="marTop10" id='kernelLoc' /><br />
                         Description: <Input className="marTop10" id='kernelDesc' /><br />
                     </ModalBody>
                     <ModalFooter>
@@ -144,6 +145,7 @@ class LinuxKernel extends Component {
         } 
         let a = {
             'Name': document.getElementById('kernelName').value,
+            'Location': document.getElementById('kernelLoc').value,
             'Description': document.getElementById('kernelDesc').value
         }
         ServerAPI.DefaultServer().addKernel(this.callback, this, a);
