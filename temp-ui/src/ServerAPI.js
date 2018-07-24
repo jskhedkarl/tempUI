@@ -529,6 +529,7 @@ export class ServerConnectedTo {
 
 export class ServerISO {
     constructor(jsonObj) {
+        this.value = jsonObj.Name;
         this.label = jsonObj.Name;
         this.location = jsonObj.Location;
         this.description = jsonObj.Description;
@@ -537,6 +538,7 @@ export class ServerISO {
 
 export class ServerKernelTypes {
     constructor(jsonObj) {
+        this.value = jsonObj.Name;
         this.label = jsonObj.Name;
         this.location = jsonObj.Location    ;
         this.description = jsonObj.Description;
@@ -687,6 +689,7 @@ export class ServerAPI {
                     let jsonObj = JSON.parse(xhr.responseText);
                     let wipeInfo = jsonObj.wipe;
                     callback(instance, wipeInfo);
+                    NotificationManager.success('Wiped Successfully', 'Linux ISO');
                 } catch (err) {
                     console.log("POST :: ERROR :: " + err);
                     callback(instance, null);
@@ -1047,9 +1050,10 @@ export class ServerAPI {
                             'linuxISO': node.linuxISO
                         }
                         callback(instance, a);
+                        
                     }
                     else {
-                        alert("Faliure");
+                        NotificationManager.error('something went wrong', 'Node');
                     }
                 } catch (err) {
                     console.log("Error" + err);
@@ -1058,7 +1062,7 @@ export class ServerAPI {
         };
     }
 
-    updateNode(callback, instance, data) {
+    updateNode(callback, instance, data, flag) {
         let xhr = new XMLHttpRequest();
         let sourceURL = this.DefaultInvader() + "/node/modify/";
         xhr.open("POST", sourceURL, { data });
@@ -1070,17 +1074,6 @@ export class ServerAPI {
             intrfc.connectedTo.name = intrfc.connectedTo.serverName
         })
         data.nodes[0].type = data.nodes[0].nodeType
-        xhr.send(JSON.stringify(data.nodes[0]));
-
-        // data.nodes.map((node) => {
-        //     node.interfaces = node.allInterfaces
-        //     node.interfaces.map((interfaceItem) => {
-        //         interfaceItem.ip = interfaceItem.IPAddress
-        //         interfaceItem.connectedTo.port = interfaceItem.connectedTo.serverPort
-        //         interfaceItem.connectedTo.name = interfaceItem.connectedTo.serverName
-        //     })
-        //     xhr.send(JSON.stringify(node));
-        // })
         
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4 && xhr.status === 200) {
@@ -1101,7 +1094,12 @@ export class ServerAPI {
                 }
             }
         };
+        xhr.onerror = function () {
+            let tran = new ServerTransaction("Errr", 0);
+            callback(instance, tran);
+        };
 
+        xhr.send(JSON.stringify(data.nodes[0]));
     }
 
 

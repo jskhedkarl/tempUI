@@ -5,7 +5,6 @@ import { Redirect } from 'react-router-dom'
 import { Button } from 'reactstrap';
 import SummaryDataTable from './SummaryDataTable';
 import {nodeHead} from '../../../consts';
-import {NotificationContainer, NotificationManager} from 'react-notifications';
 import '../../views.css';
 
 class NodeSummary extends React.Component {
@@ -322,7 +321,7 @@ class NodeSummary extends React.Component {
                     </Alert>
                     <ModalBody>
                         <Row>
-                            <Col sm="6" className="marTop10">Name: <Input id='name' className="marTop10"/></Col>
+                            <Col sm="6" className="marTop10">Name: <Input id='name' autoFocus className="marTop10"/></Col>
                             <Col sm="6" className="marTop10">Site: <Input id='site' className="marTop10"/></Col>
                         </Row>
                         <Row>    
@@ -364,7 +363,7 @@ class NodeSummary extends React.Component {
             'linuxISO': document.getElementById('linuxIso').value
         }
         ServerAPI.DefaultServer().addNode(this.callback,this,a);
-        NotificationManager.success('Updated Successfully', 'Node');
+        
     }
 
     getSelectRoleValues(select) {
@@ -389,6 +388,7 @@ class NodeSummary extends React.Component {
         }
         a.push(data)
         instance.setState({data: a,displayModel : !instance.state.displayModel})
+        NotificationManager.success('Added Successfully', 'Node');
     }
 
     click() {
@@ -403,7 +403,7 @@ class NodeSummary extends React.Component {
         return (
             <Container-fluid >
                 <Row>
-                <NotificationContainer/>
+                
                     <Col sm="9">
                         <div className='marginLeft10 '>
                             <Button onClick={() => (this.onConfigureClick())} className="custBtn marginLeft13N" outline color="secondary">Configure</Button>

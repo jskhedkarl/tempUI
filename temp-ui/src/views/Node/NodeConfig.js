@@ -28,7 +28,9 @@ class NodeConfig extends Component {
       selectedIso: props.location.state.length == 1 ? props.location.state[0].linuxISO : '',
       selectedRoles: props.location.state.length == 1 ? props.location.state[0].roles : '',
       visible: false,
-      showAlert: ''
+      showAlert: '',
+      wipeBtn : true,
+      rebootBtn: true
 
     }
     this.couter = 0
@@ -93,8 +95,8 @@ class NodeConfig extends Component {
   interfaceTableHeader() {
     return (
       <div className="padTop30">
-        <h3>Interfaces  <Button className="custBtn" outline color="secondary" onClick={() => (this.toggleNewModel())}> New </Button></h3>
-        <Row className="headerRow" style={{ marginLeft: '0px' }}>
+        <h5>Interfaces  <Button className="custBtn" outline color="secondary" onClick={() => (this.toggleNewModel())}> New </Button></h5>
+        <Row className="headerRow" style={{ marginLeft: '0px', marginRight: '0px' }}>
           <Col sm="2" className="head-name">Interface Name</Col>
           <Col sm="2" className="head-name">Admin state</Col>
           <Col sm="3" className="head-name">IP Address</Col>
@@ -127,14 +129,14 @@ class NodeConfig extends Component {
           if (rowIndex == interfaces.length - 1) {
             row1 = row1 + ' headerRow3 '
           }
-          let row = (<Row className={row1} style={{ marginLeft: '0px' }}>
+          let row = (<Row className={row1} style={{ marginLeft: '0px', marginRight: '0px' }}>
 
             <Col sm="2" className="pad">{item.port ? item.port : '-'}</Col>
             <Col sm="2" className="pad">{item.adminState ? item.adminState : '-'}</Col>
             <Col sm="3" className="pad">{item.IPAddress ? item.IPAddress : '-'}</Col>
             <Col sm="2" className="pad">{item.connectedTo.serverName ? item.connectedTo.serverName : '-'}</Col>
             <Col sm="2" className="pad">{item.connectedTo.serverPort ? item.connectedTo.serverPort : '-'}</Col>
-            <Col sm="1" className="pad"><i className="fa fa-pencil" aria-hidden="true" onClick={() => (self.toggleModel(rowIndex))}></i></Col>
+            <Col sm="1" className="pad" style={{cursor:'pointer'}}><i className="fa fa-pencil" aria-hidden="true" onClick={() => (self.toggleModel(rowIndex))}></i></Col>
 
           </Row>)
           rows.push(row)
@@ -171,7 +173,7 @@ class NodeConfig extends Component {
         <Modal isOpen={this.state.displayModel} toggle={() => this.toggleModel0()} size="sm" centered="true" >
           <ModalHeader toggle={() => this.toggleModel0()}>Edit Interface {data.port}</ModalHeader>
           <ModalBody>
-            <div className="marTop10">Name: <Input type="text" defaultValue={data.port} id="interfacePort" /></div>
+            <div className="marTop10">Name: <Input type="text" autoFocus defaultValue={data.port} id="interfacePort" /></div>
             <div className="marTop10">Admin state:<Input type="text" defaultValue={data.adminState} disabled id="interfaceAdminState" /></div>
             <div className="marTop10">IP Address:<Input type="text" defaultValue={data.IPAddress} id="interfaceIpAddress" /></div>
             <div className="marTop10">Remote Node Name:<Input type="text" defaultValue={data.connectedTo.serverName ? data.connectedTo.serverName : '-'} id="interfaceRemoteNodename" /></div>
@@ -210,7 +212,7 @@ class NodeConfig extends Component {
     this.setState({ displayModel: !this.state.displayModel })
 
     ServerAPI.DefaultServer().updateNode(this.callback, this, a);
-    NotificationManager.success('Updated Successfully', 'Interface');
+    
   }
 
   callback(instance, data) {
@@ -220,7 +222,7 @@ class NodeConfig extends Component {
     }
     a.push(data)
     instance.setState({ data: a })
-    instance.click();
+    NotificationManager.success('Updated Successfully', 'Interface');
   }
 
   toggleNewModel() {
@@ -237,7 +239,7 @@ class NodeConfig extends Component {
           </Alert>
 
           <ModalBody>
-            <div className="marTop10">Name: <Input type="text" id="interName" /></div>
+            <div className="marTop10">Name: <Input autoFocus type="text" id="interName" /></div>
             <div className="marTop10">IP Address:<Input type="text" id="interIp" /></div>
             <div className="marTop10">Remote Node Name:<Input type="text" id="interRemoteName" /></div>
             <div className="marTop10">Remote Node Interface:<Input type="text" id="interRemoteInterface" /></div>
@@ -282,18 +284,18 @@ class NodeConfig extends Component {
     let a = {
       nodes: data
     }
-    ServerAPI.DefaultServer().updateNode(this.callback1, this, a);
-    NotificationManager.success('Saved Successfully', 'Interface');
+    ServerAPI.DefaultServer().updateNode(this.updateNewInterfaceCallback, this, a);
+    
   }
 
-  callback1(instance, data) {
+  updateNewInterfaceCallback(instance, data) {
     let a = instance.state.data
     if (!a) {
       a = []
     }
     a.push(data)
     instance.setState({ data: a })
-    instance.click();
+    NotificationManager.success('Saved Successfully', 'Interface');
   }
 
   updateSaveNode = () => {
@@ -309,12 +311,32 @@ class NodeConfig extends Component {
       let a = {
         nodes: [datum]
       }
-      ServerAPI.DefaultServer().updateNode(this.callback2, this, a);
+      ServerAPI.DefaultServer().updateNode(this.updateSaveNodeCallback, this, a);
     })
 
 
-    NotificationManager.success('Saved Successfully', 'Node Configuration');
+    
     // this.setState({visible: true })
+  }
+
+  updateSaveNodeCallback(instance, data) {
+    let a = instance.state.data
+    if (!a) {
+      a = []
+    }
+    a.push(data)
+    instance.setState({ data: a })
+    NotificationManager.success('Saved Successfully', 'Node Configuration');
+  }
+
+  wipeISO = () =>{
+    let data = this.state.nodes[0]
+    ServerAPI.DefaultServer().upgradeOrWipeServerNode(data,this.wipeCallback, this);
+    NotificationManager.success('Wiped Successfully', 'Linux ISO');
+  }
+
+  wipeCallback(wipeInfo) {
+    console.log("Updated :: " + wipeInfo);
   }
 
   onDismiss() {
@@ -337,15 +359,7 @@ class NodeConfig extends Component {
     return result;
   }
 
-  callback2(instance, data) {
-    let a = instance.state.data
-    if (!a) {
-      a = []
-    }
-    a.push(data)
-    instance.setState({ data: a })
-    instance.click();
-  }
+  
 
   getSelectedData = (data, identity) => {
     if (identity == 'Type') {
@@ -353,12 +367,13 @@ class NodeConfig extends Component {
 
     }
     if (identity == 'Linux') {
+      this.state.selectedIso != data ? this.setState({ rebootBtn : false}) : ''
       this.setState({ selectedLinux: data })
-
     }
     if (identity == 'ISO') {
+      
+      this.state.selectedIso != data ? this.setState({ wipeBtn : false}) : ''
       this.setState({ selectedIso: data })
-
     }
   }
 
@@ -375,6 +390,8 @@ class NodeConfig extends Component {
     }
     this.setState({ selectedRoles: selectedRoles })
   }
+
+
 
 
   render() {
@@ -403,7 +420,7 @@ class NodeConfig extends Component {
       interfaceTableHeader = this.interfaceTableHeader()
       interfaceTableContent = this.interfaceTableContent()
 
-      siteField = <Input id='site' className="marTop10"/>
+      siteField = <Input id='site' className="marTop10" />
 
     } else {
       let selectedRowIndexes = []
@@ -418,28 +435,46 @@ class NodeConfig extends Component {
           <Media left >
             {nodeNameDiv}
           </Media>
-        </Media>
-        <div className="boxBorder">
-          <Row className="pad">
-            <Col xs='4' ><Label>Linux Kernel</Label><br />
-              <DropDown options={this.state.kernelData} getSelectedData={this.getSelectedData} identity={"Linux"} default={this.state.selectedLinux} />
-            </Col>
-            <Col xs="2" ><Button className="disabledBtn marTop20" disabled outline color="secondary" > Reboot </Button></Col>
-            <Col xs='4' ><Label>Base Linux ISO</Label><br />
-              <DropDown options={this.state.isoData} getSelectedData={this.getSelectedData} identity={"ISO"} default={this.state.selectedIso} />
-            </Col>
-            <Col xs="2" ><Button className="disabledBtn marTop20" disabled outline color="secondary" > Wipe </Button></Col>
-          </Row>
-        </div>
-        <Media className="marTop10">
           <Media body><NotificationContainer /></Media>
           <Media right>
             <Button className="custBtn" outline color="secondary" onClick={() => { customHistory.goBack() }}> Cancel </Button>
-            <Button className="custBtn" outline color="secondary" > Provision </Button>
+
             <Button className="custBtn" outline color="secondary" onClick={() => (this.updateSaveNode())}> Save </Button>
           </Media>
         </Media>
-        <div className="boxBorder marTop10">
+        <div >
+
+          <div className="linuxBox" style={{ marginRight: '20px' }}>
+            <Media>
+              <Media body>
+                <Label>Linux Kernel</Label>
+                <DropDown options={this.state.kernelData} getSelectedData={this.getSelectedData} identity={"Linux"} default={this.state.selectedLinux} />
+              </Media>
+              <Media right>
+                <Button className="custBtn marTop20 marLeft10" disabled={this.state.rebootBtn} outline color="secondary" > Reboot </Button>
+              </Media>
+            </Media>
+          </div>
+          <div className="linuxBox">
+            <Media>
+              <Media body>
+                <Label>Base Linux ISO</Label>
+                <DropDown options={this.state.isoData} getSelectedData={this.getSelectedData} identity={"ISO"} default={this.state.selectedIso} />
+              </Media>
+              <Media right>
+                <Button className="custBtn marTop20 marLeft10" disabled={this.state.wipeBtn}  outline color="secondary" onClick={() => { this.wipeISO() }}> Wipe </Button>
+              </Media>
+            </Media>
+          </div>
+        </div>
+        <div className="boxBorder marTop20">
+          <Media>
+            <Media body>
+            </Media>
+            <Media right>
+              <Button className="custBtn" outline color="secondary" > Provision </Button>
+            </Media>
+          </Media>
           <Row className="pad">
             <Col xs='6' ><Label>Roles</Label><br />
               <select key={this.couter++} multiple className="form-control" id="multiRole" value={this.state.selectedRoles} onChange={(e) => { this.handleChange(e) }}>{this.getRoles()}</select>
@@ -448,10 +483,13 @@ class NodeConfig extends Component {
               <DropDown options={this.state.typedata} getSelectedData={this.getSelectedData} identity={"Type"} default={this.state.selectedType} />
             </Col>
           </Row>
-        {/* {this.confDropdown()} */}
+          {/* {this.confDropdown()} */}
+          <div style={{ padding: '10px' }}>
+            {interfaceTableHeader}
+            {interfaceTableContent}
+          </div>
         </div>
-      {interfaceTableHeader}
-      {interfaceTableContent}
+
 
         <div className="padTop20">
           {summaryDataTable}

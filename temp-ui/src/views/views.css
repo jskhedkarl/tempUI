@@ -41,7 +41,7 @@
 .custBtn{
 	background-color: white  !important;
 	border-radius: 6px  !important;
-	border: 1px solid #a4b7c1  !important;
+	border: 1px solid #20a8d8  !important;
 	padding: 10px  !important;
 	margin-bottom: 10px !important;
 	margin-right: 10px  !important;
@@ -61,10 +61,12 @@
 	
 }
 
-.custBtn:hover{
-	border: 1px solid black !important;
-	background-color: white  !important;
-	color: black;
+
+
+:disabled{
+	cursor: not-allowed !important;
+	border: 1px solid #a4b7c1  !important;
+	color: #a4b7c1 !important;
 }
 
 .borRad{
@@ -127,6 +129,19 @@
     position: relative;
     left:30px;
 
+}
+
+.linuxBox{
+	display:inline-block;
+	width:49%;
+	margin-right:10px;
+	padding:10px;
+	border:1px solid #a4b7c1;
+	border-radius: 6px;
+}
+
+.cursor-pointer{
+	cursor: pointer;
 }
 
 
