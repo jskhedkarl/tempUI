@@ -98,12 +98,10 @@
 
 .srNo{
     font-weight: 400;
-	
+	font-size: 15px;
     color:#191a1b9c ; 
 }
-#show{
-    display: none ;
-}
+
 .edit{
     font-size: 25px;
     font-weight: 600;

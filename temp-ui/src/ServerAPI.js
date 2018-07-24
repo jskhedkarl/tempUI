@@ -540,7 +540,7 @@ export class ServerKernelTypes {
     constructor(jsonObj) {
         this.value = jsonObj.Name;
         this.label = jsonObj.Name;
-        this.location = jsonObj.Location    ;
+        this.location = jsonObj.Location;
         this.description = jsonObj.Description;
     }
 }
@@ -689,7 +689,7 @@ export class ServerAPI {
                     let jsonObj = JSON.parse(xhr.responseText);
                     let wipeInfo = jsonObj.wipe;
                     callback(instance, wipeInfo);
-                    NotificationManager.success('Wiped Successfully', 'Linux ISO');
+                    
                 } catch (err) {
                     console.log("POST :: ERROR :: " + err);
                     callback(instance, null);
@@ -1102,6 +1102,7 @@ export class ServerAPI {
         xhr.send(JSON.stringify(data.nodes[0]));
     }
 
+   
 
 
     addRole(callback, instance, data) {

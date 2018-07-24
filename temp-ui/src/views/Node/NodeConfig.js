@@ -115,7 +115,7 @@ class NodeConfig extends Component {
       this.state.nodes.map((node) => {
         let interfaces = node.allInterfaces
         if (!interfaces || !interfaces.length) {
-          let row = (<Row className='headerRow1'>
+          let row = (<Row className='headerRow1' style={{ marginLeft: '0px', marginRight: '0px' }}>
             <Col sm="12" className="pad"><h5 className="text-center">Interface data not available</h5></Col>
           </Row>)
           rows.push(row)
@@ -212,6 +212,7 @@ class NodeConfig extends Component {
     this.setState({ displayModel: !this.state.displayModel })
 
     ServerAPI.DefaultServer().updateNode(this.callback, this, a);
+    
     
   }
 
@@ -333,6 +334,7 @@ class NodeConfig extends Component {
     let data = this.state.nodes[0]
     ServerAPI.DefaultServer().upgradeOrWipeServerNode(data,this.wipeCallback, this);
     NotificationManager.success('Wiped Successfully', 'Linux ISO');
+    this.setState({ wipeBtn : true})
   }
 
   wipeCallback(wipeInfo) {
@@ -367,12 +369,12 @@ class NodeConfig extends Component {
 
     }
     if (identity == 'Linux') {
-      this.state.selectedIso != data ? this.setState({ rebootBtn : false}) : ''
+      this.state.selectedIso != data && data != '' ? this.setState({ rebootBtn : false}) : ''
       this.setState({ selectedLinux: data })
     }
     if (identity == 'ISO') {
       
-      this.state.selectedIso != data ? this.setState({ wipeBtn : false}) : ''
+      this.state.selectedIso != data && data != '' ? this.setState({ wipeBtn : false}) : ''
       this.setState({ selectedIso: data })
     }
   }
@@ -414,8 +416,7 @@ class NodeConfig extends Component {
               {this.state.nodes.map((nodeItem) => nodeItem.name)}
             </Media>
           </Media>
-          <h6 className="srNo"><small>Sr. No.  </small> {this.state.nodes.map((nodeItem) => nodeItem.serialNumber)}</h6>
-          <h6 className="srNo"><small>Site  </small> {this.state.nodes.map((nodeItem) => nodeItem.site)}</h6>
+          <h6 className="srNo"><b>Sr. No. </b> {this.state.nodes.map((nodeItem) => nodeItem.serialNumber)}  / <b> Site </b>  {this.state.nodes.map((nodeItem) => nodeItem.site)}</h6>
         </div>
       interfaceTableHeader = this.interfaceTableHeader()
       interfaceTableContent = this.interfaceTableContent()
