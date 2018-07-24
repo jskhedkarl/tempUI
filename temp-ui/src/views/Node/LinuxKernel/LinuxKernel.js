@@ -3,7 +3,9 @@ import { Row, Col, Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Al
 import '../../views.css';
 import { ServerAPI } from '../../../ServerAPI';
 import SummaryDataTable from '../NodeSummary/SummaryDataTable';
-import {kernelHead} from '../../../consts'
+import {kernelHead} from '../../../consts';
+import { NotificationContainer, NotificationManager } from 'react-notifications';
+import 'react-notifications/lib/notifications.css';
 
 class LinuxKernel extends Component {
 
@@ -14,7 +16,7 @@ class LinuxKernel extends Component {
             data: [],
             kernelHead: kernelHead,
             showDelete : false,
-            selectedRowIndex: [],
+            selectedRowIndexes: [],
             displayModel: false,
             visible: false
         }
@@ -29,7 +31,7 @@ class LinuxKernel extends Component {
             alert("No data received");
         }
         else {
-            instance.setState({data: data,selectedRowIndex:[]});
+            instance.setState({data: data,selectedRowIndexes:[]});
         }
     }
 
@@ -44,14 +46,14 @@ class LinuxKernel extends Component {
     }
 
     checkBoxClick = (rowIndex) =>{
-        let { selectedRowIndex } = this.state
-        let arrayIndex = selectedRowIndex.indexOf(rowIndex)
+        let { selectedRowIndexes } = this.state
+        let arrayIndex = selectedRowIndexes.indexOf(rowIndex)
         if (arrayIndex > -1) {
-            selectedRowIndex.splice(arrayIndex, 1)
+            selectedRowIndexes.splice(arrayIndex, 1)
         } else {
-            selectedRowIndex.push(rowIndex)
+            selectedRowIndexes.push(rowIndex)
         }
-        if(this.state.selectedRowIndex.length > 0) {
+        if(this.state.selectedRowIndexes.length > 0) {
             this.setState({showDelete : true});
         }
         else {
@@ -71,13 +73,16 @@ class LinuxKernel extends Component {
     }
 
     deleteKernel() {
-        for( let i = 0; i < this.state.selectedRowIndex.length; i++) {
-            ServerAPI.DefaultServer().deleteKernel(this.callbackDelete,this,this.state.data[this.state.selectedRowIndex[i]].label);
+        for( let i = 0; i < this.state.selectedRowIndexes.length; i++) {
+            ServerAPI.DefaultServer().deleteKernel(this.callbackDelete,this,this.state.data[this.state.selectedRowIndexes[i]].label);
         }
-        this.setState({showDelete: !this.state.showDelete});
+        this.setState({showDelete: !this.state.showDelete, selectedRowIndexes:[]});
     }
 
-    callbackDelete(instance, data) {
+    callbackDelete(instance) {
+        if(instance.ErrorMessage) {
+            NotificationManager.error(instance.ErrorMessage, 'Linux Kernel');
+        }
         ServerAPI.DefaultServer().fetchAllKernels(instance.retrieveData,instance);
     }
 
@@ -121,7 +126,7 @@ class LinuxKernel extends Component {
                     <ModalHeader  toggle={() => this.cancel()}>Add Linux Kernel</ModalHeader>
                     <ModalBody>
                     <Alert color="danger" isOpen={this.state.visible} toggle={() => this.onDismiss()} >Name cannot be empty</Alert>
-                        Name: <Input className="marTop10" id='kernelName' /><br />
+                        Name: <Input autoFocus className="marTop10" id='kernelName' /><br />
                         Location: <Input className="marTop10" id='kernelLoc' /><br />
                         Description: <Input className="marTop10" id='kernelDesc' /><br />
                     </ModalBody>
@@ -163,11 +168,12 @@ class LinuxKernel extends Component {
 
     render() {
         return (<div>
+            <NotificationContainer />
                 <div className='marginLeft10'>
                     <Button onClick={() => (this.cancel())} className="custBtn animated fadeIn marginLeft13N" outline color="secondary">New</Button>
                     {this.showDeleteButton()}
                 </div>
-                <SummaryDataTable heading={this.state.kernelHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndex}/>
+                <SummaryDataTable heading={this.state.kernelHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes}/>
                 {this.renderUpgradeModelDialog()}
             </div> 
         );

@@ -3,7 +3,7 @@ import { Row, Col, Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Al
 import '../../views.css';
 import { ServerAPI } from '../../../ServerAPI';
 import SummaryDataTable from '../NodeSummary/SummaryDataTable';
-import {isoHead} from '../../../consts'
+import {isoHead} from '../../../consts';
 
 class BaseLinuxIso extends Component {
 
@@ -14,7 +14,7 @@ class BaseLinuxIso extends Component {
             data: [],
             isoHead: isoHead,
             showDelete : false,
-            selectedRowIndex: [],
+            selectedRowIndexes: [],
             displayModel: false,
             visible: false
         }
@@ -29,19 +29,19 @@ class BaseLinuxIso extends Component {
             alert("No data received");
         }
         else {
-            instance.setState({data: data,selectedRowIndex:[]});
+            instance.setState({data: data,selectedRowIndexes:[]});
         }
     }
 
     checkBoxClick = (rowIndex) =>{
-        let { selectedRowIndex } = this.state
-        let arrayIndex = selectedRowIndex.indexOf(rowIndex)
+        let { selectedRowIndexes } = this.state
+        let arrayIndex = selectedRowIndexes.indexOf(rowIndex)
         if (arrayIndex > -1) {
-            selectedRowIndex.splice(arrayIndex, 1)
+            selectedRowIndexes.splice(arrayIndex, 1)
         } else {
-            selectedRowIndex.push(rowIndex)
+            selectedRowIndexes.push(rowIndex)
         }
-        if(this.state.selectedRowIndex.length > 0) {
+        if(this.state.selectedRowIndexes.length > 0) {
             this.setState({showDelete : true});
         }
         else {
@@ -62,10 +62,10 @@ class BaseLinuxIso extends Component {
 
 
     deleteISO() {
-        for( let i = 0; i < this.state.selectedRowIndex.length; i++) {
-            ServerAPI.DefaultServer().deleteIso(this.callbackDelete,this,this.state.data[this.state.selectedRowIndex[i]].label);
+        for( let i = 0; i < this.state.selectedRowIndexes.length; i++) {
+            ServerAPI.DefaultServer().deleteIso(this.callbackDelete,this,this.state.data[this.state.selectedRowIndexes[i]].label);
         }
-        this.setState({showDelete: !this.state.showDelete});
+        this.setState({showDelete: !this.state.showDelete, selectedRowIndexes:[]});
     }
 
     callbackDelete(instance, data) {
@@ -83,7 +83,7 @@ class BaseLinuxIso extends Component {
                     <ModalHeader toggle= {() => this.cancel()}>Add Base Linux ISO</ModalHeader>
                     <ModalBody>
                     <Alert color="danger" isOpen={this.state.visible} toggle={() => this.onDismiss()} >Name cannot be empty</Alert>
-                        Name: <Input className="marTop10" id='isoName' /><br />
+                        Name: <Input autoFocus className="marTop10" id='isoName' /><br />
                         Location: <Input className="marTop10" id='isoLoc' /><br />
                         Description: <Input className="marTop10" id='isoDesc' /><br />
                     </ModalBody>
@@ -130,7 +130,7 @@ class BaseLinuxIso extends Component {
                     <Button onClick={() => (this.cancel())} className="custBtn animated fadeIn marginLeft13N">New</Button>
                     {this.showDeleteButton()}
                 </div>
-                <SummaryDataTable heading={this.state.isoHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndex}/>
+                <SummaryDataTable heading={this.state.isoHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes}/>
                 {this.renderUpgradeModelDialog()}
             </div>
         );

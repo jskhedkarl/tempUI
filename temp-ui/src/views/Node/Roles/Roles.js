@@ -5,6 +5,7 @@ import {ServerAPI} from '../../../ServerAPI';
 import SummaryDataTable from '../NodeSummary/SummaryDataTable';
 import {roleHead} from '../../../consts'
 import DropDown from '../../../components/dropdown/DropDown';
+// import $ from 'jquery';
 
 class Roles extends Component {
 
@@ -15,7 +16,6 @@ class Roles extends Component {
             roleHead: roleHead,
             displayModel: false,
             selectedRowIndexes: [],
-            selectedRows: [],
             showDelete: false,
             alertVisible: false,
             selectedRole: ''
@@ -65,19 +65,18 @@ class Roles extends Component {
     getSelectedData= (data,identity) => {
         if(identity == 'Role') {
           this.setState({ selectedRole : data })
-        
         }
       }
 
     renderUpgradeModelDialog() {
         if (this.state.displayModel) {
             return (
-                <Modal  isOpen={this.state.displayModel} toggle={() => this.cancel()} size="sm" centered="true" >
+                <Modal isOpen={this.state.displayModel} toggle={() => this.cancel()} size="sm" centered="true" >
                     <ModalHeader toggle={() => this.cancel()}>Add Role</ModalHeader>
                     <ModalBody>
                     <Alert color="danger" isOpen={this.state.alertVisible} toggle={() => this.onDismiss()} >Role Name cannot be empty</Alert>
                         Parent Role: <DropDown className="marTop10" options={this.state.data} getSelectedData={this.getSelectedData} identity={"Role"} /><br />
-                        Name: <Input className="marTop10" id='roleName'/><br />
+                        Name: <Input autoFocus className="marTop10" id='roleName'/><br />
                         Description: <Input className="marTop10" id='roleDesc' /><br />
                     </ModalBody>
                     <ModalFooter>
@@ -116,14 +115,14 @@ class Roles extends Component {
            a = []
         }
         a.push(data)
-        instance.setState({data: a, displayModel: !instance.state.displayModel})
+        instance.setState({data: a, displayModel: !instance.state.displayModel, selectedRole: ''})
     }
 
     deleteRole() {
         for( let i = 0; i < this.state.selectedRowIndexes.length; i++) {
             ServerAPI.DefaultServer().deleteRole(this.callbackDelete,this,this.state.data[this.state.selectedRowIndexes[i]].label);
         }
-        this.setState({showDelete: !this.state.showDelete});
+        this.setState({showDelete: !this.state.showDelete, selectedRowIndexes: []});
     }
 
     callbackDelete = (instance) => {
@@ -131,7 +130,6 @@ class Roles extends Component {
     }
 
     render() { 
-        let self = this;
         return (
            <div>
                <Row >

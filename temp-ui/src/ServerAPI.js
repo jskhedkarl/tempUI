@@ -1,4 +1,5 @@
 import { invaderServerAddress } from './config';
+import { NotificationManager } from 'react-notifications';
 
 export class StatsEginx {
     constructor(activeConnection, totalConnection, totalHandledConnection, totalRequests, requestsPerConnection, reading, writing, waiting) {
@@ -801,8 +802,9 @@ export class ServerAPI {
                     if(jsonObj.success) {
                         callback(instance);
                     }
-                    else
-                        alert("Something went wrong!")
+                    else if(jsonObj.ErrorMessage){
+                        NotificationManager.error(jsonObj.ErrorMessage, 'Role');
+                    }
                 } catch (err) {
                     console.log("POST :: ERROR :: " + err);
                 }
@@ -889,8 +891,9 @@ export class ServerAPI {
                     if(jsonObj.success) {
                         callback(instance);
                     }
-                    else
-                        alert("Something went wrong!")
+                    else if(jsonObj.ErrorMessage) {
+                        NotificationManager.error(jsonObj.ErrorMessage,"Base Linux ISO");
+                    }
                 } catch (err) {
                     console.log("POST :: ERROR :: " + err);
                 }
@@ -946,8 +949,9 @@ export class ServerAPI {
                     if(jsonObj.success) {
                         callback(instance);
                     }
-                    else
-                        alert("Something went wrong!")
+                    else if(jsonObj.ErrorMessage) {
+                        NotificationManager.error(jsonObj.ErrorMessage,"Linux Kernel")
+                    }
                 } catch (err) {
                     console.log("POST :: ERROR :: " + err);
                 }
@@ -1003,8 +1007,9 @@ export class ServerAPI {
                     if(jsonObj.success) {
                         callback(instance);
                     }
-                    else
-                        alert("Something went wrong!")
+                    else if(jsonObj.ErrorMessage) {
+                        NotificationManager.error(jsonObj.ErrorMessage,"System Type");
+                    }
                 } catch (err) {
                     console.log("POST :: ERROR :: " + err);
                 }

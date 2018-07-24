@@ -3,7 +3,7 @@ import { Row, Col, Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Al
 import '../../views.css';
 import {ServerAPI} from '../../../ServerAPI';
 import SummaryDataTable from '../NodeSummary/SummaryDataTable';
-import {typeHead} from '../../../consts'
+import {typeHead} from '../../../consts';
 
 class Types extends Component {
 
@@ -14,7 +14,7 @@ class Types extends Component {
             data:[],
             typeHead: typeHead,
             showDelete : false,
-            selectedRowIndex: [],
+            selectedRowIndexes: [],
             displayModel: false,
             visible: false,
             errorMsg: ''
@@ -30,77 +30,19 @@ class Types extends Component {
             alert("No data received");
         }
         else {
-            instance.setState({data: data,selectedRowIndex:[]});
+            instance.setState({data: data,selectedRowIndexes:[]});
         }
-    }
-
-    drawHeader(){
-        return(<Row className="headerRow">
-                <Col sm="1" className="head-name"></Col>
-                <Col sm="11" className="pad" >
-                        <Row>
-                        <Col sm="2" className="head-name">Name</Col>
-                        <Col sm="1" className="head-name">Vendor</Col>
-                        <Col sm="1" className="head-name">Rack Unit</Col>
-                        <Col sm="1" className="head-name">AirFlow</Col>
-                        <Col sm="2" className="head-name">Front panel Interfaces</Col>
-                        <Col sm="2" className="head-name">Speed Front Panel Interface</Col>
-                        <Col sm="1" className="head-name">Management Interfaces</Col>
-                        <Col sm="1" className="head-name">Speed/Type</Col>
-                        <Col sm="1" className="head-name">Notes</Col>
-                        </Row>
-                    </Col>
-                    </Row>)
-    }
-
-    drawtable(props=this.props){
-
-        let {data} = this.state
-        let rows = []
-        let header = this.drawHeader()
-        rows.push(header)
-        if(data && data.length){
-            let systypes = data;
-            systypes.map( (systype,i) => {
-               let row1 = 'headerRow2'
-
-               if(i%2 === 0){
-                   row1 = 'headerRow1'
-               }
-               if (i == systypes.length - 1) {
-                row1 =  row1 +' headerRow3 '
-                }
-               let row  =  ( <Row className={row1}>
-                <Col sm="1" className="pad"><Input className="marLeft40" type="checkbox" onChange={() => (this.checkBoxClick(i))}></Input></Col>
-                <Col sm="11" className="pad" style={{ cursor: 'pointer' }} >
-                    <Row>
-                        <Col sm="2" className="pad">{systype.label}</Col>
-                        <Col sm="1" className="pad">{systype.vendor}</Col>
-                        <Col sm="1" className="pad">{systype.rackUnit}</Col>
-                        <Col sm="1" className="pad">{systype.airflow}</Col>
-                        <Col sm="2" className="pad">{systype.numFrontPanelInterface}</Col>
-                        <Col sm="2" className="pad">{systype.speedFrontPanelInterface}</Col>
-                        <Col sm="1" className="pad">{systype.numMgmtInterface}</Col>
-                        <Col sm="1" className="pad">{systype.speedMgmtInterafce}</Col>
-                        <Col sm="1" className="pad"></Col>
-                    </Row>
-                </Col>
-               </Row>)
-               rows.push(row)
-           } )  
-       }
-        return rows 
     }
 
     checkBoxClick = (rowIndex) =>{
-        let { selectedRowIndex } = this.state
-        let arrayIndex = selectedRowIndex.indexOf(rowIndex)
+        let { selectedRowIndexes } = this.state
+        let arrayIndex = selectedRowIndexes.indexOf(rowIndex)
         if (arrayIndex > -1) {
-            selectedRowIndex.splice(arrayIndex, 1)
+            selectedRowIndexes.splice(arrayIndex, 1)
         } else {
-            selectedRowIndex.push(rowIndex)
+            selectedRowIndexes.push(rowIndex)
         }
-        if(this.state.selectedRowIndex.length > 0) {
+        if(this.state.selectedRowIndexes.length > 0) {
             this.setState({showDelete : true});
         }
         else {
@@ -120,7 +62,7 @@ class Types extends Component {
                     <ModalBody>
                     <Alert color="danger" isOpen={this.state.visible} toggle={() => this.onDismiss()}>{this.state.errorMsg}</Alert>
                         <Row>
-                        <Col>Name: <Input className="marTop10" id='label' required={true}/><br />
+                        <Col>Name: <Input autoFocus className="marTop10" id='label' required={true}/><br />
                         Vendor: <Input className="marTop10" id='vendor'/><br />
                         Rack Unit: <Input className="marTop10" id='rackUnit'/><br />
                         AirFlow: <Input className="marTop10" id='airFlow'/><br /></Col><Col>
@@ -191,10 +133,10 @@ class Types extends Component {
     }
 
     deleteTypes() {
-        for( let i = 0; i < this.state.selectedRowIndex.length; i++) {
-            ServerAPI.DefaultServer().deleteSystemType(this.callbackDelete,this,this.state.data[this.state.selectedRowIndex[i]].label);
+        for( let i = 0; i < this.state.selectedRowIndexes.length; i++) {
+            ServerAPI.DefaultServer().deleteSystemType(this.callbackDelete,this,this.state.data[this.state.selectedRowIndexes[i]].label);
         }
-        this.setState({showDelete: !this.state.showDelete});
+        this.setState({showDelete: !this.state.showDelete, selectedRowIndexes:[]});
     }
 
     callbackDelete= (instance) => {
@@ -204,14 +146,13 @@ class Types extends Component {
 
     render() {
       
-        let table = this.drawtable()
         return (
            <div>
                 <div className='marginLeft10'>
                     <Button onClick={() => (this.click())} className="custBtn marginLeft13N" outline color="secondary">New</Button>
                     {this.showDeleteButton()}
                 </div>
-                <SummaryDataTable heading={this.state.typeHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndex}/>
+                <SummaryDataTable heading={this.state.typeHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes}/>
                 {this.renderUpgradeModelDialog()}
             </div> 
         );
