@@ -804,9 +804,10 @@ export class ServerAPI {
                     let jsonObj = JSON.parse(xhr.responseText);
                     if(jsonObj.success) {
                         callback(instance);
+                        NotificationManager.success('Deleted Successfully', 'Role');
                     }
                     else if(jsonObj.ErrorMessage){
-                        NotificationManager.error(jsonObj.ErrorMessage, 'Role');
+                        NotificationManager.error(name+' '+jsonObj.ErrorMessage, 'Role');
                     }
                 } catch (err) {
                     console.log("POST :: ERROR :: " + err);
@@ -893,9 +894,10 @@ export class ServerAPI {
                     let jsonObj = JSON.parse(xhr.responseText);
                     if(jsonObj.success) {
                         callback(instance);
+                        NotificationManager.success(name + " deleted successfully","Base Linux ISO");
                     }
                     else if(jsonObj.ErrorMessage) {
-                        NotificationManager.error(jsonObj.ErrorMessage,"Base Linux ISO");
+                        NotificationManager.error(name + ' ' + jsonObj.ErrorMessage,"Base Linux ISO");
                     }
                 } catch (err) {
                     console.log("POST :: ERROR :: " + err);
@@ -951,9 +953,10 @@ export class ServerAPI {
                     let jsonObj = JSON.parse(xhr.responseText);
                     if(jsonObj.success) {
                         callback(instance);
+                        NotificationManager.success(name + ' deleted successfully', 'Linux Kernel');
                     }
                     else if(jsonObj.ErrorMessage) {
-                        NotificationManager.error(jsonObj.ErrorMessage,"Linux Kernel")
+                        NotificationManager.error(name + ' ' + jsonObj.ErrorMessage,"Linux Kernel")
                     }
                 } catch (err) {
                     console.log("POST :: ERROR :: " + err);
@@ -1009,9 +1012,11 @@ export class ServerAPI {
                     let jsonObj = JSON.parse(xhr.responseText);
                     if(jsonObj.success) {
                         callback(instance);
+                        NotificationManager.success(name + ' deleted successfully', 'System Type');
+                        
                     }
                     else if(jsonObj.ErrorMessage) {
-                        NotificationManager.error(jsonObj.ErrorMessage,"System Type");
+                        NotificationManager.error(name + ' ' + jsonObj.ErrorMessage,"System Type");
                     }
                 } catch (err) {
                     console.log("POST :: ERROR :: " + err);
@@ -1123,9 +1128,10 @@ export class ServerAPI {
                             'description': jsonObj.role.Description,
                         }
                         callback(instance, a);
+                        NotificationManager.success(jsonObj.role.Name+" added successfully","Role");
                     }
                     else {
-                        alert("Faliure");
+                        NotificationManager.error(jsonObj.role.Name+" was not added","Role");
                     }
                 } catch (err) {
                     console.log("Error" + err);
@@ -1152,9 +1158,10 @@ export class ServerAPI {
                             'description': jsonObj.iso.Description
                         }
                         callback(instance, a);
+                        NotificationManager.success(jsonObj.iso.Name+" added successfully","Base Linux ISO");
                     }
                     else {
-                        alert("Faliure");
+                        NotificationManager.error(jsonObj.iso.Name+" was not added","Base Linux ISO");
                     }
                 } catch (err) {
                     console.log("Error" + err);
@@ -1181,9 +1188,10 @@ export class ServerAPI {
                             'description': jsonObj.kernel.Description
                         }
                         callback(instance, a);
+                        NotificationManager.success(jsonObj.kernel.Name+" added successfully","Linux Kernel");
                     }
                     else {
-                        alert("Faliure");
+                        NotificationManager.error(jsonObj.kernel.Name+" was not added","Linux Kernel");
                     }
                 } catch (err) {
                     console.log("Error" + err);
@@ -1215,9 +1223,10 @@ export class ServerAPI {
                             'speedMgmtInterafce': jsonObj.system.SpeedMgmtInterafce
                         }
                         callback(instance, a);
+                        NotificationManager.success(jsonObj.system.Id+" added successfully","System Type");
                     }
                     else {
-                        alert("Faliure");
+                        NotificationManager.error(jsonObj.system.Id+" was not added","System Type");
                     }
                 } catch (err) {
                     console.log("Error" + err);

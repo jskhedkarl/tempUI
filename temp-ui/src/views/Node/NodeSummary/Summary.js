@@ -7,6 +7,7 @@ import SummaryDataTable from './SummaryDataTable';
 import DropDown from '../../../components/dropdown/DropDown';
 import {nodeHead} from '../../../consts';
 import '../../views.css';
+import { NotificationManager } from 'react-notifications';
 
 class NodeSummary extends React.Component {
     constructor(props) {
