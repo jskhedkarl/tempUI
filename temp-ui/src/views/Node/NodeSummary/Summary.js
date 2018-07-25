@@ -4,6 +4,7 @@ import { ServerAPI } from '../../../ServerAPI';
 import { Redirect } from 'react-router-dom'
 import { Button } from 'reactstrap';
 import SummaryDataTable from './SummaryDataTable';
+import DropDown from '../../../components/dropdown/DropDown';
 import {nodeHead} from '../../../consts';
 import '../../views.css';
 
@@ -22,7 +23,10 @@ class NodeSummary extends React.Component {
             displayModel: false,
             visible:false,
             showDelete: false,
-            redirect: false
+            redirect: false,
+            selectedType: '',
+            selectedLinux: '',
+            selectedIso: ''
         }
     }
 
@@ -32,6 +36,12 @@ class NodeSummary extends React.Component {
         ServerAPI.DefaultServer().fetchAllIso(this.retrieveIsoData, this);
         ServerAPI.DefaultServer().fetchAllKernels(this.retrieveKernelsData, this);
         ServerAPI.DefaultServer().fetchAllSystemTypes(this.retrieveTypesData, this);
+    }
+
+    updateNodeSummary = (instance, nodes) => {
+        instance.setState({
+            nodes: nodes,
+        });
     }
 
     retrieveData(instance, data) {
@@ -88,6 +98,22 @@ class NodeSummary extends React.Component {
     }
   }
 
+  getSelectedData = (data, identity) => {
+    if (identity == 'Type') {
+      this.setState({ selectedType: data })
+
+    }
+    if (identity == 'Linux') {
+      
+      this.setState({ selectedLinux: data })
+    }
+    if (identity == 'ISO') {
+      
+     
+      this.setState({ selectedIso: data })
+    }
+  }
+
   getRoles() {
     let rolesHtml = [];
     this.state.roleData.map((item) => (rolesHtml.push(<option>{item.label}</option>)));
@@ -100,22 +126,8 @@ class NodeSummary extends React.Component {
     return typesHtml;
   }
 
-  getTypesForAddnew() {
-    let typesHtml = [];
-    typesHtml.push(<option>---Select an Option---</option>)
-    this.state.typedata.map((item) => (typesHtml.push(<option>{item.label}</option>)));
-    return typesHtml;
-  }
-
   getKernel() {
     let kernelHtml = [];
-    this.state.kernelData.map((item) => (kernelHtml.push(<option>{item.label}</option>)));
-    return kernelHtml;
-  }
-
-  getKernelForAddnew() {
-    let kernelHtml = [];
-    kernelHtml.push(<option>---Select an Option---</option>)
     this.state.kernelData.map((item) => (kernelHtml.push(<option>{item.label}</option>)));
     return kernelHtml;
   }
@@ -126,21 +138,7 @@ class NodeSummary extends React.Component {
     return isoHtml;
   }
 
-  getIsoForAddnew() {
-    let isoHtml = [];
-    isoHtml.push(<option>---Select an Option---</option>)
-    this.state.isoData.map((item) => (isoHtml.push(<option>{item.label}</option>)));
-    return isoHtml;
-  }
-
-  updateNodeSummary = (instance, nodes) => {
-      instance.setState({
-          nodes: nodes,
-      });
-  }
-  
-
-    checkBoxClick = (rowIndex, singleRowClick) => {
+  checkBoxClick = (rowIndex, singleRowClick) => {
         if (singleRowClick) {
             let { nodes } = this.state
             let selectedRows = [nodes[rowIndex]]
@@ -328,14 +326,17 @@ class NodeSummary extends React.Component {
                             <Col sm="6" className="marTop10">Roles: <select multiple className="form-control marTop10" id="roles">{this.getRoles()}</select></Col>
                             <Col sm="6" className="marTop10">
                                 Serial Number: <Input id='serialNumber' className="marTop10"/>
-                                <br />Type: <select className="form-control marTop10" id="types">
-                                                {this.getTypesForAddnew()}
-                                            </select>
+                                <br/>Type:
+                                <DropDown options={this.state.typedata} getSelectedData={this.getSelectedData} identity={"Type"} default={this.state.selectedType} />
                             </Col>
                         </Row>
                         <Row> 
-                            <Col sm="6" className="marTop10">Linux Kernel: <select className="form-control marTop10" id="linuxkernel">{this.getKernelForAddnew()}</select></Col>
-                            <Col sm="6" className="marTop10">Base Linux ISO: <select className="form-control marTop10" id="linuxIso">{this.getIsoForAddnew()}</select></Col>
+                            <Col sm="6" className="marTop10">Linux Kernel: 
+                                <DropDown options={this.state.kernelData} getSelectedData={this.getSelectedData} identity={"Linux"} default={this.state.selectedLinux} />
+                            </Col>
+                            <Col sm="6" className="marTop10">Base Linux ISO: 
+                                <DropDown options={this.state.isoData} getSelectedData={this.getSelectedData} identity={"ISO"} default={this.state.selectedIso} />
+                            </Col>
                         </Row>    
                     </ModalBody>
                     <ModalFooter>
@@ -357,15 +358,16 @@ class NodeSummary extends React.Component {
             'Name' : document.getElementById('name').value,
             'site': document.getElementById('site').value,
             'roles': roles,
-            'type': document.getElementById('types').value,
+            'type': this.state.selectedType,
             'serialNumber': document.getElementById('serialNumber').value,
-            'kernel': document.getElementById('linuxkernel').value,
-            'linuxISO': document.getElementById('linuxIso').value
+            'kernel': this.state.selectedLinux,
+            'linuxISO': this.state.selectedIso
         }
         ServerAPI.DefaultServer().addNode(this.callback,this,a);
         
     }
 
+    
     getSelectRoleValues(select) {
         var result = [];
         var options = select && select.options;
@@ -394,7 +396,6 @@ class NodeSummary extends React.Component {
     click() {
         this.setState({displayModel : !this.state.displayModel})
     }
-
 
     render() {
         if (this.state.redirect) {
