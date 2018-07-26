@@ -689,7 +689,7 @@ export class ServerAPI {
                     let jsonObj = JSON.parse(xhr.responseText);
                     let wipeInfo = jsonObj.wipe;
                     callback(instance, wipeInfo);
-                    
+
                 } catch (err) {
                     console.log("POST :: ERROR :: " + err);
                     callback(instance, null);
@@ -745,7 +745,7 @@ export class ServerAPI {
             if (xhr.readyState === 4 && xhr.status === 200) {
                 try {
                     let jsonObj = JSON.parse(xhr.responseText);
-                    if(jsonObj.success) {
+                    if (jsonObj.success) {
                         callback(instance);
                     }
                     else
@@ -802,12 +802,15 @@ export class ServerAPI {
             if (xhr.readyState === 4 && xhr.status === 200) {
                 try {
                     let jsonObj = JSON.parse(xhr.responseText);
-                    if(jsonObj.success) {
+                    if (jsonObj.success) {
                         callback(instance);
                         NotificationManager.success('Deleted Successfully', 'Role');
                     }
-                    else if(jsonObj.ErrorMessage){
-                        NotificationManager.error(name+' '+jsonObj.ErrorMessage, 'Role');
+                    else if (jsonObj.ErrorMessage) {
+                        NotificationManager.error(jsonObj.ErrorMessage, 'Role');
+                    }
+                    else {
+                        NotificationManager.error("Something went wrong", 'Role');
                     }
                 } catch (err) {
                     console.log("POST :: ERROR :: " + err);
@@ -892,12 +895,15 @@ export class ServerAPI {
             if (xhr.readyState === 4 && xhr.status === 200) {
                 try {
                     let jsonObj = JSON.parse(xhr.responseText);
-                    if(jsonObj.success) {
+                    if (jsonObj.success) {
                         callback(instance);
-                        NotificationManager.success(name + " deleted successfully","Base Linux ISO");
+                        NotificationManager.success(name + " deleted successfully", "Base Linux ISO");
                     }
-                    else if(jsonObj.ErrorMessage) {
-                        NotificationManager.error(name + ' ' + jsonObj.ErrorMessage,"Base Linux ISO");
+                    else if (jsonObj.ErrorMessage) {
+                        NotificationManager.error(jsonObj.ErrorMessage, "Base Linux ISO");
+                    }
+                    else {
+                        NotificationManager.error("Something went wrong", 'Base Linux ISO');
                     }
                 } catch (err) {
                     console.log("POST :: ERROR :: " + err);
@@ -951,12 +957,15 @@ export class ServerAPI {
             if (xhr.readyState === 4 && xhr.status === 200) {
                 try {
                     let jsonObj = JSON.parse(xhr.responseText);
-                    if(jsonObj.success) {
+                    if (jsonObj.success) {
                         callback(instance);
                         NotificationManager.success(name + ' deleted successfully', 'Linux Kernel');
                     }
-                    else if(jsonObj.ErrorMessage) {
-                        NotificationManager.error(name + ' ' + jsonObj.ErrorMessage,"Linux Kernel")
+                    else if (jsonObj.ErrorMessage) {
+                        NotificationManager.error(jsonObj.ErrorMessage, "Linux Kernel")
+                    }
+                    else {
+                        NotificationManager.error("Something went wrong", 'Linux Kernel');
                     }
                 } catch (err) {
                     console.log("POST :: ERROR :: " + err);
@@ -1010,13 +1019,16 @@ export class ServerAPI {
             if (xhr.readyState === 4 && xhr.status === 200) {
                 try {
                     let jsonObj = JSON.parse(xhr.responseText);
-                    if(jsonObj.success) {
+                    if (jsonObj.success) {
                         callback(instance);
                         NotificationManager.success(name + ' deleted successfully', 'System Type');
-                        
+
                     }
-                    else if(jsonObj.ErrorMessage) {
-                        NotificationManager.error(name + ' ' + jsonObj.ErrorMessage,"System Type");
+                    else if (jsonObj.ErrorMessage) {
+                        NotificationManager.error(jsonObj.ErrorMessage, "System Type");
+                    }
+                    else {
+                        NotificationManager.error("Something went wrong", "System Type");
                     }
                 } catch (err) {
                     console.log("POST :: ERROR :: " + err);
@@ -1041,7 +1053,7 @@ export class ServerAPI {
             if (xhr.readyState === 4 && xhr.status === 200) {
                 try {
                     let jsonObj = JSON.parse(xhr.responseText);
-                   
+
                     if (jsonObj.success) {
                         let node = jsonObj.Node
                         let a = {
@@ -1050,12 +1062,12 @@ export class ServerAPI {
                             'status': node.status,
                             'roles': node.roles,
                             'nodeType': node.type,
-                            'serialNumber':node.serialNumber,
+                            'serialNumber': node.serialNumber,
                             'kernel': node.kernel,
                             'linuxISO': node.linuxISO
                         }
                         callback(instance, a);
-                        
+
                     }
                     else {
                         NotificationManager.error('something went wrong', 'Node');
@@ -1079,7 +1091,7 @@ export class ServerAPI {
             intrfc.connectedTo.name = intrfc.connectedTo.serverName
         })
         data.nodes[0].type = data.nodes[0].nodeType
-        
+
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4 && xhr.status === 200) {
                 try {
@@ -1107,7 +1119,7 @@ export class ServerAPI {
         xhr.send(JSON.stringify(data.nodes[0]));
     }
 
-   
+
 
 
     addRole(callback, instance, data) {
@@ -1124,14 +1136,14 @@ export class ServerAPI {
                         let a = {
                             'parent': jsonObj.role.Parent,
                             'label': jsonObj.role.Name,
-                            'value' : jsonObj.role.Name,
+                            'value': jsonObj.role.Name,
                             'description': jsonObj.role.Description,
                         }
                         callback(instance, a);
-                        NotificationManager.success(jsonObj.role.Name+" added successfully","Role");
+                        NotificationManager.success(jsonObj.role.Name + " added successfully", "Role");
                     }
                     else {
-                        NotificationManager.error(jsonObj.role.Name+" was not added","Role");
+                        NotificationManager.error(jsonObj.role.Name + " was not added", "Role");
                     }
                 } catch (err) {
                     console.log("Error" + err);
@@ -1153,15 +1165,15 @@ export class ServerAPI {
                     let jsonObj = JSON.parse(xhr.responseText);
                     if (jsonObj.success) {
                         let a = {
-                            'label' : jsonObj.iso.Name,
-                            'location' : jsonObj.iso.Location,
+                            'label': jsonObj.iso.Name,
+                            'location': jsonObj.iso.Location,
                             'description': jsonObj.iso.Description
                         }
                         callback(instance, a);
-                        NotificationManager.success(jsonObj.iso.Name+" added successfully","Base Linux ISO");
+                        NotificationManager.success(jsonObj.iso.Name + " added successfully", "Base Linux ISO");
                     }
                     else {
-                        NotificationManager.error(jsonObj.iso.Name+" was not added","Base Linux ISO");
+                        NotificationManager.error(jsonObj.iso.Name + " was not added", "Base Linux ISO");
                     }
                 } catch (err) {
                     console.log("Error" + err);
@@ -1183,15 +1195,15 @@ export class ServerAPI {
                     let jsonObj = JSON.parse(xhr.responseText);
                     if (jsonObj.success) {
                         let a = {
-                            'label' : jsonObj.kernel.Name,
-                            'location' : jsonObj.kernel.Location,
+                            'label': jsonObj.kernel.Name,
+                            'location': jsonObj.kernel.Location,
                             'description': jsonObj.kernel.Description
                         }
                         callback(instance, a);
-                        NotificationManager.success(jsonObj.kernel.Name+" added successfully","Linux Kernel");
+                        NotificationManager.success(jsonObj.kernel.Name + " added successfully", "Linux Kernel");
                     }
                     else {
-                        NotificationManager.error(jsonObj.kernel.Name+" was not added","Linux Kernel");
+                        NotificationManager.error(jsonObj.kernel.Name + " was not added", "Linux Kernel");
                     }
                 } catch (err) {
                     console.log("Error" + err);
@@ -1213,26 +1225,26 @@ export class ServerAPI {
                     let jsonObj = JSON.parse(xhr.responseText);
                     if (jsonObj.success) {
                         let a = {
-                            'label' : jsonObj.system.Id,
-                            'vendor' : jsonObj.system.Vendor,
-                            'rackUnit' : jsonObj.system.RackUnit,
-                            'airflow' : jsonObj.system.Airflow,
-                            'numFrontPanelInterface' : jsonObj.system.NumFrontPanelInterface,
-                            'speedFrontPanelInterface' : jsonObj.system.SpeedFrontPanelInterface,
-                            'numMgmtInterface' : jsonObj.system.NumMgmtInterface,
+                            'label': jsonObj.system.Id,
+                            'vendor': jsonObj.system.Vendor,
+                            'rackUnit': jsonObj.system.RackUnit,
+                            'airflow': jsonObj.system.Airflow,
+                            'numFrontPanelInterface': jsonObj.system.NumFrontPanelInterface,
+                            'speedFrontPanelInterface': jsonObj.system.SpeedFrontPanelInterface,
+                            'numMgmtInterface': jsonObj.system.NumMgmtInterface,
                             'speedMgmtInterafce': jsonObj.system.SpeedMgmtInterafce
                         }
                         callback(instance, a);
-                        NotificationManager.success(jsonObj.system.Id+" added successfully","System Type");
+                        NotificationManager.success(jsonObj.system.Id + " added successfully", "System Type");
                     }
                     else {
-                        NotificationManager.error(jsonObj.system.Id+" was not added","System Type");
+                        NotificationManager.error(jsonObj.system.Id + " was not added", "System Type");
                     }
                 } catch (err) {
                     console.log("Error" + err);
                 }
             }
-            else if (xhr.readyState === 4 && xhr.status === 500){
+            else if (xhr.readyState === 4 && xhr.status === 500) {
                 alert("Something went wrong!");
             }
         };
