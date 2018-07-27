@@ -18,7 +18,10 @@ class Roles extends Component {
             selectedRowIndexes: [],
             showDelete: false,
             alertVisible: false,
-            selectedRole: ''
+            selectedRole: '',
+            displayRoleUpdateModel: false,
+            updateRowIndex:null,
+            selectedParentRole:null
         }
     }
 
@@ -51,6 +54,80 @@ class Roles extends Component {
         }
     }
 
+    // checkBoxClick = (rowIndex) =>{
+    //    console.log(rowIndex)
+
+    // }
+
+    toggleModel = (rowIndex) => {
+        this.setState({updateRowIndex:rowIndex})
+        this.setState({displayRoleUpdateModel : !this.state.displayRoleUpdateModel})
+    }
+
+
+    updateModel = () => {
+        let data = this.state.data
+        let currentRole = null
+
+        data.map((datum,index) => {
+            if(index == this.state.updateRowIndex){
+                currentRole = datum
+            }
+           
+        })
+        
+        
+        if (this.state.displayRoleUpdateModel) {
+            this.setState({selectedRole:currentRole.parent})
+            return (
+                <Modal isOpen={this.state.displayRoleUpdateModel} toggle={() => this.cancelRoleModel()} size="sm" centered="true" >
+                    <ModalHeader toggle={() => this.cancelRoleModel()}>Update Role--{this.state.selectedRole}--</ModalHeader>
+                    <ModalBody>
+                      Parent Role: <DropDown className="marTop10" id='rolePUpdate' options={this.state.data}  getSelectedData={this.getSelectedData} identity={"Role"} default={currentRole.parent}/><br /> 
+                        Name: <Input autoFocus className="marTop10" id='roleNameUpdate' defaultValue={currentRole.label}/><br />
+                        Description: <Input className="marTop10" id='roleDescUpdate' defaultValue={currentRole.description}/><br />
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button outline color="primary" onClick={()=>(this.updateRole())}>Update</Button>{'  '}
+                        <Button outline color="primary" onClick={()=>(this.cancelRoleModel())}>Cancel</Button>
+                    </ModalFooter>
+                </Modal>
+            );
+        }
+    }
+
+   
+    updateRole = () => {
+        if(!document.getElementById('roleNameUpdate').value) {
+            this.setState({alertVisible : true});
+                return;
+        }   
+        let desc = document.getElementById('roleDescUpdate').value  
+        let roleName = document.getElementById('rolePUpdate').value
+        let a = {
+            
+            'Name' : roleName,
+            'Description': desc,
+          
+        }
+        this.roleN =  roleName
+        this.descr = desc
+        ServerAPI.DefaultServer().updateRole(this.roleUpdateCallback,this,a);
+    }
+
+    roleUpdateCallback(instance, data) {
+        let arr = instance.state.data
+        arr[instance.state.updateRowIndex].label = instance.roleN
+        arr[instance.state.updateRowIndex].description = instance.descr
+
+        instance.setState({data: arr, displayRoleUpdateModel: !instance.state.displayRoleUpdateModel, selectedParentRole: ''})
+        ServerAPI.DefaultServer().fetchAllRoles(this.retrieveData,this);
+    }
+
+    cancelRoleModel = () => {
+        this.setState({displayRoleUpdateModel : !this.state.displayRoleUpdateModel})
+    }
+
     
     showDeleteButton() {
         let a = [];
@@ -63,8 +140,10 @@ class Roles extends Component {
     }
 
     getSelectedData= (data,identity) => {
+        
         if(identity == 'Role') {
           this.setState({ selectedRole : data })
+         
         }
       }
 
@@ -80,8 +159,8 @@ class Roles extends Component {
                         Description: <Input className="marTop10" id='roleDesc' /><br />
                     </ModalBody>
                     <ModalFooter>
-                        <Button outline color="primary" onClick={()=>(this.addRole())}>Add</Button>{'  '}
-                        <Button outline color="primary" onClick={()=>(this.cancel())}>Cancel</Button>
+                        <Button className="custBtn" outline color="primary" onClick={()=>(this.addRole())}>Add</Button>
+                        <Button className="custBtn" outline color="primary" onClick={()=>(this.cancel())}>Cancel</Button>
                     </ModalFooter>
                 </Modal>
             );
@@ -136,8 +215,9 @@ class Roles extends Component {
                     <Button className="custBtn animated fadeIn" id="add" outline color="secondary" onClick={() => (this.cancel())}>New</Button>
                     {this.showDeleteButton()}
                </Row>
-               <SummaryDataTable heading={this.state.roleHead} data={this.state.data} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes}/>
+               <SummaryDataTable heading={this.state.roleHead} data={this.state.data} toggleModel={this.toggleModel} checkBoxClick={this.checkBoxClick} selectedRowIndexes={this.state.selectedRowIndexes} />
                 {this.renderUpgradeModelDialog()}
+                {this.updateModel()}
             </div> 
         );
     }
