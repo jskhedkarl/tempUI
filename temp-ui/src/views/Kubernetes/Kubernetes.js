@@ -62,6 +62,7 @@ class Kubernetes extends Component {
                     row1 =  row1 +' headerRow3 '
                   }
                 let key = data.name + '_' + index;
+                //<Col sm="1" className="pad"><Input className="marLeft40" id={key} type="checkbox" onClick={() => (this.checkBoxClick(key))} /></Col>
                 table.push(
                     <Row className={row1}>
                         <Col sm="1" className="pad"><Input className="marLeft40" id={key} type="checkbox" onClick={() => (this.checkBoxClick(key))} /></Col>
@@ -88,12 +89,13 @@ class Kubernetes extends Component {
     }
 
     deploy() {
-        if (this.state.selectedRowIndex.length) {
-            alert(this.state.selectedRowIndex + ' deployed')
-        }
-        else {
-            alert("Please make a selection in order to deploy")
-        }
+        ServerAPI.DefaultServer().kubernetesDeployment();
+        //if (this.state.selectedRowIndex.length) {
+        //    alert(this.state.selectedRowIndex + ' deployed')
+        //}
+        //else {
+        //    alert("Please make a selection in order to deploy")
+        //}
     }
 
     renderFilterComponent = () => {
